@@ -2,140 +2,128 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Star, Clock, Truck, MapPin } from 'lucide-react'
+import { Star, Clock, ShoppingBag } from 'lucide-react'
 import Card from '../ui/Card'
 import Badge from '../ui/Badge'
-import Button from '../ui/Button'
 import { OfferWithDetails } from '@/lib/types/database'
 import {
     formatPrice,
     getDiscountBadge,
     formatDeliveryTime,
-    getMealImageUrl,
-    getTrackingUrl
+    getTrackingUrl,
+    getSourceLogoUrl
 } from '@/lib/utils'
 
 interface OfferCardProps {
     offer: OfferWithDetails
+    priority?: boolean
 }
 
-export default function OfferCard({ offer }: OfferCardProps) {
+// Demo image mapping helper
+function getDemoImage(mealName: string): string {
+    const lower = mealName.toLowerCase()
+    if (lower.includes('pizza')) return '/images/pizza.jpg'
+    if (lower.includes('sushi') || lower.includes('maki') || lower.includes('roll')) return '/images/sushi.jpg'
+    if (lower.includes('burger')) return '/images/burger.jpg'
+    return '/images/placeholder-meal.jpg'
+}
+
+export default function OfferCard({ offer, priority = false }: OfferCardProps) {
     const discountBadge = getDiscountBadge(offer.old_price_cents, offer.price_cents)
-    const imageUrl = getMealImageUrl(offer.meal.image_path)
+    // Use demo images if Supabase image is just a path, otherwise use full URL
+    const imageUrl = offer.meal.image_path?.startsWith('http')
+        ? offer.meal.image_path
+        : getDemoImage(offer.meal.name)
+
     const trackingUrl = getTrackingUrl(offer.id)
 
     return (
-        <Card hover className="group">
-            {/* Image */}
-            <div className="relative h-48 overflow-hidden">
+        <Card className="group border-none shadow-lg hover:shadow-2xl transition-all duration-300 bg-white dark:bg-zinc-900 overflow-hidden h-full flex flex-col">
+            {/* Image Container - Taller aspect ratio for food appeal */}
+            <div className="relative aspect-[4/3] w-full overflow-hidden">
                 <Image
                     src={imageUrl}
                     alt={offer.meal.name}
                     fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-110"
+                    priority={priority}
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
 
-                {/* Discount Badge */}
+                {/* Discount Badge - Modern pill shape */}
                 {discountBadge && (
-                    <div className="absolute top-3 left-3">
-                        <Badge variant="error" className="text-sm px-3 py-1">
-                            {discountBadge}
-                        </Badge>
-                    </div>
-                )}
-
-                {/* Source Logo */}
-                <div className="absolute top-3 right-3 bg-white/90 dark:bg-black/90 backdrop-blur-sm px-3 py-1.5 rounded-lg">
-                    <span className="text-xs font-semibold text-gray-900 dark:text-white">
-                        {offer.source.name}
-                    </span>
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className="p-4 space-y-3">
-                {/* Meal Name */}
-                <h3 className="text-lg font-semibold line-clamp-1 group-hover:text-primary transition-colors">
-                    {offer.meal.name}
-                </h3>
-
-                {/* Restaurant & Location */}
-                <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground line-clamp-1">
-                        {offer.meal.restaurant.name}
-                    </p>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin className="w-3 h-3" />
-                        <span>{offer.meal.restaurant.city.name}</span>
-                    </div>
-                </div>
-
-                {/* Rating */}
-                {offer.meal.restaurant.rating > 0 && (
-                    <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-food-yellow text-food-yellow" />
-                        <span className="text-sm font-medium">
-                            {offer.meal.restaurant.rating.toFixed(1)}
+                    <div className="absolute top-3 left-3 z-10">
+                        <span className="bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                            {discountBadge} OFF
                         </span>
                     </div>
                 )}
 
-                {/* Diet Flags */}
-                {offer.meal.diet_flags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                        {offer.meal.diet_flags.slice(0, 3).map((flag) => (
-                            <Badge
-                                key={flag}
-                                variant={flag as any}
-                                className="text-xs"
-                            >
-                                {flag}
-                            </Badge>
-                        ))}
+                {/* Source Logo/Platform - Floating pill */}
+                <div className="absolute bottom-3 right-3 z-10">
+                    <div className="bg-white/95 dark:bg-black/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-800 dark:text-gray-200">
+                            {offer.source.name}
+                        </span>
                     </div>
-                )}
+                </div>
 
-                {/* Delivery Info */}
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    {offer.eta_minutes && (
-                        <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            <span>{formatDeliveryTime(offer.eta_minutes)}</span>
-                        </div>
-                    )}
-                    {!offer.is_pickup && (
-                        <div className="flex items-center gap-1">
-                            <Truck className="w-3 h-3" />
-                            <span>
-                                {offer.delivery_fee_cents === 0
-                                    ? 'Free delivery'
-                                    : formatPrice(offer.delivery_fee_cents)}
+                {/* Gradient Overlay for text readability if needed */}
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity" />
+            </div>
+
+            {/* Content */}
+            <div className="p-5 flex flex-col flex-grow">
+                <div className="flex justify-between items-start gap-2 mb-2">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-50 leading-tight line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {offer.meal.name}
+                    </h3>
+                    {offer.meal.restaurant.rating > 0 && (
+                        <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-1.5 py-0.5 rounded flex-shrink-0">
+                            <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                            <span className="text-sm font-semibold text-yellow-700 dark:text-yellow-500">
+                                {offer.meal.restaurant.rating.toFixed(1)}
                             </span>
                         </div>
                     )}
-                    {offer.is_pickup && (
-                        <span className="text-accent font-medium">Pickup</span>
-                    )}
                 </div>
 
-                {/* Price & CTA */}
-                <div className="flex items-center justify-between pt-2 border-t border-border">
-                    <div>
+                <div className="mb-4">
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 line-clamp-1">
+                        {offer.meal.restaurant.name}
+                    </p>
+                    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-500 mt-2">
+                        <div className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{formatDeliveryTime(offer.eta_minutes)}</span>
+                        </div>
+                        <span>•</span>
+                        <span>
+                            {offer.delivery_fee_cents === 0
+                                ? 'Free Delivery'
+                                : `${formatPrice(offer.delivery_fee_cents)} delivery`}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Price & Action - Always at bottom */}
+                <div className="mt-auto pt-4 border-t border-gray-100 dark:border-zinc-800 flex items-center justify-between">
+                    <div className="flex flex-col">
                         {offer.old_price_cents && (
-                            <p className="text-xs text-muted-foreground line-through">
+                            <span className="text-xs text-gray-400 line-through font-medium">
                                 {formatPrice(offer.old_price_cents)}
-                            </p>
+                            </span>
                         )}
-                        <p className="text-2xl font-bold text-accent">
+                        <span className="text-xl font-extrabold text-gray-900 dark:text-white">
                             {formatPrice(offer.price_cents)}
-                        </p>
+                        </span>
                     </div>
 
-                    <Link href={trackingUrl} target="_blank">
-                        <Button variant="accent" size="md">
-                            Go to Deal
-                        </Button>
+                    <Link href={trackingUrl} target="_blank" className="w-auto">
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2.5 text-sm font-semibold transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2">
+                            <ShoppingBag className="w-4 h-4" />
+                            Order
+                        </button>
                     </Link>
                 </div>
             </div>
