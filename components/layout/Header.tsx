@@ -18,12 +18,18 @@ export default function Header() {
                 </Link>
 
                 {/* Navigation */}
-                <nav className="hidden md:flex items-center gap-6">
+                <nav className="hidden md:flex items-center gap-8">
                     <Link
                         href="/"
                         className="text-sm font-medium text-foreground hover:text-primary transition-colors"
                     >
-                        Search
+                        Home
+                    </Link>
+                    <Link
+                        href="/search"
+                        className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                    >
+                        Offers
                     </Link>
                     <Link
                         href="/about"
@@ -33,13 +39,17 @@ export default function Header() {
                     </Link>
                 </nav>
 
-                {/* Mobile Menu - Simplified for now */}
-                <div className="md:hidden">
-                    <Link
-                        href="/"
-                        className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                    >
-                        Search
+                {/* Auth Actions */}
+                <div className="flex items-center gap-3">
+                    <Link href="/login" className="hidden md:block">
+                        <button className="text-sm font-medium text-foreground hover:text-primary transition-colors px-4 py-2">
+                            Sign In
+                        </button>
+                    </Link>
+                    <Link href="/signup">
+                        <button className="bg-primary hover:bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-full transition-all shadow-lg shadow-blue-500/20">
+                            Get Started
+                        </button>
                     </Link>
                 </div>
             </div>

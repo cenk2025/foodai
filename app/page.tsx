@@ -8,6 +8,7 @@ import OfferCard from '@/components/offers/OfferCard'
 import { SkeletonCard } from '@/components/ui/Skeleton'
 import { OfferWithDetails } from '@/lib/types/database'
 import { Utensils } from 'lucide-react'
+import Footer from '@/components/layout/Footer'
 
 export default function HomePage() {
   const [cities, setCities] = useState<Array<{ id: string; name: string }>>([])
@@ -237,6 +238,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   )
 }
