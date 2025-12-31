@@ -122,7 +122,7 @@ export default function OfferCard({ offer, priority = false }: OfferCardProps) {
                         </span>
                     </div>
 
-                    <Link href={trackingUrl} target="_blank" className="w-auto">
+                    <Link href={`/offer/${offer.id}`} className="w-auto">
                         <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2.5 text-sm font-semibold transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2">
                             <ShoppingBag className="w-4 h-4" />
                             {t.card.order}
