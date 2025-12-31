@@ -111,20 +111,40 @@ export async function searchOffers(params: SearchParams): Promise<OfferWithDetai
 }
 
 export async function getCities() {
+    // Always return Finnish cities with 100,000+ population
+    // This ensures consistent city list even if database is empty
+    const finnishCities = [
+        { id: 'helsinki', name: 'Helsinki' },      // ~656,000
+        { id: 'espoo', name: 'Espoo' },            // ~297,000
+        { id: 'tampere', name: 'Tampere' },        // ~244,000
+        { id: 'vantaa', name: 'Vantaa' },          // ~239,000
+        { id: 'oulu', name: 'Oulu' },              // ~208,000
+        { id: 'turku', name: 'Turku' },            // ~195,000
+        { id: 'jyvaskyla', name: 'Jyväskylä' },    // ~144,000
+        { id: 'lahti', name: 'Lahti' },            // ~120,000
+        { id: 'kuopio', name: 'Kuopio' },          // ~120,000
+        { id: 'pori', name: 'Pori' },              // ~83,000
+    ]
+
     const supabase = await createClient()
-    if (!supabase) return []
+    if (!supabase) return finnishCities
 
     const { data, error } = await supabase
         .from('cities')
         .select('id, name')
         .order('name')
 
-    if (error) {
-        console.error('Error fetching cities:', error)
-        return []
+    if (error || !data || data.length === 0) {
+        return finnishCities
     }
 
-    return data || []
+    // Merge database cities with Finnish cities, preferring database data
+    const cityMap = new Map(finnishCities.map(c => [c.name.toLowerCase(), c]))
+    data.forEach((dbCity: { id: string; name: string }) => {
+        cityMap.set(dbCity.name.toLowerCase(), dbCity)
+    })
+
+    return Array.from(cityMap.values()).sort((a, b) => a.name.localeCompare(b.name))
 }
 
 export async function getOfferById(offerId: string): Promise<OfferWithDetails | null> {

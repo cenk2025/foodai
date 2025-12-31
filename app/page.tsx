@@ -29,17 +29,7 @@ export default function HomePage() {
   // Load cities on mount
   useEffect(() => {
     getCities().then((data) => {
-      if (data && data.length > 0) {
-        setCities(data)
-      } else {
-        // Fallback demo cities
-        setCities([
-          { id: '1', name: 'Helsinki' },
-          { id: '2', name: 'Espoo' },
-          { id: '3', name: 'Tampere' },
-          { id: '4', name: 'Turku' },
-        ])
-      }
+      setCities(data)
     })
   }, [])
 

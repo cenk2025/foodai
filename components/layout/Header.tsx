@@ -75,10 +75,10 @@ export default function Header() {
                         {t.header.home}
                     </Link>
                     <Link
-                        href="/search"
+                        href="/how-it-works"
                         className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                     >
-                        {t.header.offers}
+                        {t.header.how_it_works}
                     </Link>
                     <Link
                         href="/about"

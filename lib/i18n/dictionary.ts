@@ -53,7 +53,7 @@ export const dictionary = {
         },
         header: {
             home: 'Koti',
-            offers: 'Tarjoukset',
+            how_it_works: 'Miten se toimii',
             about: 'Tietoa',
             signin: 'Kirjaudu',
             get_started: 'Aloita',
@@ -146,7 +146,7 @@ export const dictionary = {
         },
         header: {
             home: 'Home',
-            offers: 'Offers',
+            how_it_works: 'How It Works',
             about: 'About',
             signin: 'Sign In',
             get_started: 'Get Started',
