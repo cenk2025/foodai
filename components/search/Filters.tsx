@@ -68,11 +68,11 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
             {/* Expanded Filters */}
             {isOpen && (
                 <div className="p-6 bg-card rounded-xl border border-border shadow-sm animate-in slide-in-from-top-2 fade-in duration-200">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                        {/* Diet */}
-                        <div>
-                            <h4 className="font-semibold mb-3">{t.filters.diet.healthy} / {t.filters.diet.vegan}</h4>
+                        {/* Diet Preferences */}
+                        <div className="space-y-3">
+                            <h4 className="font-semibold text-foreground">{t.filters.diet_preferences || 'Dietary Preferences'}</h4>
                             <div className="flex flex-wrap gap-2">
                                 {['vegan', 'gluten_free', 'healthy', 'pescatarian'].map(flag => (
                                     <Badge
@@ -89,34 +89,36 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                         </div>
 
                         {/* Price Range */}
-                        <div>
-                            <h4 className="font-semibold mb-3">{t.filters.max_price}</h4>
-                            <input
-                                type="range"
-                                min="500"
-                                max="3000"
-                                step="100"
-                                className="w-full accent-primary h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-                                value={filters.maxPrice || 3000}
-                                onChange={(e) => onFilterChange({ ...filters, maxPrice: parseInt(e.target.value) })}
-                            />
-                            <div className="flex justify-between text-sm text-muted-foreground mt-1">
-                                <span>€5</span>
-                                <span>€{(filters.maxPrice || 3000) / 100}</span>
+                        <div className="space-y-3">
+                            <h4 className="font-semibold text-foreground">{t.filters.max_price}</h4>
+                            <div className="pt-2">
+                                <input
+                                    type="range"
+                                    min="500"
+                                    max="3000"
+                                    step="100"
+                                    className="w-full accent-primary h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                                    value={filters.maxPrice || 3000}
+                                    onChange={(e) => onFilterChange({ ...filters, maxPrice: parseInt(e.target.value) })}
+                                />
+                                <div className="flex justify-between text-sm text-muted-foreground mt-2">
+                                    <span>€5</span>
+                                    <span className="font-medium text-foreground">€{(filters.maxPrice || 3000) / 100}</span>
+                                </div>
                             </div>
                         </div>
 
                         {/* Rating */}
-                        <div>
-                            <h4 className="font-semibold mb-3">{t.filters.min_rating}</h4>
-                            <div className="flex gap-2">
+                        <div className="space-y-3">
+                            <h4 className="font-semibold text-foreground">{t.filters.min_rating}</h4>
+                            <div className="flex flex-wrap gap-2">
                                 {[3, 3.5, 4, 4.5].map(rating => (
                                     <button
                                         key={rating}
                                         onClick={() => onFilterChange({ ...filters, minRating: filters.minRating === rating ? undefined : rating })}
-                                        className={`px-3 py-1 rounded-full text-sm font-medium transition-colors border ${filters.minRating === rating
-                                                ? 'bg-blue-600 text-white border-blue-600'
-                                                : 'bg-background hover:bg-muted border-input'
+                                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${filters.minRating === rating
+                                            ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/30'
+                                            : 'bg-background hover:bg-muted border-input hover:border-primary'
                                             }`}
                                     >
                                         {rating}+
@@ -125,33 +127,34 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                             </div>
                         </div>
 
-                        {/* Delivery Mode */}
-                        <div>
-                            <h4 className="font-semibold mb-3">{t.filters.delivery_only.split(' ')[0]}</h4>
-                            <div className="flex flex-col gap-2">
-                                <label className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary transition-colors">
+                        {/* Delivery Options */}
+                        <div className="space-y-3">
+                            <h4 className="font-semibold text-foreground">{t.filters.delivery_options || 'Delivery Options'}</h4>
+                            <div className="flex flex-col gap-3">
+                                <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-primary transition-colors group">
                                     <input
                                         type="checkbox"
                                         checked={filters.deliveryOnly}
                                         onChange={() => onFilterChange({ ...filters, deliveryOnly: !filters.deliveryOnly, pickupOnly: false })}
-                                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer"
                                     />
-                                    {t.filters.delivery_only}
+                                    <span className="group-hover:text-primary transition-colors">{t.filters.delivery_only}</span>
                                 </label>
-                                <label className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary transition-colors">
+                                <label className="flex items-center gap-3 text-sm cursor-pointer hover:text-primary transition-colors group">
                                     <input
                                         type="checkbox"
                                         checked={filters.pickupOnly}
                                         onChange={() => onFilterChange({ ...filters, pickupOnly: !filters.pickupOnly, deliveryOnly: false })}
-                                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer"
                                     />
-                                    {t.filters.pickup_only}
+                                    <span className="group-hover:text-primary transition-colors">{t.filters.pickup_only}</span>
                                 </label>
                             </div>
                         </div>
 
                     </div>
 
+                    {/* Reset Button */}
                     <div className="mt-6 flex justify-end pt-4 border-t border-border">
                         <Button
                             variant="ghost"
@@ -165,7 +168,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                             className="text-muted-foreground hover:text-foreground"
                         >
                             <X className="w-4 h-4 mr-2" />
-                            Reset
+                            {t.filters.reset || 'Reset'}
                         </Button>
                     </div>
                 </div>

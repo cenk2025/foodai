@@ -50,7 +50,7 @@ export default function Header() {
 
     const getUserInitials = () => {
         const name = getUserDisplayName()
-        return name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     }
 
     return (

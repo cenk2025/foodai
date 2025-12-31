@@ -23,6 +23,7 @@ export const dictionary = {
                 rating: 'Parhaat arvostelut',
                 eta: 'Nopein toimitus',
             },
+            diet_preferences: 'Ruokavaliot',
             diet: {
                 vegan: 'Vegaaninen',
                 gluten_free: 'Gluteeniton',
@@ -31,8 +32,10 @@ export const dictionary = {
             },
             max_price: 'Maksimihinta',
             min_rating: 'Vähintään',
+            delivery_options: 'Toimitustapa',
             delivery_only: 'Vain kuljetus',
             pickup_only: 'Vain nouto',
+            reset: 'Tyhjennä',
         },
         results: {
             trending: 'Suosituimmat Tarjoukset',
@@ -113,6 +116,7 @@ export const dictionary = {
                 rating: 'Best Rated',
                 eta: 'Fastest Delivery',
             },
+            diet_preferences: 'Dietary Preferences',
             diet: {
                 vegan: 'Vegan',
                 gluten_free: 'Gluten Free',
@@ -121,8 +125,10 @@ export const dictionary = {
             },
             max_price: 'Max Price',
             min_rating: 'Min Rating',
+            delivery_options: 'Delivery Options',
             delivery_only: 'Delivery Only',
             pickup_only: 'Pickup Only',
+            reset: 'Reset',
         },
         results: {
             trending: 'Trending Deals',
