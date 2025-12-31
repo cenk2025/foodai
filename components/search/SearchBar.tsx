@@ -42,9 +42,9 @@ export default function SearchBar({
             </div>
 
             <div className="relative md:w-48">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5 pointer-events-none z-10" />
                 <select
-                    className="w-full h-12 pl-10 pr-4 rounded-xl border border-transparent bg-gray-50 dark:bg-zinc-800/50 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:bg-white dark:focus:bg-zinc-900 appearance-none transition-all cursor-pointer"
+                    className="w-full h-12 pl-10 pr-10 rounded-lg border border-transparent bg-gray-50 dark:bg-zinc-800/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/20 focus:bg-white dark:focus:bg-zinc-900 transition-all cursor-pointer appearance-none"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                 >
@@ -55,6 +55,14 @@ export default function SearchBar({
                         </option>
                     ))}
                 </select>
+                <svg
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
             </div>
 
             <Button type="submit" size="lg" className="h-12 px-8 text-lg font-semibold bg-gradient-to-r from-accent to-emerald-500 hover:from-emerald-500 hover:to-accent text-white shadow-lg shadow-emerald-500/20">
