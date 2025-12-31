@@ -13,6 +13,7 @@ import {
     getTrackingUrl,
     getSourceLogoUrl
 } from '@/lib/utils'
+import { useLanguage } from '@/lib/i18n/context'
 
 interface OfferCardProps {
     offer: OfferWithDetails
@@ -29,7 +30,9 @@ function getDemoImage(mealName: string): string {
 }
 
 export default function OfferCard({ offer, priority = false }: OfferCardProps) {
+    const { t } = useLanguage()
     const discountBadge = getDiscountBadge(offer.old_price_cents, offer.price_cents)
+
     // Use demo images if Supabase image is just a path, otherwise use full URL
     const imageUrl = offer.meal.image_path?.startsWith('http')
         ? offer.meal.image_path
@@ -54,7 +57,7 @@ export default function OfferCard({ offer, priority = false }: OfferCardProps) {
                 {discountBadge && (
                     <div className="absolute top-3 left-3 z-10">
                         <span className="bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
-                            {discountBadge} OFF
+                            {discountBadge} {t.card.off}
                         </span>
                     </div>
                 )}
@@ -100,8 +103,8 @@ export default function OfferCard({ offer, priority = false }: OfferCardProps) {
                         <span>•</span>
                         <span>
                             {offer.delivery_fee_cents === 0
-                                ? 'Free Delivery'
-                                : `${formatPrice(offer.delivery_fee_cents)} delivery`}
+                                ? t.card.free_delivery
+                                : `${formatPrice(offer.delivery_fee_cents)} ${t.card.delivery}`}
                         </span>
                     </div>
                 </div>
@@ -122,7 +125,7 @@ export default function OfferCard({ offer, priority = false }: OfferCardProps) {
                     <Link href={trackingUrl} target="_blank" className="w-auto">
                         <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-2.5 text-sm font-semibold transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2">
                             <ShoppingBag className="w-4 h-4" />
-                            Order
+                            {t.card.order}
                         </button>
                     </Link>
                 </div>

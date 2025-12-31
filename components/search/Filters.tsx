@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { SlidersHorizontal, X } from 'lucide-react'
+import { SlidersHorizontal, ChevronDown, Check, X } from 'lucide-react'
 import Button from '../ui/Button'
 import Badge from '../ui/Badge'
+import { useLanguage } from '@/lib/i18n/context'
+import { useState } from 'react'
 
 export interface FilterOptions {
     maxPrice?: number
@@ -15,206 +16,157 @@ export interface FilterOptions {
 }
 
 interface FiltersProps {
+    filters: FilterOptions
     onFilterChange: (filters: FilterOptions) => void
-    initialFilters?: Partial<FilterOptions>
 }
 
-const DIET_OPTIONS = [
-    { value: 'vegan', label: 'Vegan', variant: 'vegan' as const },
-    { value: 'vegetarian', label: 'Vegetarian', variant: 'vegetarian' as const },
-    { value: 'halal', label: 'Halal', variant: 'halal' as const },
-    { value: 'gluten_free', label: 'Gluten-Free', variant: 'gluten-free' as const },
-]
-
-const SORT_OPTIONS = [
-    { value: 'price_asc', label: 'Cheapest First' },
-    { value: 'price_desc', label: 'Most Expensive' },
-    { value: 'rating', label: 'Highest Rated' },
-    { value: 'eta', label: 'Fastest Delivery' },
-]
-
-export default function Filters({ onFilterChange, initialFilters }: FiltersProps) {
+export default function Filters({ filters, onFilterChange }: FiltersProps) {
+    const { t } = useLanguage()
     const [isOpen, setIsOpen] = useState(false)
-    const [filters, setFilters] = useState<FilterOptions>({
-        maxPrice: initialFilters?.maxPrice,
-        dietFlags: initialFilters?.dietFlags || [],
-        minRating: initialFilters?.minRating,
-        deliveryOnly: initialFilters?.deliveryOnly || false,
-        pickupOnly: initialFilters?.pickupOnly || false,
-        sortBy: initialFilters?.sortBy || 'price_asc',
-    })
 
-    const handleDietToggle = (diet: string) => {
-        const newDietFlags = filters.dietFlags.includes(diet)
-            ? filters.dietFlags.filter(d => d !== diet)
-            : [...filters.dietFlags, diet]
-
-        const newFilters = { ...filters, dietFlags: newDietFlags }
-        setFilters(newFilters)
-        onFilterChange(newFilters)
+    const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        onFilterChange({ ...filters, sortBy: e.target.value as any })
     }
 
-    const handleSortChange = (sortBy: FilterOptions['sortBy']) => {
-        const newFilters = { ...filters, sortBy }
-        setFilters(newFilters)
-        onFilterChange(newFilters)
+    const toggleDietFlag = (flag: string) => {
+        const newFlags = filters.dietFlags.includes(flag)
+            ? filters.dietFlags.filter(f => f !== flag)
+            : [...filters.dietFlags, flag]
+        onFilterChange({ ...filters, dietFlags: newFlags })
     }
-
-    const handleMaxPriceChange = (value: string) => {
-        const maxPrice = value ? parseInt(value) * 100 : undefined
-        const newFilters = { ...filters, maxPrice }
-        setFilters(newFilters)
-        onFilterChange(newFilters)
-    }
-
-    const handleMinRatingChange = (value: string) => {
-        const minRating = value ? parseFloat(value) : undefined
-        const newFilters = { ...filters, minRating }
-        setFilters(newFilters)
-        onFilterChange(newFilters)
-    }
-
-    const handleDeliveryToggle = () => {
-        const newFilters = {
-            ...filters,
-            deliveryOnly: !filters.deliveryOnly,
-            pickupOnly: false
-        }
-        setFilters(newFilters)
-        onFilterChange(newFilters)
-    }
-
-    const handlePickupToggle = () => {
-        const newFilters = {
-            ...filters,
-            pickupOnly: !filters.pickupOnly,
-            deliveryOnly: false
-        }
-        setFilters(newFilters)
-        onFilterChange(newFilters)
-    }
-
-    const activeFilterCount =
-        (filters.maxPrice ? 1 : 0) +
-        filters.dietFlags.length +
-        (filters.minRating ? 1 : 0) +
-        (filters.deliveryOnly ? 1 : 0) +
-        (filters.pickupOnly ? 1 : 0)
 
     return (
-        <div className="w-full">
-            {/* Filter Toggle Button */}
-            <div className="flex items-center justify-between mb-4">
+        <div className="w-full mb-8">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                 <Button
                     variant="outline"
                     onClick={() => setIsOpen(!isOpen)}
-                    className="relative"
+                    className="flex items-center gap-2"
                 >
-                    <SlidersHorizontal className="w-4 h-4 mr-2" />
-                    Filters
-                    {activeFilterCount > 0 && (
-                        <Badge variant="accent" className="ml-2">
-                            {activeFilterCount}
-                        </Badge>
-                    )}
+                    <SlidersHorizontal className="w-4 h-4" />
+                    {t.filters.title}
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                 </Button>
 
-                {/* Sort Dropdown */}
-                <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground hidden sm:inline">Sort by:</span>
+                <div className="flex items-center gap-3 ml-auto">
+                    <span className="text-sm font-medium text-muted-foreground hidden sm:inline-block">
+                        {t.filters.sort_by}
+                    </span>
                     <select
+                        className="bg-background border border-input rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary h-10 cursor-pointer"
                         value={filters.sortBy}
-                        onChange={(e) => handleSortChange(e.target.value as FilterOptions['sortBy'])}
-                        className="px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm cursor-pointer transition-smooth focus:outline-none focus:ring-2 focus:ring-ring"
+                        onChange={handleSortChange}
                     >
-                        {SORT_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
+                        <option value="price_asc">{t.filters.sort_options.price_asc}</option>
+                        <option value="price_desc">{t.filters.sort_options.price_desc}</option>
+                        <option value="rating">{t.filters.sort_options.rating}</option>
+                        <option value="eta">{t.filters.sort_options.eta}</option>
                     </select>
                 </div>
             </div>
 
-            {/* Filter Panel */}
+            {/* Expanded Filters */}
             {isOpen && (
-                <div className="glass rounded-xl p-6 mb-6 space-y-6 animate-in fade-in slide-in-from-top-2 duration-200">
-                    {/* Diet Filters */}
-                    <div>
-                        <h3 className="text-sm font-semibold mb-3">Dietary Preferences</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {DIET_OPTIONS.map((option) => (
-                                <button
-                                    key={option.value}
-                                    onClick={() => handleDietToggle(option.value)}
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-smooth ${filters.dietFlags.includes(option.value)
-                                            ? 'bg-accent text-accent-foreground'
-                                            : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                                        }`}
-                                >
-                                    {option.label}
-                                </button>
-                            ))}
+                <div className="p-6 bg-card rounded-xl border border-border shadow-sm animate-in slide-in-from-top-2 fade-in duration-200">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                        {/* Diet */}
+                        <div>
+                            <h4 className="font-semibold mb-3">{t.filters.diet.healthy} / {t.filters.diet.vegan}</h4>
+                            <div className="flex flex-wrap gap-2">
+                                {['vegan', 'gluten_free', 'healthy', 'pescatarian'].map(flag => (
+                                    <Badge
+                                        key={flag}
+                                        variant={filters.dietFlags.includes(flag) ? 'success' : 'default'}
+                                        className="cursor-pointer select-none hover:opacity-80 transition-opacity"
+                                        onClick={() => toggleDietFlag(flag)}
+                                    >
+                                        {filters.dietFlags.includes(flag) && <Check className="w-3 h-3 mr-1" />}
+                                        {t.filters.diet[flag as keyof typeof t.filters.diet] || flag}
+                                    </Badge>
+                                ))}
+                            </div>
                         </div>
+
+                        {/* Price Range */}
+                        <div>
+                            <h4 className="font-semibold mb-3">{t.filters.max_price}</h4>
+                            <input
+                                type="range"
+                                min="500"
+                                max="3000"
+                                step="100"
+                                className="w-full accent-primary h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                                value={filters.maxPrice || 3000}
+                                onChange={(e) => onFilterChange({ ...filters, maxPrice: parseInt(e.target.value) })}
+                            />
+                            <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                                <span>€5</span>
+                                <span>€{(filters.maxPrice || 3000) / 100}</span>
+                            </div>
+                        </div>
+
+                        {/* Rating */}
+                        <div>
+                            <h4 className="font-semibold mb-3">{t.filters.min_rating}</h4>
+                            <div className="flex gap-2">
+                                {[3, 3.5, 4, 4.5].map(rating => (
+                                    <button
+                                        key={rating}
+                                        onClick={() => onFilterChange({ ...filters, minRating: filters.minRating === rating ? undefined : rating })}
+                                        className={`px-3 py-1 rounded-full text-sm font-medium transition-colors border ${filters.minRating === rating
+                                                ? 'bg-blue-600 text-white border-blue-600'
+                                                : 'bg-background hover:bg-muted border-input'
+                                            }`}
+                                    >
+                                        {rating}+
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Delivery Mode */}
+                        <div>
+                            <h4 className="font-semibold mb-3">{t.filters.delivery_only.split(' ')[0]}</h4>
+                            <div className="flex flex-col gap-2">
+                                <label className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={filters.deliveryOnly}
+                                        onChange={() => onFilterChange({ ...filters, deliveryOnly: !filters.deliveryOnly, pickupOnly: false })}
+                                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    {t.filters.delivery_only}
+                                </label>
+                                <label className="flex items-center gap-2 text-sm cursor-pointer hover:text-primary transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={filters.pickupOnly}
+                                        onChange={() => onFilterChange({ ...filters, pickupOnly: !filters.pickupOnly, deliveryOnly: false })}
+                                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    {t.filters.pickup_only}
+                                </label>
+                            </div>
+                        </div>
+
                     </div>
 
-                    {/* Price & Rating */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="text-sm font-semibold mb-2 block">
-                                Max Price (€)
-                            </label>
-                            <input
-                                type="number"
-                                min="0"
-                                step="1"
-                                placeholder="No limit"
-                                value={filters.maxPrice ? filters.maxPrice / 100 : ''}
-                                onChange={(e) => handleMaxPriceChange(e.target.value)}
-                                className="w-full px-4 py-2 rounded-lg border border-input bg-background text-foreground transition-smooth focus:outline-none focus:ring-2 focus:ring-ring"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-sm font-semibold mb-2 block">
-                                Min Rating
-                            </label>
-                            <input
-                                type="number"
-                                min="0"
-                                max="5"
-                                step="0.5"
-                                placeholder="Any rating"
-                                value={filters.minRating || ''}
-                                onChange={(e) => handleMinRatingChange(e.target.value)}
-                                className="w-full px-4 py-2 rounded-lg border border-input bg-background text-foreground transition-smooth focus:outline-none focus:ring-2 focus:ring-ring"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Delivery Options */}
-                    <div>
-                        <h3 className="text-sm font-semibold mb-3">Fulfillment</h3>
-                        <div className="flex gap-3">
-                            <button
-                                onClick={handleDeliveryToggle}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-smooth ${filters.deliveryOnly
-                                        ? 'bg-accent text-accent-foreground'
-                                        : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                                    }`}
-                            >
-                                Delivery Only
-                            </button>
-                            <button
-                                onClick={handlePickupToggle}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-smooth ${filters.pickupOnly
-                                        ? 'bg-accent text-accent-foreground'
-                                        : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                                    }`}
-                            >
-                                Pickup Only
-                            </button>
-                        </div>
+                    <div className="mt-6 flex justify-end pt-4 border-t border-border">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onFilterChange({
+                                dietFlags: [],
+                                deliveryOnly: false,
+                                pickupOnly: false,
+                                sortBy: 'price_asc'
+                            })}
+                            className="text-muted-foreground hover:text-foreground"
+                        >
+                            <X className="w-4 h-4 mr-2" />
+                            Reset
+                        </Button>
                     </div>
                 </div>
             )}

@@ -1,9 +1,14 @@
+'use client'
+
 import Link from 'next/link'
 import { Facebook, Twitter, Instagram, Linkedin, Send, Utensils } from 'lucide-react'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
+import { useLanguage } from '@/lib/i18n/context'
 
 export default function Footer() {
+    const { t } = useLanguage()
+
     return (
         <footer className="bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-zinc-800 pt-16 pb-8">
             <div className="container mx-auto px-4">
@@ -19,7 +24,7 @@ export default function Footer() {
                             </span>
                         </Link>
                         <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-                            Discover the best food deals in Finland. We compare prices across all major platforms to save you money on every delicious bite.
+                            {t.footer.desc}
                         </p>
                         <div className="flex gap-4 pt-2">
                             <SocialIcon icon={<Facebook className="w-5 h-5" />} href="#" />
@@ -31,7 +36,7 @@ export default function Footer() {
 
                     {/* Quick Links */}
                     <div>
-                        <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white">Discover</h3>
+                        <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white">{t.footer.discover}</h3>
                         <ul className="space-y-3">
                             <FooterLink href="/search?q=pizza">Best Pizza in Helsinki</FooterLink>
                             <FooterLink href="/search?q=sushi">Top Sushi Deals</FooterLink>
@@ -43,26 +48,26 @@ export default function Footer() {
 
                     {/* Company */}
                     <div>
-                        <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white">Company</h3>
+                        <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white">{t.footer.company}</h3>
                         <ul className="space-y-3">
-                            <FooterLink href="/about">About Us</FooterLink>
-                            <FooterLink href="/careers">Careers</FooterLink>
-                            <FooterLink href="/partners">For Restaurants</FooterLink>
-                            <FooterLink href="/privacy">Privacy Policy</FooterLink>
-                            <FooterLink href="/terms">Terms of Service</FooterLink>
+                            <FooterLink href="/about">{t.footer.links.about}</FooterLink>
+                            <FooterLink href="/careers">{t.footer.links.careers}</FooterLink>
+                            <FooterLink href="/partners">{t.footer.links.partners}</FooterLink>
+                            <FooterLink href="/privacy">{t.footer.links.privacy}</FooterLink>
+                            <FooterLink href="/terms">{t.footer.links.terms}</FooterLink>
                         </ul>
                     </div>
 
                     {/* Newsletter */}
                     <div>
-                        <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white">Stay Updated</h3>
+                        <h3 className="text-lg font-bold mb-6 text-gray-900 dark:text-white">{t.footer.stay_updated}</h3>
                         <p className="text-gray-500 dark:text-gray-400 mb-4 text-sm">
-                            Subscribe to get daily food deals and exclusive discounts sent to your inbox.
+                            {t.footer.newsletter_desc}
                         </p>
                         <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
                             <div className="relative">
                                 <Input
-                                    placeholder="Enter your email"
+                                    placeholder={t.footer.email_placeholder}
                                     type="email"
                                     className="pr-10 bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 focus:ring-blue-500"
                                 />
@@ -80,12 +85,12 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-gray-200 dark:border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                        © {new Date().getFullYear()} FoodAi. All rights reserved.
+                        © {new Date().getFullYear()} FoodAi. {t.footer.rights}
                     </p>
                     <div className="flex gap-6 text-sm text-gray-500 dark:text-gray-400">
-                        <Link href="#" className="hover:text-blue-600 transition-colors">Privacy</Link>
-                        <Link href="#" className="hover:text-blue-600 transition-colors">Terms</Link>
-                        <Link href="#" className="hover:text-blue-600 transition-colors">Cookies</Link>
+                        <Link href="#" className="hover:text-blue-600 transition-colors">{t.footer.links.privacy}</Link>
+                        <Link href="#" className="hover:text-blue-600 transition-colors">{t.footer.links.terms}</Link>
+                        <Link href="#" className="hover:text-blue-600 transition-colors">{t.footer.links.cookies}</Link>
                     </div>
                 </div>
             </div>

@@ -10,7 +10,10 @@ import { OfferWithDetails } from '@/lib/types/database'
 import { Utensils } from 'lucide-react'
 import Footer from '@/components/layout/Footer'
 
+import { useLanguage } from '@/lib/i18n/context'
+
 export default function HomePage() {
+  const { t } = useLanguage()
   const [cities, setCities] = useState<Array<{ id: string; name: string }>>([])
   const [offers, setOffers] = useState<OfferWithDetails[]>([])
   const [loading, setLoading] = useState(true)
@@ -165,13 +168,13 @@ export default function HomePage() {
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-6 animate-in fade-in slide-in-from-bottom-3 duration-500">
               <Utensils className="w-4 h-4" />
-              <span>The Smarter Way to Eat</span>
+              <span>{t.hero.badge}</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-slate-900 dark:text-white animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-              Find the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">Cheapest Meals</span> near you.
+              {t.hero.title_start} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">{t.hero.title_gradient}</span> {t.hero.title_end}
             </h1>
             <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 leading-relaxed max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200">
-              Don't overpay for delivery. Compare prices across Wolt, Foodora, and UberEats instantly.
+              {t.hero.subtitle}
             </p>
 
             {/* Floating Search Bar */}
@@ -196,7 +199,7 @@ export default function HomePage() {
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                 Filters
               </h3>
-              <Filters onFilterChange={handleFilterChange} initialFilters={filters} />
+              <Filters onFilterChange={handleFilterChange} filters={filters} />
             </div>
           </aside>
 

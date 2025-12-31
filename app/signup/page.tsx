@@ -1,12 +1,79 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Utensils, ArrowRight, Github, Mail } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
+import { createClient } from '@/lib/supabase/client'
 
 export default function SignupPage() {
+    const router = useRouter()
+    const [firstName, setFirstName] = useState('')
+    const [lastName, setLastName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+    const [success, setSuccess] = useState(false)
+
+    const handleEmailSignup = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setLoading(true)
+        setError(null)
+        setSuccess(false)
+
+        try {
+            const supabase = createClient()
+            const { error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        first_name: firstName,
+                        last_name: lastName,
+                        full_name: `${firstName} ${lastName}`,
+                    },
+                },
+            })
+
+            if (error) throw error
+
+            setSuccess(true)
+            // Redirect to home page after successful signup
+            setTimeout(() => {
+                router.push('/')
+                router.refresh()
+            }, 2000)
+        } catch (err: any) {
+            setError(err.message || 'An error occurred during signup')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleOAuthSignup = async (provider: 'github' | 'google') => {
+        setLoading(true)
+        setError(null)
+
+        try {
+            const supabase = createClient()
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider,
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`,
+                },
+            })
+
+            if (error) throw error
+        } catch (err: any) {
+            setError(err.message || 'An error occurred during OAuth signup')
+            setLoading(false)
+        }
+    }
+
     return (
         <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
             {/* Background blobs */}
@@ -34,7 +101,21 @@ export default function SignupPage() {
                             </p>
                         </div>
 
-                        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                        <form className="space-y-4" onSubmit={handleEmailSignup}>
+                            {error && (
+                                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                                    <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                                </div>
+                            )}
+
+                            {success && (
+                                <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                                    <p className="text-sm text-green-600 dark:text-green-400">
+                                        Account created successfully! Redirecting...
+                                    </p>
+                                </div>
+                            )}
+
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -43,6 +124,9 @@ export default function SignupPage() {
                                     <Input
                                         placeholder="John"
                                         className="bg-white dark:bg-zinc-950"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        disabled={loading}
                                         required
                                     />
                                 </div>
@@ -53,6 +137,9 @@ export default function SignupPage() {
                                     <Input
                                         placeholder="Doe"
                                         className="bg-white dark:bg-zinc-950"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                        disabled={loading}
                                         required
                                     />
                                 </div>
@@ -66,6 +153,9 @@ export default function SignupPage() {
                                     type="email"
                                     placeholder="name@example.com"
                                     className="bg-white dark:bg-zinc-950"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    disabled={loading}
                                     required
                                 />
                             </div>
@@ -78,19 +168,31 @@ export default function SignupPage() {
                                     type="password"
                                     placeholder="Create a password"
                                     className="bg-white dark:bg-zinc-950"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    disabled={loading}
                                     required
                                 />
                                 <p className="text-xs text-gray-400 mt-1">Must be at least 8 characters</p>
                             </div>
 
                             <div className="flex items-start">
-                                <input type="checkbox" className="mt-1 mr-2" required />
+                                <input type="checkbox" className="mt-1 mr-2" required disabled={loading} />
                                 <span className="text-xs text-gray-500">I agree to the <Link href="#" className="underline">Terms of Service</Link> and <Link href="#" className="underline">Privacy Policy</Link></span>
                             </div>
 
-                            <Button className="w-full justify-center bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-lg shadow-teal-500/25">
-                                Create Account
-                                <ArrowRight className="w-4 h-4 ml-2" />
+                            <Button
+                                type="submit"
+                                className="w-full justify-center bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-lg shadow-teal-500/25"
+                                loading={loading}
+                                disabled={loading}
+                            >
+                                {!loading && (
+                                    <>
+                                        Create Account
+                                        <ArrowRight className="w-4 h-4 ml-2" />
+                                    </>
+                                )}
                             </Button>
                         </form>
 
@@ -104,11 +206,21 @@ export default function SignupPage() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <Button variant="outline" className="justify-center border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800">
+                            <Button
+                                variant="outline"
+                                className="justify-center border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800"
+                                onClick={() => handleOAuthSignup('github')}
+                                disabled={loading}
+                            >
                                 <Github className="w-4 h-4 mr-2" />
                                 Github
                             </Button>
-                            <Button variant="outline" className="justify-center border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800">
+                            <Button
+                                variant="outline"
+                                className="justify-center border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800"
+                                onClick={() => handleOAuthSignup('google')}
+                                disabled={loading}
+                            >
                                 <Mail className="w-4 h-4 mr-2" />
                                 Google
                             </Button>

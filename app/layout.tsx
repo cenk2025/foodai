@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import AiAssistant from "@/components/ai/AiAssistant";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import { LanguageProvider } from "@/lib/i18n/context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,9 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`} suppressHydrationWarning>
-        <Header />
-        {children}
-        <AiAssistant />
+        <LanguageProvider>
+          <Header />
+          {children}
+          <AiAssistant />
+        </LanguageProvider>
       </body>
     </html>
   );

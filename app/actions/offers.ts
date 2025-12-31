@@ -16,6 +16,7 @@ export interface SearchParams {
 
 export async function searchOffers(params: SearchParams): Promise<OfferWithDetails[]> {
     const supabase = await createClient()
+    if (!supabase) return []
 
     let query = supabase
         .from('offers')
@@ -111,6 +112,7 @@ export async function searchOffers(params: SearchParams): Promise<OfferWithDetai
 
 export async function getCities() {
     const supabase = await createClient()
+    if (!supabase) return []
 
     const { data, error } = await supabase
         .from('cities')
@@ -127,6 +129,7 @@ export async function getCities() {
 
 export async function getOfferById(offerId: string): Promise<OfferWithDetails | null> {
     const supabase = await createClient()
+    if (!supabase) return null
 
     const { data, error } = await supabase
         .from('offers')
@@ -154,6 +157,7 @@ export async function getOfferById(offerId: string): Promise<OfferWithDetails | 
 
 export async function getOffersByGroupKey(groupKey: string): Promise<OfferWithDetails[]> {
     const supabase = await createClient()
+    if (!supabase) return []
 
     const { data, error } = await supabase
         .from('offers')
