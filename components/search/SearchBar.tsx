@@ -65,7 +65,12 @@ export default function SearchBar({
                 </svg>
             </div>
 
-            <Button type="submit" size="lg" className="h-12 px-8 text-lg font-semibold bg-gradient-to-r from-accent to-emerald-500 hover:from-emerald-500 hover:to-accent text-white shadow-lg shadow-emerald-500/20">
+            <Button
+                type="submit"
+                size="lg"
+                className="h-12 px-8 text-lg font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-teal-500 hover:from-blue-700 hover:via-teal-500 hover:to-blue-600 text-white shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-600/40 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 border-0"
+            >
+                <Search className="w-5 h-5" />
                 {t.search.button}
             </Button>
         </form>
