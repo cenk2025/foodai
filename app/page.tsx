@@ -187,7 +187,7 @@ export default function HomePage() {
           <aside className="lg:w-72 flex-shrink-0">
             <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-xl shadow-gray-200/50 dark:shadow-none sticky top-24">
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                Filters
+                {t.filters.title}
               </h3>
               <Filters onFilterChange={handleFilterChange} filters={filters} />
             </div>
@@ -197,11 +197,11 @@ export default function HomePage() {
           <div className="flex-1">
             <div className="flex justify-between items-end mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Trending Deals</h2>
-                <p className="text-slate-500 text-sm">Best prices found in your area today</p>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t.results.trending}</h2>
+                <p className="text-slate-500 text-sm">{t.results.subtitle}</p>
               </div>
               <div className="text-sm font-medium text-slate-500">
-                {offers.length} offers found
+                {offers.length} {offers.length === 1 ? t.results.count_one : t.results.count_many}
               </div>
             </div>
 
@@ -222,9 +222,9 @@ export default function HomePage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-zinc-800 mb-4">
                   <Utensils className="w-8 h-8 text-slate-400" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">No offers found</h3>
+                <h3 className="text-xl font-semibold mb-2">{t.results.no_results_title}</h3>
                 <p className="text-muted-foreground mb-6">
-                  Try adjusting your search or filters
+                  {t.results.no_results_desc}
                 </p>
               </div>
             )}
