@@ -1,62 +1,73 @@
 @import "tailwindcss";
 
 :root {
-  /* Light Mode - Clean, Airy, Product focused */
-  --background: #fdfdfd;
-  --foreground: #0f172a;
+  /* Light Mode - Warm, Inviting, Food-focused */
+  --background: #faf8f5;
+  --foreground: #1a1a1a;
 
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #1a1a1a;
 
-  --primary: #2563eb;
+  /* Primary - Vibrant Orange/Coral (like the example) */
+  --primary: #ff6b35;
   --primary-foreground: #ffffff;
 
-  --secondary: #f8fafc;
-  --secondary-foreground: #334155;
+  /* Secondary - Warm Beige */
+  --secondary: #f5f1ed;
+  --secondary-foreground: #4a4a4a;
 
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  --muted: #e8e3dd;
+  --muted-foreground: #6b6b6b;
 
-  --accent: #10b981;
+  /* Accent - Fresh Green (for healthy/vegan options) */
+  --accent: #4ade80;
   --accent-foreground: #ffffff;
 
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #2563eb;
+  --border: #e8e3dd;
+  --input: #f5f1ed;
+  --ring: #ff6b35;
 
-  --radius: 0.75rem;
+  --radius: 1rem;
+
+  /* Custom Food Colors */
+  --food-orange: #ff6b35;
+  --food-red: #ff4757;
+  --food-green: #4ade80;
+  --food-yellow: #fbbf24;
+  --food-cream: #faf8f5;
+  --food-dark: #1a1a1a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Dark Mode - Deep, Rich, sleek */
-    --background: #09090b;
-    --foreground: #f8fafc;
+    /* Dark Mode - Rich, Elegant, Appetizing */
+    --background: #0f0f0f;
+    --foreground: #f5f5f5;
 
-    --card: #18181b;
-    --card-foreground: #f8fafc;
+    --card: #1a1a1a;
+    --card-foreground: #f5f5f5;
 
-    --primary: #3b82f6;
+    --primary: #ff7849;
     --primary-foreground: #ffffff;
 
-    --secondary: #27272a;
-    --secondary-foreground: #f8fafc;
+    --secondary: #2a2a2a;
+    --secondary-foreground: #e5e5e5;
 
-    --muted: #27272a;
-    --muted-foreground: #94a3b8;
+    --muted: #2a2a2a;
+    --muted-foreground: #a3a3a3;
 
-    --accent: #10b981;
+    --accent: #4ade80;
     --accent-foreground: #ffffff;
 
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
 
-    --border: #27272a;
-    --input: #27272a;
-    --ring: #3b82f6;
+    --border: #2a2a2a;
+    --input: #2a2a2a;
+    --ring: #ff7849;
   }
 }
 
@@ -68,17 +79,55 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Utilities for FoodAi */
+/* Modern FoodAi Design System */
 
+/* Hero Gradient - Subtle, warm glow */
 .gradient-hero {
-  background: radial-gradient(circle at top right, #3b82f615 0%, transparent 40%),
-    radial-gradient(circle at bottom left, #10b98115 0%, transparent 40%);
+  background: radial-gradient(circle at top right, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at bottom left, rgba(74, 222, 128, 0.06) 0%, transparent 50%);
 }
 
+/* Gradient Text - Orange to Red */
+.gradient-text {
+  background: linear-gradient(135deg, #ff6b35 0%, #ff4757 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+
+  /* Fallback for browsers that don't support background-clip */
+  @supports not (background-clip: text) {
+    color: #ff6b35;
+  }
+}
+
+/* Card Shadows - Soft, elevated */
 .food-card-shadow {
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.08),
+    0 4px 12px -2px rgba(0, 0, 0, 0.04);
 }
 
+.food-card-shadow-hover {
+  box-shadow: 0 12px 40px -4px rgba(0, 0, 0, 0.12),
+    0 8px 20px -2px rgba(0, 0, 0, 0.06);
+}
+
+/* Glass Effect - Modern, clean */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass {
+    background: rgba(26, 26, 26, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Scrollbar Hide */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
@@ -86,4 +135,53 @@ body {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Smooth Animations */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(255, 107, 53, 0.5);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Circular Image Container */
+.circle-image {
+  border-radius: 50%;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+/* Hover Lift Effect */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
 }

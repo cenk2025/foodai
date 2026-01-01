@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Utensils, Globe, User, LogOut, Settings } from 'lucide-react'
+import { Utensils, Globe, User, LogOut, Settings, Menu, X } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/context'
 import { createClient } from '@/lib/supabase/client'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
@@ -14,6 +14,7 @@ export default function Header() {
     const [user, setUser] = useState<SupabaseUser | null>(null)
     const [loading, setLoading] = useState(true)
     const [showDropdown, setShowDropdown] = useState(false)
+    const [showMobileMenu, setShowMobileMenu] = useState(false)
 
     useEffect(() => {
         const supabase = createClient()
@@ -54,17 +55,35 @@ export default function Header() {
     }
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-border glass bg-white/80 dark:bg-black/80 backdrop-blur-md">
+        <header className="sticky top-0 z-50 w-full border-b border-border bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                    <div className="w-8 h-8 bg-gradient-to-br from-accent to-primary rounded-lg flex items-center justify-center">
+                    <div
+                        className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg"
+                        style={{
+                            background: 'linear-gradient(to bottom right, #ff6b35, #ff4757)',
+                        }}
+                    >
                         <Utensils className="w-5 h-5 text-white" />
                     </div>
                     <span className="text-xl font-bold gradient-text">
                         FoodAi
                     </span>
                 </Link>
+
+                {/* Mobile Menu Button */}
+                <button
+                    onClick={() => setShowMobileMenu(!showMobileMenu)}
+                    className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+                    aria-label="Toggle menu"
+                >
+                    {showMobileMenu ? (
+                        <X className="w-6 h-6 text-gray-900 dark:text-white" />
+                    ) : (
+                        <Menu className="w-6 h-6 text-gray-900 dark:text-white" />
+                    )}
+                </button>
 
                 {/* Navigation */}
                 <nav className="hidden md:flex items-center gap-8">
@@ -165,12 +184,17 @@ export default function Header() {
                                 /* Logged out - Show login/signup buttons */
                                 <>
                                     <Link href="/login" className="hidden md:block">
-                                        <button className="text-sm font-medium text-foreground hover:text-primary transition-colors px-4 py-2">
+                                        <button className="text-sm font-medium text-foreground hover:text-food-orange transition-colors px-4 py-2">
                                             {t.header.signin}
                                         </button>
                                     </Link>
                                     <Link href="/signup">
-                                        <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-full transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50">
+                                        <button
+                                            className="text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all shadow-lg hover:scale-105 active:scale-95"
+                                            style={{
+                                                background: 'linear-gradient(to right, #ff6b35, #ff4757)',
+                                            }}
+                                        >
                                             {t.header.get_started}
                                         </button>
                                     </Link>
@@ -180,6 +204,64 @@ export default function Header() {
                     )}
                 </div>
             </div>
+
+            {/* Mobile Menu Overlay */}
+            {showMobileMenu && (
+                <>
+                    {/* Backdrop */}
+                    <div
+                        className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                        onClick={() => setShowMobileMenu(false)}
+                    />
+
+                    {/* Menu Panel */}
+                    <div className="fixed top-16 left-0 right-0 bg-white dark:bg-zinc-900 border-b border-border z-50 md:hidden">
+                        <nav className="container mx-auto px-4 py-6 flex flex-col gap-4">
+                            <Link
+                                href="/"
+                                className="text-base font-medium text-foreground hover:text-primary transition-colors py-2"
+                                onClick={() => setShowMobileMenu(false)}
+                            >
+                                {t.header.home}
+                            </Link>
+                            <Link
+                                href="/how-it-works"
+                                className="text-base font-medium text-muted-foreground hover:text-primary transition-colors py-2"
+                                onClick={() => setShowMobileMenu(false)}
+                            >
+                                {t.header.how_it_works}
+                            </Link>
+                            <Link
+                                href="/about"
+                                className="text-base font-medium text-muted-foreground hover:text-primary transition-colors py-2"
+                                onClick={() => setShowMobileMenu(false)}
+                            >
+                                {t.header.about}
+                            </Link>
+
+                            {!loading && !user && (
+                                <div className="flex flex-col gap-3 pt-4 border-t border-border">
+                                    <Link href="/login" onClick={() => setShowMobileMenu(false)}>
+                                        <button className="w-full text-base font-medium text-foreground hover:text-food-orange transition-colors px-4 py-3 border border-border rounded-lg">
+                                            {t.header.signin}
+                                        </button>
+                                    </Link>
+                                    <Link href="/signup" onClick={() => setShowMobileMenu(false)}>
+                                        <button
+                                            className="w-full text-white text-base font-semibold px-4 py-3 rounded-lg transition-all shadow-lg"
+                                            style={{
+                                                background: 'linear-gradient(to right, #ff6b35, #ff4757)',
+                                            }}
+                                        >
+                                            {t.header.get_started}
+                                        </button>
+                                    </Link>
+                                </div>
+                            )}
+                        </nav>
+                    </div>
+                </>
+            )}
         </header>
     )
 }

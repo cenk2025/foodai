@@ -1,15 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { searchOffers, getCities, SearchParams } from './actions/offers'
 import SearchBar from '@/components/search/SearchBar'
 import Filters, { FilterOptions } from '@/components/search/Filters'
 import OfferCard from '@/components/offers/OfferCard'
 import { SkeletonCard } from '@/components/ui/Skeleton'
 import { OfferWithDetails } from '@/lib/types/database'
-import { Utensils } from 'lucide-react'
+import { Utensils, TrendingDown, Clock, Star } from 'lucide-react'
 import Footer from '@/components/layout/Footer'
-
 import { useLanguage } from '@/lib/i18n/context'
 
 export default function HomePage() {
@@ -69,7 +69,7 @@ export default function HomePage() {
       },
       {
         id: '4',
-        meal: { name: 'Vegan Buddha Bowl', restaurant: { name: 'Green Leaf', rating: 4.9, city: { name: 'Helsinki' } }, diet_flags: ['vegan', 'healthy'], image_path: 'pizza' }, // Fallback to placeholder logic but let's assume valid
+        meal: { name: 'Vegan Buddha Bowl', restaurant: { name: 'Green Leaf', rating: 4.9, city: { name: 'Helsinki' } }, diet_flags: ['vegan', 'healthy'], image_path: 'pizza' },
         source: { name: 'Wolt' },
         price_cents: 1450,
         old_price_cents: 1590,
@@ -96,96 +96,136 @@ export default function HomePage() {
       },
     ]
 
-    // Cast to full type for demo purposes (omitting some fields largely unused in UI)
     return demoDeals as unknown as OfferWithDetails[]
   }
 
-  const handleSearch = async (query: string, cityId: string) => {
+  const handleSearch = async (query: string, city: string) => {
     setLoading(true)
     setSearchQuery(query)
-    setSelectedCity(cityId)
+    setSelectedCity(city)
 
-    const searchParams: SearchParams = {
-      query: query || undefined,
-      cityId: cityId || undefined,
-      maxPrice: filters.maxPrice,
-      dietFlags: filters.dietFlags.length > 0 ? filters.dietFlags : undefined,
-      minRating: filters.minRating,
+    const params: SearchParams = {
+      query,
+      cityId: city,
+      dietFlags: filters.dietFlags,
       deliveryOnly: filters.deliveryOnly,
       pickupOnly: filters.pickupOnly,
       sortBy: filters.sortBy,
     }
 
     try {
-      const results = await searchOffers(searchParams)
+      const results = await searchOffers(params)
       if (results && results.length > 0) {
         setOffers(results)
       } else {
-        // If no results from Supabase (or empty DB), show beautiful Demo Data
-        // This ensures the user sees the design quality immediately
-        console.log("No data found from DB, using fallback visual data")
         setOffers(generateDemoOffers())
       }
-    } catch (e) {
-      console.error("Search error", e)
+    } catch (error) {
+      console.error('Search error:', error)
       setOffers(generateDemoOffers())
     } finally {
       setLoading(false)
     }
   }
 
-  const handleFilterChange = async (newFilters: FilterOptions) => {
+  const handleFilterChange = (newFilters: FilterOptions) => {
     setFilters(newFilters)
-    // Re-trigger search with new filters
-    // For demo simplicity we might just reload the same mock data, 
-    // but in prod this calls the API again.
-    setLoading(true)
-    setTimeout(() => { // Fake network delay for smoother feel
-      setOffers(generateDemoOffers()) // Just reset to demo for visual fidelity
-      setLoading(false)
-    }, 600)
+    handleSearch(searchQuery, selectedCity)
   }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Visual Hero Section */}
-      <section className="relative overflow-hidden bg-white dark:bg-black pt-16 pb-24 lg:pt-32 lg:pb-40">
-        <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-          <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style={{ clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)' }}></div>
+      {/* Hero Section - Modern, Bold, Food-focused */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-food-cream via-white to-food-cream dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-20 right-20 w-96 h-96 bg-food-orange rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 left-20 w-96 h-96 bg-food-green rounded-full blur-3xl"></div>
         </div>
 
-        <div className="container mx-auto px-4 relative">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-6 animate-in fade-in slide-in-from-bottom-3 duration-500">
-              <Utensils className="w-4 h-4" />
-              <span>{t.hero.badge}</span>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-slate-900 dark:text-white animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-              {t.hero.title_start} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">{t.hero.title_gradient}</span> {t.hero.title_end}
-            </h1>
-            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 leading-relaxed max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200">
-              {t.hero.subtitle}
-            </p>
+        <div className="container mx-auto px-4 py-16 md:py-24 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Content */}
+            <div className="space-y-8">
+              <div className="inline-block">
+                <span className="px-4 py-2 bg-food-orange/10 text-food-orange rounded-full text-sm font-semibold">
+                  {t.hero.badge}
+                </span>
+              </div>
 
-            {/* Floating Search Bar */}
-            <div className="shadow-2xl shadow-blue-900/10 rounded-2xl bg-white dark:bg-zinc-900 p-2 animate-in fade-in zoom-in duration-500 delay-300">
-              <SearchBar
-                onSearch={handleSearch}
-                cities={cities}
-                initialQuery={searchQuery}
-                initialCity={selectedCity}
-              />
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                <span className="text-foreground">{t.hero.title_start} </span>
+                <span className="gradient-text">{t.hero.title_gradient}</span>
+                <span className="text-foreground"> {t.hero.title_end}</span>
+              </h1>
+
+              <p className="text-xl text-muted-foreground max-w-xl">
+                {t.hero.subtitle}
+              </p>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-6 pt-8">
+                <div className="text-center">
+                  <div className="w-20 h-20 mx-auto mb-3 rounded-full border-4 border-food-orange/20 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-food-orange">06</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Kaupunkia</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-20 h-20 mx-auto mb-3 rounded-full border-4 border-food-green/20 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-food-green">10</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Ravintolaa</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-20 h-20 mx-auto mb-3 rounded-full border-4 border-food-yellow/20 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-food-yellow">20</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Tarjousta</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Hero Image */}
+            <div className="relative">
+              <div className="relative w-full aspect-square max-w-lg mx-auto">
+                {/* Floating Pizza Image */}
+                <div className="absolute inset-0 animate-float">
+                  <Image
+                    src="/images/pizza.jpg"
+                    alt="Delicious Pizza"
+                    fill
+                    className="object-contain drop-shadow-2xl"
+                    priority
+                  />
+                </div>
+                {/* Decorative Elements */}
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-food-green/20 rounded-full blur-2xl animate-pulse"></div>
+                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-food-orange/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Search Section */}
+      <section className="bg-white dark:bg-zinc-900 border-y border-border">
+        <div className="container mx-auto px-4 py-8">
+          <SearchBar
+            onSearch={handleSearch}
+            cities={cities}
+            initialQuery={searchQuery}
+            initialCity={selectedCity}
+          />
+        </div>
+      </section>
+
       {/* Main Content */}
-      <section className="container mx-auto px-4 py-12 -mt-12 relative z-10">
+      <section className="container mx-auto px-4 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters - Sticky on Desktop */}
           <aside className="lg:w-72 flex-shrink-0">
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-xl shadow-gray-200/50 dark:shadow-none sticky top-24">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 food-card-shadow sticky top-24">
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                 {t.filters.title}
               </h3>
