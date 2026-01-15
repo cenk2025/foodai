@@ -1,182 +1,104 @@
+'use client'
+
 import Link from 'next/link'
-import { ArrowLeft, Target, TrendingDown, Shield, Zap } from 'lucide-react'
-import Button from '@/components/ui/Button'
-import Card, { CardHeader, CardContent } from '@/components/ui/Card'
+import { ArrowLeft, Target, TrendingDown, Shield, Zap, Utensils, Heart, ShoppingBag } from 'lucide-react'
 
 export default function AboutPage() {
     return (
-        <div className="min-h-screen bg-background">
-            <div className="container mx-auto px-4 py-12">
-                {/* Back Button */}
-                <Link href="/">
-                    <Button variant="ghost" className="mb-8">
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Search
-                    </Button>
-                </Link>
+        <div className="min-h-screen bg-[#fffcf8] font-outfit pb-24 md:pb-12">
+            {/* Hero Section */}
+            <div className="bg-[#3d1d11] pt-24 pb-48 relative overflow-hidden text-center">
+                <div className="absolute top-0 left-0 w-full h-full">
+                    <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[150%] bg-[#d35400]/20 rounded-full blur-3xl transform rotate-12" />
+                    <div className="absolute bottom-[-20%] left-[-10%] w-[50%] h-[150%] bg-[#f3d179]/10 rounded-full blur-3xl transform -rotate-12" />
+                </div>
 
-                {/* Hero */}
-                <div className="max-w-4xl mx-auto text-center mb-16">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                        About <span className="gradient-text">FoodAi</span>
+                <div className="container mx-auto px-6 relative z-10">
+                    <Link href="/" className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-12 group">
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Takaisin</span>
+                    </Link>
+                    <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tight">
+                        Tietoa <span className="text-[#f3d179]">FoodAista</span>
                     </h1>
-                    <p className="text-xl text-muted-foreground">
-                        Your smart companion for finding the best food deals in Finland
+                    <p className="text-xl md:text-2xl text-white/60 font-medium max-w-2xl mx-auto leading-relaxed">
+                        Älykäs kumppanisi parhaiden ruokatarjousten löytämiseen Suomessa.
                     </p>
                 </div>
+            </div>
 
-                {/* Mission */}
-                <div className="max-w-4xl mx-auto mb-16">
-                    <Card glass>
-                        <CardHeader>
-                            <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-lg text-muted-foreground leading-relaxed">
-                                FoodAi is a price comparison platform designed to help you save money on food orders.
-                                Just like Trivago revolutionized hotel booking, we're making it easy to find the cheapest
-                                meals across multiple delivery platforms and restaurants in Finland.
-                            </p>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Features */}
-                <div className="max-w-6xl mx-auto mb-16">
-                    <h2 className="text-3xl font-bold text-center mb-12">Why Choose FoodAi?</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <Card hover>
-                            <CardHeader>
-                                <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
-                                    <TrendingDown className="w-6 h-6 text-accent" />
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">Save Money</h3>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground">
-                                    Compare prices across platforms and save up to 30% on every order
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        <Card hover>
-                            <CardHeader>
-                                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                                    <Zap className="w-6 h-6 text-primary" />
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">Fast Search</h3>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground">
-                                    Find the best deals in seconds with our smart search and filters
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        <Card hover>
-                            <CardHeader>
-                                <div className="w-12 h-12 bg-food-orange/10 rounded-lg flex items-center justify-center mb-4">
-                                    <Target className="w-6 h-6 text-food-orange" />
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">Personalized</h3>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground">
-                                    Filter by dietary preferences, price range, and delivery options
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        <Card hover>
-                            <CardHeader>
-                                <div className="w-12 h-12 bg-food-green/10 rounded-lg flex items-center justify-center mb-4">
-                                    <Shield className="w-6 h-6 text-food-green" />
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">Transparent</h3>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-muted-foreground">
-                                    No hidden fees. See real prices including delivery costs
-                                </p>
-                            </CardContent>
-                        </Card>
+            <div className="container mx-auto px-6 max-w-5xl -mt-24 relative z-20 space-y-24">
+                {/* Mission Card */}
+                <div className="bg-white rounded-[4rem] p-12 md:p-20 app-shadow border border-[#f1ebd8] relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#fdf2e2] rounded-full blur-3xl -mr-32 -mt-32 opacity-50 group-hover:scale-150 transition-transform duration-1000" />
+                    <div className="relative z-10 text-center max-w-3xl mx-auto">
+                        <div className="w-20 h-20 bg-[#fff9f0] rounded-[2rem] flex items-center justify-center text-[#d35400] mx-auto mb-10 shadow-lg">
+                            <Target className="w-10 h-10" />
+                        </div>
+                        <h2 className="text-3xl font-black text-[#3d1d11] mb-8 uppercase tracking-widest">Meidän Missio</h2>
+                        <p className="text-lg md:text-xl text-[#a08a7e] font-medium leading-[1.8] italic">
+                            &quot;FoodAi on hintavertailualusta, joka on suunniteltu auttamaan sinua säästämään rahaa ruokatilauksissasi. Teemme halvimpien aterioiden löytämisestä helppoa useiden eri toimitusalustojen ja ravintoloiden välillä.&quot;
+                        </p>
                     </div>
                 </div>
 
-                {/* How It Works */}
-                <div className="max-w-4xl mx-auto mb-16">
-                    <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
-                    <div className="space-y-6">
-                        <Card glass>
-                            <CardHeader>
-                                <div className="flex items-start gap-4">
-                                    <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold">
-                                        1
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">Search for Your Meal</h3>
-                                        <p className="text-muted-foreground">
-                                            Enter what you're craving - pizza, sushi, kebab, or anything else.
-                                            Select your city to see local offers.
-                                        </p>
-                                    </div>
+                {/* Features Grid */}
+                <div className="space-y-12">
+                    <h2 className="text-4xl font-black text-[#3d1d11] text-center tracking-tight">Miksi valita FoodAi?</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {[
+                            { title: 'Säästä Rahaa', icon: TrendingDown, color: '#f3d179', desc: 'Vertaa hintoja ja säästä jopa 30% jokaisesta tilauksesta' },
+                            { title: 'Nopea Haku', icon: Zap, color: '#d35400', desc: 'Löydä parhaat diilit sekunneissa älykkäillä suodattimilla' },
+                            { title: 'Personoitu', icon: Heart, color: '#e74c3c', desc: 'Suodata ruokavaliosi, hintaluokan ja toimitustavan mukaan' },
+                            { title: 'Läpinäkyvä', icon: Shield, color: '#27ae60', desc: 'Ei piilokuluja. Näe todelliset hinnat toimituskuluineen' }
+                        ].map((f) => (
+                            <div key={f.title} className="bg-white p-10 rounded-[3rem] border border-[#f1ebd8] app-shadow hover:translate-y-[-8px] transition-all group">
+                                <div className="w-16 h-16 rounded-[1.5rem] flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-all" style={{ backgroundColor: `${f.color}15`, color: f.color }}>
+                                    <f.icon className="w-8 h-8" />
                                 </div>
-                            </CardHeader>
-                        </Card>
+                                <h3 className="text-lg font-black text-[#3d1d11] mb-4 uppercase tracking-wider">{f.title}</h3>
+                                <p className="text-sm text-[#a08a7e] font-medium leading-relaxed">{f.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
 
-                        <Card glass>
-                            <CardHeader>
-                                <div className="flex items-start gap-4">
-                                    <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold">
-                                        2
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">Compare Prices</h3>
-                                        <p className="text-muted-foreground">
-                                            We show you the same meal from different platforms, sorted by price.
-                                            Apply filters for dietary needs, ratings, and delivery options.
-                                        </p>
-                                    </div>
+                {/* How it works simple steps */}
+                <div className="bg-[#3d1d11] rounded-[4rem] p-12 md:p-20 text-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-[#d35400]/10 blur-3xl rounded-full" />
+                    <h2 className="text-4xl font-black mb-20 text-center tracking-tight">Miten se toimii?</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 relative z-10">
+                        {[
+                            { step: '1', title: 'Etsi', desc: 'Kirjoita mitä haluat syödä ja valitse kaupunki.' },
+                            { step: '2', title: 'Vertaa', desc: 'Näytämme saman annoksen hinnan eri alustoilla.' },
+                            { step: '3', title: 'Säästä', desc: 'Klikkaa halvinta diiliä ja nauti ateriastasi.' }
+                        ].map((s) => (
+                            <div key={s.step} className="text-center space-y-6">
+                                <div className="w-16 h-16 bg-[#f3d179] text-[#3d1d11] rounded-2xl flex items-center justify-center text-2xl font-black mx-auto shadow-xl transform group-hover:rotate-6 transition-transform">
+                                    {s.step}
                                 </div>
-                            </CardHeader>
-                        </Card>
-
-                        <Card glass>
-                            <CardHeader>
-                                <div className="flex items-start gap-4">
-                                    <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold">
-                                        3
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-semibold mb-2">Order & Save</h3>
-                                        <p className="text-muted-foreground">
-                                            Click "Go to Deal" to be redirected to the platform with the best price.
-                                            Complete your order there and enjoy your savings!
-                                        </p>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                        </Card>
+                                <h3 className="text-xl font-black uppercase tracking-widest">{s.title}</h3>
+                                <p className="text-white/60 font-medium leading-relaxed">{s.desc}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
                 {/* Demo Notice */}
-                <div className="max-w-4xl mx-auto">
-                    <Card className="border-2 border-food-yellow">
-                        <CardHeader>
-                            <h3 className="text-xl font-semibold mb-2">📢 Demo Version</h3>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground mb-4">
-                                This is a demonstration version of FoodAi. All prices, restaurants, and offers
-                                are for demo purposes only. In a production version, we would integrate with
-                                official platform APIs and affiliate programs.
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                                Built with Next.js, TypeScript, Supabase, and Tailwind CSS.
-                            </p>
-                        </CardContent>
-                    </Card>
+                <div className="bg-[#fdf2e2]/50 rounded-[3rem] p-10 border-2 border-dashed border-[#f1ebd8] text-center">
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                        <Utensils className="w-5 h-5 text-[#3d1d11]" />
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11]">Demo-versio</span>
+                    </div>
+                    <p className="text-sm text-[#a08a7e] font-medium max-w-2xl mx-auto leading-relaxed">
+                        Tämä on FoodAin esittelyversio. Kaikki hinnat, ravintolat ja tarjoukset ovat vain esittelytarkoituksiin.
+                        Tuotantoversiossa integroimme viralliset API-rajapinnat ja kumppanuusohjelmat.
+                    </p>
+                    <div className="mt-8 pt-8 border-t border-[#f1ebd8] flex flex-wrap justify-center gap-6">
+                        {['Next.js 15', 'TypeScript', 'Supabase', 'Tailwind v4'].map(tag => (
+                            <span key={tag} className="text-[10px] font-black uppercase tracking-tighter text-[#3d1d11]/40">{tag}</span>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

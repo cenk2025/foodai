@@ -49,6 +49,16 @@ export const dictionary = {
             no_results_title: 'Ei tarjouksia löytynyt',
             no_results_desc: 'Kokeile muuttaa hakua tai suodattimia',
         },
+        preview: {
+            title: 'Pikakatselu',
+            subtitle: 'Vie hiiri tarjouksen päälle nähdäksesi lisätiedot tässä.',
+            rating: 'Arvostelu',
+            delivery: 'Toimitus',
+            price_with_delivery: 'Hinta kuljetuksella',
+            savings: 'Säästö',
+            best_price: 'Paras hinta',
+            best_market_price: 'Tämä on markkinoiden edullisin hinta tälle aterialle juuri nyt.',
+        },
         card: {
             off: 'ALE',
             free_delivery: 'Ilmainen kuljetus',
@@ -223,6 +233,16 @@ export const dictionary = {
             count_many: 'offers found',
             no_results_title: 'No offers found',
             no_results_desc: 'Try adjusting your search or filters',
+        },
+        preview: {
+            title: 'Quick Preview',
+            subtitle: 'Hover over an offer to see details here.',
+            rating: 'Rating',
+            delivery: 'Delivery',
+            price_with_delivery: 'Price with delivery',
+            savings: 'Savings',
+            best_price: 'Best Price',
+            best_market_price: 'This is the best market price for this meal right now.',
         },
         card: {
             off: 'OFF',

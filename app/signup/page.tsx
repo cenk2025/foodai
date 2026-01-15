@@ -3,10 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Utensils, ArrowRight, Github, Mail } from 'lucide-react'
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
-import Card from '@/components/ui/Card'
+import { Utensils, ArrowRight, Github, Mail, User as UserIcon, Lock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 export default function SignupPage() {
@@ -75,165 +72,173 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
-            {/* Background blobs */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-3xl"></div>
-            </div>
+        <div className="min-h-screen bg-[#fffcf8] flex flex-col items-center justify-center p-6 relative overflow-hidden font-outfit">
+            {/* Background elements */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#f3d179]/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#d35400]/5 rounded-full blur-3xl" />
 
-            <div className="w-full max-w-md">
-                <Link href="/" className="inline-flex items-center gap-2 mb-8 mx-auto justify-center w-full">
-                    <div className="bg-gradient-to-tr from-blue-600 to-teal-500 p-2 rounded-lg text-white">
-                        <Utensils className="w-6 h-6" />
+            <div className="w-full max-w-md relative z-10">
+                {/* Logo Section */}
+                <Link href="/" className="flex items-center gap-3 mb-12 justify-center group">
+                    <div className="w-12 h-12 rounded-2xl bg-[#3d1d11] flex items-center justify-center shadow-xl transform group-hover:rotate-3 transition-transform">
+                        <Utensils className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
-                        FoodAi
+                    <span className="text-3xl font-black tracking-tight text-[#3d1d11]">
+                        Food<span className="text-[#d35400]">AI</span>
                     </span>
                 </Link>
 
-                <Card className="border-none shadow-2xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl">
-                    <div className="p-8">
-                        <div className="text-center mb-8">
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Create an account</h1>
-                            <p className="text-gray-500 dark:text-gray-400">
-                                Join thousands of foodies saving money every day
-                            </p>
+                <div className="bg-white rounded-[3rem] p-10 app-shadow border border-[#f1ebd8]">
+                    <div className="text-center mb-10">
+                        <h1 className="text-3xl font-black text-[#3d1d11] mb-3 tracking-tight">Luo tili</h1>
+                        <p className="text-[#a08a7e] font-medium">Liity mukaan ja löydä parhaat säästöt</p>
+                    </div>
+
+                    <form className="space-y-6" onSubmit={handleEmailSignup}>
+                        {error && (
+                            <div className="p-4 rounded-2xl bg-[#e74c3c]/5 border border-[#e74c3c]/20">
+                                <p className="text-sm text-[#e74c3c] font-bold text-center">{error}</p>
+                            </div>
+                        )}
+
+                        {success && (
+                            <div className="p-4 rounded-2xl bg-[#27ae60]/5 border border-[#27ae60]/20">
+                                <p className="text-sm text-[#27ae60] font-bold text-center">
+                                    Tili luotu onnistuneesti! Ohjataan...
+                                </p>
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11] ml-2">
+                                    Etunimi
+                                </label>
+                                <input
+                                    placeholder="John"
+                                    className="w-full bg-[#fdf2e2]/50 border-none rounded-2xl py-4 px-4 text-sm focus:ring-2 focus:ring-[#f3d179] transition-all font-medium placeholder:text-[#a08a7e]/50"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    disabled={loading}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11] ml-2">
+                                    Sukunimi
+                                </label>
+                                <input
+                                    placeholder="Doe"
+                                    className="w-full bg-[#fdf2e2]/50 border-none rounded-2xl py-4 px-4 text-sm focus:ring-2 focus:ring-[#f3d179] transition-all font-medium placeholder:text-[#a08a7e]/50"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    disabled={loading}
+                                    required
+                                />
+                            </div>
                         </div>
 
-                        <form className="space-y-4" onSubmit={handleEmailSignup}>
-                            {error && (
-                                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                                    <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11] ml-2">
+                                Sähköposti
+                            </label>
+                            <div className="relative group">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a08a7e] group-focus-within:text-[#d35400] transition-colors">
+                                    <Mail className="w-5 h-5" />
                                 </div>
-                            )}
-
-                            {success && (
-                                <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                                    <p className="text-sm text-green-600 dark:text-green-400">
-                                        Account created successfully! Redirecting...
-                                    </p>
-                                </div>
-                            )}
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        First Name
-                                    </label>
-                                    <Input
-                                        placeholder="John"
-                                        className="bg-white dark:bg-zinc-950"
-                                        value={firstName}
-                                        onChange={(e) => setFirstName(e.target.value)}
-                                        disabled={loading}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Last Name
-                                    </label>
-                                    <Input
-                                        placeholder="Doe"
-                                        className="bg-white dark:bg-zinc-950"
-                                        value={lastName}
-                                        onChange={(e) => setLastName(e.target.value)}
-                                        disabled={loading}
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Email address
-                                </label>
-                                <Input
+                                <input
                                     type="email"
-                                    placeholder="name@example.com"
-                                    className="bg-white dark:bg-zinc-950"
+                                    placeholder="nimi@esimerkki.com"
+                                    className="w-full bg-[#fdf2e2]/50 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-[#f3d179] transition-all font-medium placeholder:text-[#a08a7e]/50"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     disabled={loading}
                                     required
                                 />
                             </div>
+                        </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Password
-                                </label>
-                                <Input
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11] ml-2">
+                                Salasana
+                            </label>
+                            <div className="relative group">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a08a7e] group-focus-within:text-[#d35400] transition-colors">
+                                    <Lock className="w-5 h-5" />
+                                </div>
+                                <input
                                     type="password"
-                                    placeholder="Create a password"
-                                    className="bg-white dark:bg-zinc-950"
+                                    placeholder="••••••••"
+                                    className="w-full bg-[#fdf2e2]/50 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-[#f3d179] transition-all font-medium placeholder:text-[#a08a7e]/50"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     disabled={loading}
                                     required
                                 />
-                                <p className="text-xs text-gray-400 mt-1">Must be at least 8 characters</p>
                             </div>
-
-                            <div className="flex items-start">
-                                <input type="checkbox" className="mt-1 mr-2" required disabled={loading} />
-                                <span className="text-xs text-gray-500">I agree to the <Link href="#" className="underline">Terms of Service</Link> and <Link href="#" className="underline">Privacy Policy</Link></span>
-                            </div>
-
-                            <Button
-                                type="submit"
-                                className="w-full justify-center bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-lg shadow-teal-500/25"
-                                loading={loading}
-                                disabled={loading}
-                            >
-                                {!loading && (
-                                    <>
-                                        Create Account
-                                        <ArrowRight className="w-4 h-4 ml-2" />
-                                    </>
-                                )}
-                            </Button>
-                        </form>
-
-                        <div className="relative my-8">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-200 dark:border-zinc-800"></div>
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white dark:bg-zinc-900 text-gray-500">Or register with</span>
-                            </div>
+                            <p className="text-[10px] text-[#a08a7e] ml-2 font-medium italic">Vähintään 8 merkkiä</p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <Button
-                                variant="outline"
-                                className="justify-center border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800"
-                                onClick={() => handleOAuthSignup('github')}
-                                disabled={loading}
-                            >
-                                <Github className="w-4 h-4 mr-2" />
-                                Github
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="justify-center border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800"
-                                onClick={() => handleOAuthSignup('google')}
-                                disabled={loading}
-                            >
-                                <Mail className="w-4 h-4 mr-2" />
-                                Google
-                            </Button>
+                        <div className="flex items-start ml-2">
+                            <input type="checkbox" className="mt-1 mr-3 accent-[#d35400]" required disabled={loading} />
+                            <span className="text-[10px] text-[#a08a7e] leading-relaxed font-medium">
+                                Hyväksyn <Link href="#" className="text-[#3d1d11] underline decoration-[#d35400]/20 font-black uppercase tracking-wider">Käyttöehdot</Link> ja <Link href="#" className="text-[#3d1d11] underline decoration-[#d35400]/20 font-black uppercase tracking-wider">Tietosuojaselosteen</Link>
+                            </span>
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="w-full bg-[#3d1d11] text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-[#d35400] transition-all active:scale-95 shadow-xl flex items-center justify-center gap-3"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <>
+                                    Luo Tili
+                                    <ArrowRight className="w-4 h-4" />
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="relative my-10">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-[#f1ebd8]"></div>
+                        </div>
+                        <div className="relative flex justify-center text-[10px]">
+                            <span className="px-4 bg-white text-[#a08a7e] font-black uppercase tracking-widest">Tai Rekisteröidy</span>
                         </div>
                     </div>
 
-                    <div className="px-8 py-4 bg-gray-50/50 dark:bg-zinc-900/50 border-t border-gray-200 dark:border-zinc-800 text-center text-sm">
-                        <span className="text-gray-500 dark:text-gray-400">Already have an account? </span>
-                        <Link href="/login" className="font-semibold text-blue-600 hover:text-blue-700">
-                            Sign in
-                        </Link>
+                    <div className="grid grid-cols-2 gap-4">
+                        <button
+                            className="flex items-center justify-center gap-3 bg-[#fdf2e2]/50 hover:bg-[#fdf2e2] py-4 rounded-2xl border border-[#f1ebd8] transition-all group"
+                            onClick={() => handleOAuthSignup('github')}
+                            disabled={loading}
+                        >
+                            <Github className="w-5 h-5 text-[#3d1d11] group-hover:scale-110 transition-transform" />
+                            <span className="text-[11px] font-black text-[#3d1d11] uppercase tracking-wider">Github</span>
+                        </button>
+                        <button
+                            className="flex items-center justify-center gap-3 bg-[#fdf2e2]/50 hover:bg-[#fdf2e2] py-4 rounded-2xl border border-[#f1ebd8] transition-all group"
+                            onClick={() => handleOAuthSignup('google')}
+                            disabled={loading}
+                        >
+                            <Mail className="w-5 h-5 text-[#3d1d11] group-hover:scale-110 transition-transform" />
+                            <span className="text-[11px] font-black text-[#3d1d11] uppercase tracking-wider">Google</span>
+                        </button>
                     </div>
-                </Card>
+
+                    <div className="mt-10 text-center">
+                        <p className="text-[11px] font-medium text-[#a08a7e]">
+                            Onko sinulla jo tili? {' '}
+                            <Link href="/login" className="text-[#3d1d11] font-black uppercase tracking-wider hover:text-[#d35400] underline underline-offset-4 decoration-2 decoration-[#d35400]/20 hover:decoration-[#d35400]">
+                                Kirjaudu sisään
+                            </Link>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     )

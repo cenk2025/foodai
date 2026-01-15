@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { dictionary, Locale } from './dictionary';
 
 interface LanguageContextType {
@@ -12,16 +12,16 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-    // Default to Finnish
-    const [locale, setLocale] = useState<Locale>('fi');
-
-    // Load from local storage if available
-    useEffect(() => {
-        const savedLocale = localStorage.getItem('foodai_locale') as Locale;
-        if (savedLocale && (savedLocale === 'fi' || savedLocale === 'en')) {
-            setLocale(savedLocale);
+    // Load from local storage if available with lazy initialization
+    const [locale, setLocale] = useState<Locale>(() => {
+        if (typeof window !== 'undefined') {
+            const savedLocale = localStorage.getItem('foodai_locale') as Locale;
+            if (savedLocale && (savedLocale === 'fi' || savedLocale === 'en')) {
+                return savedLocale;
+            }
         }
-    }, []);
+        return 'fi';
+    });
 
     const changeLocale = (newLocale: Locale) => {
         setLocale(newLocale);

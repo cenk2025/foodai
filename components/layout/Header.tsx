@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Utensils, Globe, User, LogOut, Settings, Menu, X } from 'lucide-react'
+import { MapPin, User, LogOut, Settings, ChevronDown, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/context'
 import { createClient } from '@/lib/supabase/client'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
@@ -14,22 +14,16 @@ export default function Header() {
     const [user, setUser] = useState<SupabaseUser | null>(null)
     const [loading, setLoading] = useState(true)
     const [showDropdown, setShowDropdown] = useState(false)
-    const [showMobileMenu, setShowMobileMenu] = useState(false)
 
     useEffect(() => {
         const supabase = createClient()
-
-        // Get initial session
         supabase.auth.getSession().then(({ data: { session } }) => {
             setUser(session?.user ?? null)
             setLoading(false)
         })
-
-        // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null)
         })
-
         return () => subscription.unsubscribe()
     }, [])
 
@@ -43,225 +37,151 @@ export default function Header() {
 
     const getUserDisplayName = () => {
         if (!user) return ''
-        return user.user_metadata?.full_name ||
-            user.user_metadata?.first_name ||
-            user.email?.split('@')[0] ||
-            'User'
+        return user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
     }
 
-    const getUserInitials = () => {
-        const name = getUserDisplayName()
-        return name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+    const [location, setLocation] = useState('Helsinki, Kamppi')
+    const [isDetecting, setIsDetecting] = useState(false)
+
+    const detectLocation = () => {
+        if (!navigator.geolocation) {
+            alert('Selaimesi ei tue sijainnin tunnistusta.')
+            return
+        }
+
+        setIsDetecting(true)
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords
+                try {
+                    // Using OSM Nominatim for demo reverse geocoding
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`)
+                    const data = await res.json()
+                    const city = data.address.city || data.address.town || data.address.village || 'Tuntematon'
+                    const suburb = data.address.suburb || data.address.neighbourhood || ''
+                    setLocation(`${city}${suburb ? ', ' + suburb : ''}`)
+                } catch (error) {
+                    console.error('Location error:', error)
+                } finally {
+                    setIsDetecting(false)
+                }
+            },
+            (error) => {
+                console.error('Geolocation error:', error)
+                setIsDetecting(false)
+            }
+        )
     }
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-border bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md">
-            <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                {/* Logo */}
-                <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                    <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg"
-                        style={{
-                            background: 'linear-gradient(to bottom right, #ff6b35, #ff4757)',
-                        }}
-                    >
-                        <Utensils className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="text-xl font-bold gradient-text">
-                        FoodAi
-                    </span>
-                </Link>
-
-                {/* Mobile Menu Button */}
-                <button
-                    onClick={() => setShowMobileMenu(!showMobileMenu)}
-                    className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
-                    aria-label="Toggle menu"
-                >
-                    {showMobileMenu ? (
-                        <X className="w-6 h-6 text-gray-900 dark:text-white" />
-                    ) : (
-                        <Menu className="w-6 h-6 text-gray-900 dark:text-white" />
-                    )}
-                </button>
-
-                {/* Navigation */}
-                <nav className="hidden md:flex items-center gap-8">
-                    <Link
-                        href="/"
-                        className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-                    >
-                        {t.header.home}
-                    </Link>
-                    <Link
-                        href="/how-it-works"
-                        className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                    >
-                        {t.header.how_it_works}
-                    </Link>
-                    <Link
-                        href="/about"
-                        className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                    >
-                        {t.header.about}
-                    </Link>
-                </nav>
-
-                {/* Actions */}
-                <div className="flex items-center gap-3">
-                    {/* Language Switcher */}
+        <header className="z-50 w-full relative">
+            {/* Top Bar: Location & Language (Tier 1) */}
+            <div className="location-bar-bg px-4 py-2 flex items-center justify-between text-[#3d1d11]">
+                <div className="flex items-center gap-2">
                     <button
-                        onClick={() => setLocale(locale === 'fi' ? 'en' : 'fi')}
-                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center gap-1 text-sm font-medium"
-                        title="Switch Language"
+                        onClick={detectLocation}
+                        className="w-8 h-8 rounded-full bg-[#3d1d11]/10 flex items-center justify-center hover:bg-[#3d1d11]/20 transition-all active:scale-95"
                     >
-                        <Globe className="w-4 h-4" />
-                        <span>{locale.toUpperCase()}</span>
+                        <MapPin className={`w-4 h-4 text-[#3d1d11] ${isDetecting ? 'animate-bounce' : ''}`} />
                     </button>
-
-                    {!loading && (
-                        <>
-                            {user ? (
-                                /* Logged in - Show user menu */
-                                <div className="relative">
-                                    <button
-                                        onClick={() => setShowDropdown(!showDropdown)}
-                                        className="flex items-center gap-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
-                                    >
-                                        <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-teal-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                                            {getUserInitials()}
-                                        </div>
-                                        <span className="hidden md:block text-sm font-medium text-foreground">
-                                            {getUserDisplayName()}
-                                        </span>
-                                    </button>
-
-                                    {showDropdown && (
-                                        <>
-                                            {/* Backdrop to close dropdown */}
-                                            <div
-                                                className="fixed inset-0 z-40"
-                                                onClick={() => setShowDropdown(false)}
-                                            />
-
-                                            {/* Dropdown menu */}
-                                            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-zinc-800 py-2 z-50">
-                                                <div className="px-4 py-2 border-b border-gray-200 dark:border-zinc-800">
-                                                    <p className="text-sm font-medium text-foreground">{getUserDisplayName()}</p>
-                                                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                                                </div>
-
-                                                <Link
-                                                    href="/profile"
-                                                    className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
-                                                    onClick={() => setShowDropdown(false)}
-                                                >
-                                                    <User className="w-4 h-4" />
-                                                    Profile
-                                                </Link>
-
-                                                <Link
-                                                    href="/settings"
-                                                    className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
-                                                    onClick={() => setShowDropdown(false)}
-                                                >
-                                                    <Settings className="w-4 h-4" />
-                                                    Settings
-                                                </Link>
-
-                                                <button
-                                                    onClick={handleLogout}
-                                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
-                                                >
-                                                    <LogOut className="w-4 h-4" />
-                                                    Logout
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            ) : (
-                                /* Logged out - Show login/signup buttons */
-                                <>
-                                    <Link href="/login" className="hidden md:block">
-                                        <button className="text-sm font-medium text-foreground hover:text-food-orange transition-colors px-4 py-2">
-                                            {t.header.signin}
-                                        </button>
-                                    </Link>
-                                    <Link href="/signup">
-                                        <button
-                                            className="text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all shadow-lg hover:scale-105 active:scale-95"
-                                            style={{
-                                                background: 'linear-gradient(to right, #ff6b35, #ff4757)',
-                                            }}
-                                        >
-                                            {t.header.get_started}
-                                        </button>
-                                    </Link>
-                                </>
+                    <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-bold tracking-tight opacity-60">Toimitusosoite</span>
+                        <div className="flex items-center gap-2 cursor-pointer hover:opacity-70 group transition-all" onClick={detectLocation}>
+                            <span className="text-xs font-black">{location}</span>
+                            <ChevronDown className="w-3 h-3 group-hover:translate-y-0.5 transition-transform" />
+                            {isDetecting && (
+                                <span className="text-[9px] bg-[#3d1d11] text-white px-1.5 py-0.5 rounded-md animate-pulse">Etsitään...</span>
                             )}
-                        </>
-                    )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Language Segmented Control */}
+                <div className="bg-[#3d1d11]/10 p-1 rounded-xl flex items-center gap-1">
+                    <button
+                        onClick={() => setLocale('fi')}
+                        className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all ${locale === 'fi' ? 'bg-[#3d1d11] text-white shadow-sm' : 'text-[#3d1d11]/60 hover:text-[#3d1d11]'}`}
+                    >
+                        FI
+                    </button>
+                    <button
+                        onClick={() => setLocale('en')}
+                        className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all ${locale === 'en' ? 'bg-[#3d1d11] text-white shadow-sm' : 'text-[#3d1d11]/60 hover:text-[#3d1d11]'}`}
+                    >
+                        EN
+                    </button>
                 </div>
             </div>
 
-            {/* Mobile Menu Overlay */}
-            {showMobileMenu && (
-                <>
-                    {/* Backdrop */}
-                    <div
-                        className="fixed inset-0 bg-black/50 z-40 md:hidden"
-                        onClick={() => setShowMobileMenu(false)}
-                    />
-
-                    {/* Menu Panel */}
-                    <div className="fixed top-16 left-0 right-0 bg-white dark:bg-zinc-900 border-b border-border z-50 md:hidden">
-                        <nav className="container mx-auto px-4 py-6 flex flex-col gap-4">
-                            <Link
-                                href="/"
-                                className="text-base font-medium text-foreground hover:text-primary transition-colors py-2"
-                                onClick={() => setShowMobileMenu(false)}
-                            >
-                                {t.header.home}
-                            </Link>
-                            <Link
-                                href="/how-it-works"
-                                className="text-base font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                                onClick={() => setShowMobileMenu(false)}
-                            >
-                                {t.header.how_it_works}
-                            </Link>
-                            <Link
-                                href="/about"
-                                className="text-base font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                                onClick={() => setShowMobileMenu(false)}
-                            >
-                                {t.header.about}
-                            </Link>
-
-                            {!loading && !user && (
-                                <div className="flex flex-col gap-3 pt-4 border-t border-border">
-                                    <Link href="/login" onClick={() => setShowMobileMenu(false)}>
-                                        <button className="w-full text-base font-medium text-foreground hover:text-food-orange transition-colors px-4 py-3 border border-border rounded-lg">
-                                            {t.header.signin}
-                                        </button>
-                                    </Link>
-                                    <Link href="/signup" onClick={() => setShowMobileMenu(false)}>
-                                        <button
-                                            className="w-full text-white text-base font-semibold px-4 py-3 rounded-lg transition-all shadow-lg"
-                                            style={{
-                                                background: 'linear-gradient(to right, #ff6b35, #ff4757)',
-                                            }}
-                                        >
-                                            {t.header.get_started}
-                                        </button>
-                                    </Link>
-                                </div>
-                            )}
-                        </nav>
+            {/* Main Header (Tier 2) */}
+            <div className="bg-white px-4 h-16 flex items-center justify-between border-b border-[#f1ebd8]">
+                {/* Logo Section */}
+                <Link href="/" className="flex items-center gap-2.5 group">
+                    <div className="w-10 h-10 rounded-2xl bg-[#3d1d11] flex items-center justify-center shadow-md transform group-hover:rotate-3 transition-transform">
+                        <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17 5V19M17 19L20 16M17 19L14 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M7 5V19M7 5L4 8M7 5L10 8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
                     </div>
-                </>
-            )}
+                    <span className="text-xl font-black tracking-tight text-[#3d1d11]">
+                        Food<span className="text-[#d35400]">AI</span>
+                    </span>
+                </Link>
+
+                {/* User Profile / Auth */}
+                <div className="flex items-center gap-4">
+                    {!loading && (
+                        <div className="relative">
+                            {user ? (
+                                <button
+                                    onClick={() => setShowDropdown(!showDropdown)}
+                                    className="w-10 h-10 rounded-2xl bg-[#fdf2e2] flex items-center justify-center border border-[#3d1d11]/5 hover:bg-[#faebda] transition-colors app-shadow"
+                                >
+                                    <User className="w-5 h-5 text-[#3d1d11]" />
+                                </button>
+                            ) : (
+                                <Link href="/login">
+                                    <button className="text-xs font-black text-[#3d1d11] uppercase tracking-wider hover:text-[#d35400] transition-colors">
+                                        {t.header.signin}
+                                    </button>
+                                </Link>
+                            )}
+
+                            {showDropdown && (
+                                <>
+                                    <div className="fixed inset-0 z-40" onClick={() => setShowDropdown(false)} />
+                                    <div className="absolute right-0 mt-3 w-56 bg-white rounded-3xl card-shadow border border-[#f1ebd8] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                                        <div className="px-5 py-4 border-b border-[#f1ebd8] bg-[#fdf2e2]/30">
+                                            <p className="text-sm font-black text-[#3d1d11]">{getUserDisplayName()}</p>
+                                            <p className="text-[10px] text-[#a08a7e] truncate font-medium">{user?.email}</p>
+                                        </div>
+                                        <div className="p-2">
+                                            <Link href="/profile" onClick={() => setShowDropdown(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-[#3d1d11] hover:bg-[#fdf2e2]/50 transition-colors">
+                                                <div className="flex items-center gap-3">
+                                                    <User className="w-4 h-4 text-[#a08a7e]" />
+                                                    Profiili
+                                                </div>
+                                                <ChevronRight className="w-4 h-4 text-[#a08a7e]/50" />
+                                            </Link>
+                                            <Link href="/settings" onClick={() => setShowDropdown(false)} className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-[#3d1d11] hover:bg-[#fdf2e2]/50 transition-colors">
+                                                <div className="flex items-center gap-3">
+                                                    <Settings className="w-4 h-4 text-[#a08a7e]" />
+                                                    Asetukset
+                                                </div>
+                                                <ChevronRight className="w-4 h-4 text-[#a08a7e]/50" />
+                                            </Link>
+                                            <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-[#e74c3c] hover:bg-[#e74c3c]/5 transition-colors">
+                                                <LogOut className="w-4 h-4" />
+                                                Kirjaudu ulos
+                                            </button>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
         </header>
     )
 }

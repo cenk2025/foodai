@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import AiAssistant from "@/components/ai/AiAssistant";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import BottomNav from "@/components/layout/BottomNav";
 import { LanguageProvider } from "@/lib/i18n/context";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
   title: "FoodAi - Find the Cheapest Meals in Finland",
@@ -26,10 +28,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
+      <body className={`${inter.variable} ${outfit.variable} font-outfit antialiased bg-[#fffcf8]`} suppressHydrationWarning>
         <LanguageProvider>
           <Header />
-          {children}
+          <main className="pb-24 md:pb-0">
+            {children}
+          </main>
+          <BottomNav />
           <AiAssistant />
         </LanguageProvider>
       </body>

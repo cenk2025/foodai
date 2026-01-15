@@ -3,10 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Utensils, ArrowRight, Github, Mail } from 'lucide-react'
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
-import Card from '@/components/ui/Card'
+import { Utensils, ArrowRight, Github, Mail, Lock, User as UserIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
@@ -60,127 +57,133 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
-            {/* Background blobs */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-teal-500/10 rounded-full blur-3xl"></div>
-            </div>
+        <div className="min-h-screen bg-[#fffcf8] flex flex-col items-center justify-center p-6 relative overflow-hidden font-outfit">
+            {/* Background elements */}
+            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#f3d179]/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#d35400]/5 rounded-full blur-3xl" />
 
-            <div className="w-full max-w-md">
-                <Link href="/" className="inline-flex items-center gap-2 mb-8 mx-auto justify-center w-full">
-                    <div className="bg-gradient-to-tr from-blue-600 to-teal-500 p-2 rounded-lg text-white">
-                        <Utensils className="w-6 h-6" />
+            <div className="w-full max-w-md relative z-10">
+                {/* Logo Section */}
+                <Link href="/" className="flex items-center gap-3 mb-12 justify-center group">
+                    <div className="w-12 h-12 rounded-2xl bg-[#3d1d11] flex items-center justify-center shadow-xl transform group-hover:rotate-3 transition-transform">
+                        <Utensils className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
-                        FoodAi
+                    <span className="text-3xl font-black tracking-tight text-[#3d1d11]">
+                        Food<span className="text-[#d35400]">AI</span>
                     </span>
                 </Link>
 
-                <Card className="border-none shadow-2xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl">
-                    <div className="p-8">
-                        <div className="text-center mb-8">
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome back</h1>
-                            <p className="text-gray-500 dark:text-gray-400">
-                                Enter your credentials to access your account
-                            </p>
-                        </div>
+                <div className="bg-white rounded-[3rem] p-10 app-shadow border border-[#f1ebd8]">
+                    <div className="text-center mb-10">
+                        <h1 className="text-3xl font-black text-[#3d1d11] mb-3 tracking-tight">Tervetuloa takaisin</h1>
+                        <p className="text-[#a08a7e] font-medium">Kirjaudu sisään säästääksesi vielä enemmän</p>
+                    </div>
 
-                        <form className="space-y-4" onSubmit={handleEmailLogin}>
-                            {error && (
-                                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                                    <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                    <form className="space-y-6" onSubmit={handleEmailLogin}>
+                        {error && (
+                            <div className="p-4 rounded-2xl bg-[#e74c3c]/5 border border-[#e74c3c]/20">
+                                <p className="text-sm text-[#e74c3c] font-bold text-center">{error}</p>
+                            </div>
+                        )}
+
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11] ml-2">
+                                Sähköposti
+                            </label>
+                            <div className="relative group">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a08a7e] group-focus-within:text-[#d35400] transition-colors">
+                                    <Mail className="w-5 h-5" />
                                 </div>
-                            )}
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Email address
-                                </label>
-                                <Input
+                                <input
                                     type="email"
-                                    placeholder="name@example.com"
-                                    className="bg-white dark:bg-zinc-950"
+                                    placeholder="nimi@esimerkki.com"
+                                    className="w-full bg-[#fdf2e2]/50 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-[#f3d179] transition-all font-medium placeholder:text-[#a08a7e]/50"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     disabled={loading}
                                     required
                                 />
                             </div>
+                        </div>
 
-                            <div>
-                                <div className="flex justify-between items-center mb-1">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Password
-                                    </label>
-                                    <Link href="#" className="text-xs text-blue-600 hover:text-blue-700 font-medium">
-                                        Forgot password?
-                                    </Link>
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center ml-2">
+                                <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11]">
+                                    Salasana
+                                </label>
+                                <Link href="#" className="text-[10px] text-[#3d1d11]/60 hover:text-[#d35400] font-black uppercase tracking-wider">
+                                    Unohditko?
+                                </Link>
+                            </div>
+                            <div className="relative group">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a08a7e] group-focus-within:text-[#d35400] transition-colors">
+                                    <Lock className="w-5 h-5" />
                                 </div>
-                                <Input
+                                <input
                                     type="password"
                                     placeholder="••••••••"
-                                    className="bg-white dark:bg-zinc-950"
+                                    className="w-full bg-[#fdf2e2]/50 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-[#f3d179] transition-all font-medium placeholder:text-[#a08a7e]/50"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     disabled={loading}
                                     required
                                 />
                             </div>
-
-                            <Button
-                                type="submit"
-                                className="w-full justify-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/25"
-                                loading={loading}
-                                disabled={loading}
-                            >
-                                {!loading && (
-                                    <>
-                                        Sign In
-                                        <ArrowRight className="w-4 h-4 ml-2" />
-                                    </>
-                                )}
-                            </Button>
-                        </form>
-
-                        <div className="relative my-8">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-200 dark:border-zinc-800"></div>
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white dark:bg-zinc-900 text-gray-500">Or continue with</span>
-                            </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <Button
-                                variant="outline"
-                                className="justify-center border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800"
-                                onClick={() => handleOAuthLogin('github')}
-                                disabled={loading}
-                            >
-                                <Github className="w-4 h-4 mr-2" />
-                                Github
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="justify-center border-gray-200 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800"
-                                onClick={() => handleOAuthLogin('google')}
-                                disabled={loading}
-                            >
-                                <Mail className="w-4 h-4 mr-2" />
-                                Google
-                            </Button>
+                        <button
+                            type="submit"
+                            className="w-full bg-[#3d1d11] text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-[#d35400] transition-all active:scale-95 shadow-xl flex items-center justify-center gap-3"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <>
+                                    Kirjaudu Sisään
+                                    <ArrowRight className="w-4 h-4" />
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="relative my-10">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-[#f1ebd8]"></div>
+                        </div>
+                        <div className="relative flex justify-center text-[10px]">
+                            <span className="px-4 bg-white text-[#a08a7e] font-black uppercase tracking-widest">Tai Kirjaudu</span>
                         </div>
                     </div>
 
-                    <div className="px-8 py-4 bg-gray-50/50 dark:bg-zinc-900/50 border-t border-gray-200 dark:border-zinc-800 text-center text-sm">
-                        <span className="text-gray-500 dark:text-gray-400">Don't have an account? </span>
-                        <Link href="/signup" className="font-semibold text-blue-600 hover:text-blue-700">
-                            Sign up
-                        </Link>
+                    <div className="grid grid-cols-2 gap-4">
+                        <button
+                            className="flex items-center justify-center gap-3 bg-[#fdf2e2]/50 hover:bg-[#fdf2e2] py-4 rounded-2xl border border-[#f1ebd8] transition-all group"
+                            onClick={() => handleOAuthLogin('github')}
+                            disabled={loading}
+                        >
+                            <Github className="w-5 h-5 text-[#3d1d11] group-hover:scale-110 transition-transform" />
+                            <span className="text-[11px] font-black text-[#3d1d11] uppercase tracking-wider">Github</span>
+                        </button>
+                        <button
+                            className="flex items-center justify-center gap-3 bg-[#fdf2e2]/50 hover:bg-[#fdf2e2] py-4 rounded-2xl border border-[#f1ebd8] transition-all group"
+                            onClick={() => handleOAuthLogin('google')}
+                            disabled={loading}
+                        >
+                            <Mail className="w-5 h-5 text-[#3d1d11] group-hover:scale-110 transition-transform" />
+                            <span className="text-[11px] font-black text-[#3d1d11] uppercase tracking-wider">Google</span>
+                        </button>
                     </div>
-                </Card>
+
+                    <div className="mt-10 text-center">
+                        <p className="text-[11px] font-medium text-[#a08a7e]">
+                            Eikö sinulla ole tiliä? {' '}
+                            <Link href="/signup" className="text-[#3d1d11] font-black uppercase tracking-wider hover:text-[#d35400] underline underline-offset-4 decoration-2 decoration-[#d35400]/20 hover:decoration-[#d35400]">
+                                Luo tili
+                            </Link>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     )

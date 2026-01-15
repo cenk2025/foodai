@@ -1,41 +1,30 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { searchOffers, getCities, SearchParams } from './actions/offers'
 import SearchBar from '@/components/search/SearchBar'
-import Filters, { FilterOptions } from '@/components/search/Filters'
 import OfferCard from '@/components/offers/OfferCard'
 import { SkeletonCard } from '@/components/ui/Skeleton'
 import { OfferWithDetails } from '@/lib/types/database'
-import { Utensils, TrendingDown, Clock, Star } from 'lucide-react'
+import { TrendingDown, Clock, Star, ChevronRight, MapPin } from 'lucide-react'
 import Footer from '@/components/layout/Footer'
-import { useLanguage } from '@/lib/i18n/context'
+import OfferPreview from '@/components/offers/OfferPreview'
 
 export default function HomePage() {
-  const { t } = useLanguage()
   const [cities, setCities] = useState<Array<{ id: string; name: string }>>([])
   const [offers, setOffers] = useState<OfferWithDetails[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCity, setSelectedCity] = useState('')
-  const [filters, setFilters] = useState<FilterOptions>({
-    dietFlags: [],
-    deliveryOnly: false,
-    pickupOnly: false,
-    sortBy: 'price_asc',
-  })
+  const [hoveredOffer, setHoveredOffer] = useState<OfferWithDetails | null>(null)
 
   // Load cities on mount
   useEffect(() => {
     getCities().then((data) => {
       setCities(data)
     })
-  }, [])
-
-  // Load initial offers
-  useEffect(() => {
-    handleSearch(searchQuery, selectedCity)
   }, [])
 
   const generateDemoOffers = (): OfferWithDetails[] => {
@@ -99,7 +88,7 @@ export default function HomePage() {
     return demoDeals as unknown as OfferWithDetails[]
   }
 
-  const handleSearch = async (query: string, city: string) => {
+  const handleSearch = useCallback(async (query: string, city: string) => {
     setLoading(true)
     setSearchQuery(query)
     setSelectedCity(city)
@@ -107,10 +96,7 @@ export default function HomePage() {
     const params: SearchParams = {
       query,
       cityId: city,
-      dietFlags: filters.dietFlags,
-      deliveryOnly: filters.deliveryOnly,
-      pickupOnly: filters.pickupOnly,
-      sortBy: filters.sortBy,
+      sortBy: 'price_asc',
     }
 
     try {
@@ -126,153 +112,299 @@ export default function HomePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const handleFilterChange = (newFilters: FilterOptions) => {
-    setFilters(newFilters)
+  // Load initial offers
+  useEffect(() => {
     handleSearch(searchQuery, selectedCity)
-  }
+  }, [handleSearch, searchQuery, selectedCity])
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section - Modern, Bold, Food-focused */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-food-cream via-white to-food-cream dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 right-20 w-96 h-96 bg-food-orange rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 left-20 w-96 h-96 bg-food-green rounded-full blur-3xl"></div>
-        </div>
-
-        <div className="container mx-auto px-4 py-16 md:py-24 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Content */}
-            <div className="space-y-8">
-              <div className="inline-block">
-                <span className="px-4 py-2 bg-food-orange/10 text-food-orange rounded-full text-sm font-semibold">
-                  {t.hero.badge}
-                </span>
-              </div>
-
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                <span className="text-foreground">{t.hero.title_start} </span>
-                <span className="gradient-text">{t.hero.title_gradient}</span>
-                <span className="text-foreground"> {t.hero.title_end}</span>
+    <div className="min-h-screen bg-[#fffcf8] pb-20">
+      {/* Search Header Section - Now wider for web */}
+      <section className="bg-white px-4 pt-6 pb-10 border-b border-[#f1ebd8] rounded-b-[3rem] card-shadow relative z-10 transition-all duration-500">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <h1 className="text-3xl md:text-4xl font-black text-[#3d1d11] tracking-tight">
+                Mitä tekisi mieli <span className="text-[#d35400]">syödä?</span>
               </h1>
-
-              <p className="text-xl text-muted-foreground max-w-xl">
-                {t.hero.subtitle}
-              </p>
-
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-6 pt-8">
-                <div className="text-center">
-                  <div className="w-20 h-20 mx-auto mb-3 rounded-full border-4 border-food-orange/20 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-food-orange">06</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">Kaupunkia</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-20 h-20 mx-auto mb-3 rounded-full border-4 border-food-green/20 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-food-green">10</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">Ravintolaa</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-20 h-20 mx-auto mb-3 rounded-full border-4 border-food-yellow/20 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-food-yellow">20</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">Tarjousta</p>
-                </div>
-              </div>
+              <p className="text-[#a08a7e] font-medium">Löydä kaupungin parhaat tarjoukset ja säästä jopa -50%</p>
             </div>
 
-            {/* Right: Hero Image */}
-            <div className="relative">
-              <div className="relative w-full aspect-square max-w-lg mx-auto">
-                {/* Floating Pizza Image */}
-                <div className="absolute inset-0 animate-float">
-                  <Image
-                    src="/images/pizza.jpg"
-                    alt="Delicious Pizza"
-                    fill
-                    className="object-contain drop-shadow-2xl"
-                    priority
-                  />
-                </div>
-                {/* Decorative Elements */}
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-food-green/20 rounded-full blur-2xl animate-pulse"></div>
-                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-food-orange/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-              </div>
+            <div className="w-full lg:max-w-xl">
+              <SearchBar
+                onSearch={handleSearch}
+                initialQuery={searchQuery}
+                initialCity={selectedCity}
+              />
+            </div>
+          </div>
+
+          {/* Quick Categories & Filters Tier */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
+              {['Kaikki', 'Burgerit', 'Sushi', 'Pizza', 'Salaatit', 'Kiinalainen', 'Vegaani', 'Leipomo'].map((tag, i) => (
+                <button
+                  key={tag}
+                  className={`flex-shrink-0 px-6 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-wider transition-all border ${i === 0
+                    ? 'bg-[#3d1d11] text-white border-[#3d1d11] shadow-lg scale-105'
+                    : 'bg-white text-[#3d1d11] border-[#f1ebd8] hover:border-[#d35400]/30 hover:bg-[#fdf2e2]/50'
+                    }`}
+                >
+                  {tag}
+                </button>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Search Section */}
-      <section className="bg-white dark:bg-zinc-900 border-y border-border">
-        <div className="container mx-auto px-4 py-8">
-          <SearchBar
-            onSearch={handleSearch}
-            cities={cities}
-            initialQuery={searchQuery}
-            initialCity={selectedCity}
-          />
-        </div>
-      </section>
+      <div className="container mx-auto px-4 max-w-7xl pt-10">
+        <div className="flex flex-col lg:flex-row gap-10">
 
-      {/* Main Content */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar Filters - Sticky on Desktop */}
-          <aside className="lg:w-72 flex-shrink-0">
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 food-card-shadow sticky top-24">
-              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                {t.filters.title}
-              </h3>
-              <Filters onFilterChange={handleFilterChange} filters={filters} />
+          {/* Main Content Area */}
+          <div className="flex-1 space-y-12">
+
+            {/* Featured Section - More wide for Web */}
+            <section className="relative">
+              <div
+                className="featured-card h-[400px] md:h-[500px] group cursor-pointer shadow-2xl"
+                onMouseEnter={() => setHoveredOffer({
+                  id: 'featured-special',
+                  meal: {
+                    name: 'Gourmet Burger Kitchen Special',
+                    description: 'Ravintolan suosituimmat säästöateriat vain tänään puoleen hintaan. Koe kaupungin parhaat burgerit uskomattomin hinnoin.',
+                    restaurant: { name: 'Gourmet Burger Kitchen', rating: 4.9, city: { name: 'Helsinki' } },
+                    diet_flags: [],
+                    image_path: 'burger'
+                  },
+                  source: { name: 'Päivän Erikoistarjous' },
+                  price_cents: 890,
+                  old_price_cents: 1780,
+                  delivery_fee_cents: 0,
+                  eta_minutes: 20
+                } as any)}
+                onMouseLeave={() => setHoveredOffer(null)}
+              >
+                <Image
+                  src="/images/burger.jpg"
+                  alt="Daily Special"
+                  fill
+                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#3d1d11] via-[#3d1d11]/40 to-transparent" />
+
+                <div className="absolute top-10 left-10 anim-float">
+                  <div className="bg-[#f3d179] text-[#3d1d11] text-lg md:text-xl font-black px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-white/20">
+                    <div className="bg-[#3d1d11] text-white p-1 rounded-lg">
+                      <TrendingDown className="w-5 h-5" />
+                    </div>
+                    SÄÄSTÄ -50%
+                  </div>
+                </div>
+
+                <div className="absolute bottom-12 left-12 right-12 text-white">
+                  <div className="flex flex-wrap items-center gap-4 mb-6">
+                    <span className="bg-[#d35400] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg border border-white/10">PÄIVÄN ERIKOINEN</span>
+                    <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-white/10">
+                      <Clock className="w-4 h-4 text-[#f3d179]" />
+                      15–25 min
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-white/10">
+                      <Star className="w-4 h-4 text-[#f3d179] fill-[#f3d179]" />
+                      4.9 (500+)
+                    </div>
+                  </div>
+                  <h2 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter leading-none">Gourmet Burger <br /><span className="text-[#f3d179]">Kitchen</span></h2>
+                  <p className="text-[#fdf2e2]/70 font-medium max-w-xl text-lg leading-relaxed hidden md:block border-l-4 border-[#d35400] pl-6">
+                    Ravintolan suosituimmat säästöateriat vain tänään puoleen hintaan. Koe kaupungin parhaat burgerit uskomattomin hinnoin.
+                  </p>
+                  <Link href="/search">
+                    <button className="mt-8 bg-white text-[#3d1d11] px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-[#f3d179] hover:scale-105 active:scale-95 transition-all shadow-xl">
+                      Tilaa Heti
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </section>
+
+            {/* Daily Best Deals - Responsive Grid */}
+            <section>
+              <div className="flex items-end justify-between mb-10">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-[#d35400] text-xs font-black uppercase tracking-[0.2em]">
+                    <div className="w-8 h-[2px] bg-[#d35400]" />
+                    Top Poiminnat
+                  </div>
+                  <h2 className="text-4xl font-black text-[#3d1d11] tracking-tight">Päivän parhaat <span className="text-[#d35400]">tarjoukset</span></h2>
+                  <p className="text-[#a08a7e] font-medium">Parhaat hinnat juuri nyt lähelläsi päivitettynä reaaliajassa</p>
+                </div>
+                <Link href="/search">
+                  <button className="flex items-center gap-3 text-[#3d1d11] hover:text-[#d35400] transition-colors p-4 rounded-2xl bg-white border border-[#f1ebd8] shadow-sm font-black uppercase text-[10px] tracking-widest group">
+                    Katso kaikki
+                    <div className="bg-[#3d1d11] group-hover:bg-[#d35400] p-1 rounded-lg transition-colors">
+                      <ChevronRight className="w-4 h-4 text-white" />
+                    </div>
+                  </button>
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {loading ? (
+                  Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
+                ) : offers.map((offer) => (
+                  <OfferCard
+                    key={offer.id}
+                    offer={offer}
+                    onMouseEnter={() => setHoveredOffer(offer)}
+                    onMouseLeave={() => setHoveredOffer(null)}
+                  />
+                ))}
+              </div>
+            </section>
+          </div>
+
+          {/* Desktop Web Sidebar - Sticky Preview & Info */}
+          <aside className="hidden lg:block w-[400px] flex-shrink-0">
+            <div className="sticky top-8 space-y-8">
+              {/* Quick Preview Panel */}
+              <div className="app-shadow rounded-[3rem]">
+                <OfferPreview offer={hoveredOffer || offers[0] || null} />
+              </div>
+
+              {/* Stats Card */}
+              <div className="bg-[#3d1d11] rounded-[3rem] p-10 text-white card-shadow overflow-hidden relative group">
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#d35400]/20 blur-3xl rounded-full group-hover:scale-150 transition-transform duration-1000" />
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-[#f3d179]/10 blur-3xl rounded-full" />
+
+                <h3 className="text-xl font-black mb-8 flex items-center gap-3 relative z-10">
+                  <div className="bg-[#f3d179] p-2 rounded-xl">
+                    <Star className="w-5 h-5 text-[#3d1d11] fill-[#3d1d11]" />
+                  </div>
+                  FoodAi Tilastot
+                </h3>
+
+                <div className="space-y-8 relative z-10">
+                  <div className="flex items-center justify-between group/item">
+                    <span className="text-sm font-bold text-white/50 group-hover/item:text-white/80 transition-colors">Ravintoloita</span>
+                    <div className="text-right">
+                      <span className="text-2xl font-black block">1,240+</span>
+                      <span className="text-[10px] text-[#f39c12] font-black uppercase tracking-widest">+12 tänään</span>
+                    </div>
+                  </div>
+                  <div className="h-[1px] bg-white/5" />
+                  <div className="flex items-center justify-between group/item">
+                    <span className="text-sm font-bold text-white/50 group-hover/item:text-white/80 transition-colors">Kaupunkeja</span>
+                    <span className="text-2xl font-black">{cities.length || 15}</span>
+                  </div>
+                  <div className="h-[1px] bg-white/5" />
+                  <div className="flex items-center justify-between group/item">
+                    <span className="text-sm font-bold text-white/50 group-hover/item:text-white/80 transition-colors">Tarjouksia</span>
+                    <div className="text-right">
+                      <span className="text-2xl font-black text-[#f3d179]">3,450+</span>
+                      <span className="text-[10px] text-[#27ae60] font-black uppercase tracking-widest">Aktiivisia</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Link href="#">
+                  <button className="w-full mt-10 bg-white/5 hover:bg-white/10 border border-white/10 transition-all py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] relative z-10">
+                    Lataa Sovellus
+                  </button>
+                </Link>
+              </div>
+
+              {/* Newsletter / Promo */}
+              <div className="bg-[#fdf2e2] rounded-[3rem] p-10 border border-[#3d1d11]/5 relative overflow-hidden shadow-inner">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[#d35400]/5 rounded-full -mr-12 -mt-12" />
+                <h4 className="text-lg font-black text-[#3d1d11] mb-2 uppercase tracking-tight">Uutiskirje</h4>
+                <p className="text-sm text-[#a08a7e] mb-6 font-medium">Saa parhaat säästövinkit suoraan sähköpostiisi viikoittain.</p>
+                <div className="relative group">
+                  <input
+                    type="email"
+                    placeholder="Sähköpostiosoite"
+                    className="w-full bg-white rounded-2xl py-5 px-6 text-sm border-none focus:ring-2 focus:ring-[#d35400] app-shadow placeholder:text-[#a08a7e]/50 transition-all"
+                  />
+                  <button className="absolute right-2 top-2 bottom-2 px-6 bg-[#3d1d11] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#d35400] transition-colors shadow-lg">Tilaa</button>
+                </div>
+              </div>
             </div>
           </aside>
-
-          {/* Results Grid */}
-          <div className="flex-1">
-            <div className="flex justify-between items-end mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t.results.trending}</h2>
-                <p className="text-slate-500 text-sm">{t.results.subtitle}</p>
-              </div>
-              <div className="text-sm font-medium text-slate-500">
-                {offers.length} {offers.length === 1 ? t.results.count_one : t.results.count_many}
-              </div>
-            </div>
-
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <SkeletonCard key={i} />
-                ))}
-              </div>
-            ) : offers.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {offers.map((offer) => (
-                  <OfferCard key={offer.id} offer={offer} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-20 bg-white dark:bg-zinc-900 rounded-3xl border border-dashed border-gray-200 dark:border-zinc-800">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-zinc-800 mb-4">
-                  <Utensils className="w-8 h-8 text-slate-400" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{t.results.no_results_title}</h3>
-                <p className="text-muted-foreground mb-6">
-                  {t.results.no_results_desc}
-                </p>
-              </div>
-            )}
-          </div>
         </div>
-      </section>
+
+        {/* Categories Section - Wider for Web */}
+        <section className="mt-32">
+          <div className="flex items-center justify-between mb-12">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-[#d35400] text-xs font-black uppercase tracking-[0.2em]">
+                <div className="w-8 h-[2px] bg-[#d35400]" />
+                Selaa Lajin mukaan
+              </div>
+              <h2 className="text-4xl font-black text-[#3d1d11] tracking-tight">Suositut <span className="text-[#d35400]">kategoriat</span></h2>
+            </div>
+            <div className="flex gap-3">
+              <button className="w-12 h-12 rounded-full bg-white border border-[#f1ebd8] hover:bg-[#3d1d11] hover:text-white transition-all flex items-center justify-center app-shadow group">
+                <ChevronRight className="w-5 h-5 rotate-180 group-hover:scale-110 transition-transform" />
+              </button>
+              <button className="w-12 h-12 rounded-full bg-white border border-[#f1ebd8] hover:bg-[#3d1d11] hover:text-white transition-all flex items-center justify-center app-shadow group">
+                <ChevronRight className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
+            {[
+              { label: 'Suomalainen', icon: '🍲', count: '124', color: '#f0f4ff' },
+              { label: 'Leipomo', icon: '🥐', count: '86', color: '#fff9f0' },
+              { label: 'Aasialainen', icon: '🍣', count: '210', color: '#fff0f0' },
+              { label: 'Vegaani', icon: '🥗', count: '54', color: '#f0fff4' },
+              { label: 'Italia', icon: '🍕', count: '312', color: '#fff5f0' },
+              { label: 'Burgerit', icon: '🍔', count: '145', color: '#fffbef' },
+            ].map((cat) => (
+              <div key={cat.label} className="category-item group">
+                <div
+                  className="w-28 h-28 md:w-32 md:h-32 rounded-[2.5rem] flex items-center justify-center mb-4 transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl relative overflow-hidden"
+                  style={{ backgroundColor: cat.color }}
+                >
+                  <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="text-5xl md:text-6xl transform group-hover:scale-110 transition-transform duration-500 z-10">{cat.icon}</span>
+                </div>
+                <div className="text-center">
+                  <span className="block text-sm font-black uppercase tracking-widest text-[#3d1d11] mb-1">{cat.label}</span>
+                  <span className="text-[10px] text-[#a08a7e] font-bold uppercase tracking-tighter bg-[#fdf2e2] px-2 py-0.5 rounded-lg border border-[#3d1d11]/5">{cat.count} tarjousta</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Secondary Results / Recommendation Grid */}
+        <section className="mt-32 pb-20">
+          <div className="flex items-center gap-4 mb-12">
+            <h2 className="text-4xl font-black text-[#3d1d11] tracking-tight">Sinulle <span className="text-[#d35400]">suositeltua</span></h2>
+            <div className="flex-grow h-[2px] bg-[#f1ebd8] rounded-full" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {(offers.length > 0 ? offers.slice(0, 4) : generateDemoOffers().slice(0, 4)).map((offer) => (
+              <OfferCard key={`rec-${offer.id}`} offer={offer} />
+            ))}
+          </div>
+        </section>
+      </div>
 
       <Footer />
+
+      {/* Floating Map Button - Still useful on web */}
+      <div className="fixed bottom-10 right-10 z-40 hidden md:block">
+        <button className="bg-[#3d1d11] text-white pl-6 pr-8 py-4 rounded-full flex items-center gap-3 shadow-2xl hover:scale-105 active:scale-95 transition-all group font-black uppercase text-xs tracking-[0.15em]">
+          <div className="w-8 h-8 rounded-full bg-[#f3d179] flex items-center justify-center -ml-2 text-[#3d1d11]">
+            <MapPin className="w-4 h-4" />
+          </div>
+          Karttanäkymä
+        </button>
+      </div>
     </div>
   )
 }

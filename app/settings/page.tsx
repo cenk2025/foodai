@@ -3,9 +3,20 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, User, Mail, Globe, Bell, Shield, Trash2, Save } from 'lucide-react'
-import Button from '@/components/ui/Button'
-import Card, { CardHeader, CardContent } from '@/components/ui/Card'
+import {
+    ArrowLeft,
+    User as UserIcon,
+    Mail,
+    Globe,
+    Bell,
+    Shield,
+    Trash2,
+    Save,
+    Check,
+    ChevronRight,
+    Lock,
+    Eye
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
@@ -60,257 +71,205 @@ export default function SettingsPage() {
 
             if (error) throw error
 
-            setMessage({ type: 'success', text: 'Profile updated successfully!' })
+            setMessage({ type: 'success', text: 'Profiili päivitetty onnistuneesti!' })
+            setTimeout(() => setMessage(null), 3000)
         } catch (error) {
             console.error('Error updating profile:', error)
-            setMessage({ type: 'error', text: 'Failed to update profile. Please try again.' })
+            setMessage({ type: 'error', text: 'Päivitys epäonnistui. Yritä uudelleen.' })
         } finally {
             setSaving(false)
         }
     }
 
     const handleDeleteAccount = async () => {
-        if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        if (!confirm('Oletko varma että haluat poistaa tilisi? Tätä toimintoa ei voi peruuttaa.')) {
             return
         }
 
         try {
             const supabase = createClient()
-            // Note: In production, you'd want to call a server action to properly delete user data
             await supabase.auth.signOut()
             router.push('/')
         } catch (error) {
             console.error('Error deleting account:', error)
-            setMessage({ type: 'error', text: 'Failed to delete account. Please try again.' })
+            setMessage({ type: 'error', text: 'Poisto epäonnistui. Yritä uudelleen.' })
         }
     }
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <div className="min-h-screen bg-[#fffcf8] flex items-center justify-center">
+                <div className="w-12 h-12 border-4 border-[#d35400]/20 border-t-[#d35400] rounded-full animate-spin"></div>
             </div>
         )
     }
 
-    if (!user) {
-        return null
-    }
+    if (!user) return null
 
     return (
-        <div className="min-h-screen bg-background">
-            <div className="container mx-auto px-4 py-12 max-w-4xl">
-                {/* Back Button */}
-                <Link href="/">
-                    <Button variant="ghost" className="mb-8">
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Home
-                    </Button>
-                </Link>
-
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold mb-2">
-                        <span className="gradient-text">Settings</span>
-                    </h1>
-                    <p className="text-muted-foreground">
-                        Manage your account settings and preferences
-                    </p>
+        <div className="min-h-screen bg-[#fffcf8] font-outfit pb-24 md:pb-12">
+            {/* Header */}
+            <div className="bg-[#3d1d11] text-white pt-16 pb-32 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-full">
+                    <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[150%] bg-[#d35400]/20 rounded-full blur-3xl transform rotate-12" />
+                    <div className="absolute bottom-[-20%] left-[-10%] w-[50%] h-[150%] bg-[#f3d179]/10 rounded-full blur-3xl transform -rotate-12" />
                 </div>
 
-                {/* Message */}
+                <div className="container mx-auto px-6 relative z-10 max-w-4xl">
+                    <Link href="/profile" className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-8 group">
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Takaisin profiiliin</span>
+                    </Link>
+                    <h1 className="text-4xl font-black mb-3">Asetukset</h1>
+                    <p className="text-white/60 font-medium">Hallitse tiliäsi ja ilmoituksia</p>
+                </div>
+            </div>
+
+            <div className="container mx-auto px-6 max-w-4xl -mt-16 relative z-20 space-y-8">
+                {/* Status Message */}
                 {message && (
-                    <div className={`mb-6 p-4 rounded-lg ${message.type === 'success'
-                            ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-300 dark:border-green-800'
-                            : 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-300 dark:border-red-800'
+                    <div className={`p-6 rounded-[2rem] border animate-in slide-in-from-top-4 duration-500 ${message.type === 'success'
+                            ? 'bg-[#27ae60]/5 border-[#27ae60]/20 text-[#27ae60]'
+                            : 'bg-[#e74c3c]/5 border-[#e74c3c]/20 text-[#e74c3c]'
                         }`}>
-                        {message.text}
+                        <div className="flex items-center gap-3">
+                            {message.type === 'success' ? <Check className="w-5 h-5" /> : <Shield className="w-5 h-5" />}
+                            <p className="font-black uppercase text-xs tracking-widest">{message.text}</p>
+                        </div>
                     </div>
                 )}
 
-                {/* Profile Settings */}
-                <Card glass className="mb-6">
-                    <CardHeader>
-                        <div className="flex items-center gap-2">
-                            <User className="w-5 h-5 text-primary" />
-                            <h2 className="text-2xl font-bold">Profile Information</h2>
+                {/* Profile Section */}
+                <div className="bg-white rounded-[3rem] p-10 app-shadow border border-[#f1ebd8]">
+                    <div className="flex items-center gap-4 mb-10">
+                        <div className="w-12 h-12 bg-[#fff9f0] rounded-2xl flex items-center justify-center text-[#d35400]">
+                            <UserIcon className="w-6 h-6" />
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-2">
-                                    Display Name
-                                </label>
-                                <input
-                                    type="text"
-                                    value={displayName}
-                                    onChange={(e) => setDisplayName(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary"
-                                    placeholder="Your name"
-                                />
-                            </div>
+                        <h2 className="text-2xl font-black text-[#3d1d11]">Profiilitiedot</h2>
+                    </div>
 
-                            <div>
-                                <label className="block text-sm font-medium mb-2">
-                                    <Mail className="w-4 h-4 inline mr-1" />
-                                    Email
-                                </label>
+                    <div className="space-y-8">
+                        <div className="space-y-3">
+                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11] ml-2">Näyttönimi</label>
+                            <input
+                                type="text"
+                                value={displayName}
+                                onChange={(e) => setDisplayName(e.target.value)}
+                                className="w-full bg-[#fdf2e2]/30 border-none rounded-2xl py-4 px-6 text-sm focus:ring-2 focus:ring-[#f3d179] transition-all font-medium"
+                                placeholder="Nimesi"
+                            />
+                        </div>
+
+                        <div className="space-y-3">
+                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11] ml-2">Sähköposti</label>
+                            <div className="relative">
+                                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a08a7e]" />
                                 <input
                                     type="email"
                                     value={user.email || ''}
                                     disabled
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 bg-gray-100 dark:bg-zinc-800 text-muted-foreground cursor-not-allowed"
+                                    className="w-full bg-[#f1ebd8]/20 border border-[#f1ebd8] rounded-2xl py-4 pl-14 pr-6 text-sm text-[#a08a7e] cursor-not-allowed font-medium"
                                 />
-                                <p className="text-xs text-muted-foreground mt-1">
-                                    Email cannot be changed
-                                </p>
                             </div>
-
-                            <Button
-                                onClick={handleSaveProfile}
-                                disabled={saving}
-                                className="w-full sm:w-auto"
-                            >
-                                <Save className="w-4 h-4 mr-2" />
-                                {saving ? 'Saving...' : 'Save Changes'}
-                            </Button>
+                            <p className="text-[10px] text-[#a08a7e] ml-2 font-medium italic">Sähköpostia ei voi vaihtaa</p>
                         </div>
-                    </CardContent>
-                </Card>
 
-                {/* Notification Settings */}
-                <Card glass className="mb-6">
-                    <CardHeader>
-                        <div className="flex items-center gap-2">
-                            <Bell className="w-5 h-5 text-primary" />
-                            <h2 className="text-2xl font-bold">Notifications</h2>
+                        <button
+                            onClick={handleSaveProfile}
+                            disabled={saving}
+                            className="bg-[#3d1d11] text-white px-10 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-[#d35400] transition-all active:scale-95 shadow-xl flex items-center gap-3"
+                        >
+                            {saving ? (
+                                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                            ) : <Save className="w-4 h-4" />}
+                            Tallenna muutokset
+                        </button>
+                    </div>
+                </div>
+
+                {/* Notifications Section */}
+                <div className="bg-white rounded-[3rem] p-10 app-shadow border border-[#f1ebd8]">
+                    <div className="flex items-center gap-4 mb-10">
+                        <div className="w-12 h-12 bg-[#fff0f0] rounded-2xl flex items-center justify-center text-[#e74c3c]">
+                            <Bell className="w-6 h-6" />
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
+                        <h2 className="text-2xl font-black text-[#3d1d11]">Ilmoitukset</h2>
+                    </div>
+
+                    <div className="space-y-4">
+                        {[
+                            { id: 'email', label: 'Sähköposti-ilmoitukset', desc: 'Saa päivityksiä tilistäsi', checked: emailNotifications, set: setEmailNotifications },
+                            { id: 'price', label: 'Hintahälytykset', desc: 'Ilmoita kun hinnat laskevat', checked: priceAlerts, set: setPriceAlerts },
+                            { id: 'news', label: 'Uutiskirje', desc: 'Viikoittaiset tarjoukset ja vinkit', checked: newsletter, set: setNewsletter }
+                        ].map((item) => (
+                            <div key={item.id} className="flex items-center justify-between p-6 rounded-[2rem] bg-[#fdf2e2]/20 border border-[#f1ebd8]/50">
                                 <div>
-                                    <p className="font-medium">Email Notifications</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        Receive updates about your account
-                                    </p>
+                                    <p className="font-black text-[#3d1d11] uppercase text-[11px] tracking-widest">{item.label}</p>
+                                    <p className="text-[10px] text-[#a08a7e] font-medium mt-1">{item.desc}</p>
                                 </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={emailNotifications}
-                                        onChange={(e) => setEmailNotifications(e.target.checked)}
-                                        className="sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-gray-300 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                </label>
+                                <button
+                                    onClick={() => item.set(!item.checked)}
+                                    className={`w-14 h-8 rounded-full relative transition-all duration-300 ${item.checked ? 'bg-[#27ae60]' : 'bg-[#a08a7e]/20'}`}
+                                >
+                                    <div className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow-md transition-all duration-300 ${item.checked ? 'left-7' : 'left-1'}`} />
+                                </button>
                             </div>
+                        ))}
+                    </div>
+                </div>
 
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="font-medium">Price Alerts</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        Get notified when prices drop
-                                    </p>
-                                </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={priceAlerts}
-                                        onChange={(e) => setPriceAlerts(e.target.checked)}
-                                        className="sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-gray-300 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                </label>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="font-medium">Newsletter</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        Weekly deals and tips
-                                    </p>
-                                </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={newsletter}
-                                        onChange={(e) => setNewsletter(e.target.checked)}
-                                        className="sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-gray-300 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                </label>
-                            </div>
+                {/* Preferences Section */}
+                <div className="bg-white rounded-[3rem] p-10 app-shadow border border-[#f1ebd8]">
+                    <div className="flex items-center gap-4 mb-10">
+                        <div className="w-12 h-12 bg-[#eff6ff] rounded-2xl flex items-center justify-center text-[#3b82f6]">
+                            <Globe className="w-6 h-6" />
                         </div>
-                    </CardContent>
-                </Card>
+                        <h2 className="text-2xl font-black text-[#3d1d11]">Asetukset</h2>
+                    </div>
 
-                {/* Preferences */}
-                <Card glass className="mb-6">
-                    <CardHeader>
-                        <div className="flex items-center gap-2">
-                            <Globe className="w-5 h-5 text-primary" />
-                            <h2 className="text-2xl font-bold">Preferences</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11] ml-2">Kieli</label>
+                            <select className="w-full bg-[#fdf2e2]/30 border-none rounded-2xl py-4 px-6 text-sm focus:ring-2 focus:ring-[#f3d179] transition-all font-bold text-[#3d1d11] appearance-none cursor-pointer">
+                                <option value="fi">Suomi (Finnish)</option>
+                                <option value="en">English (UK)</option>
+                            </select>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-2">
-                                    Default Language
-                                </label>
-                                <select className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary">
-                                    <option value="en">English</option>
-                                    <option value="fi">Suomi (Finnish)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-2">
-                                    Default City
-                                </label>
-                                <select className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary">
-                                    <option value="">Select a city</option>
-                                    <option value="helsinki">Helsinki</option>
-                                    <option value="espoo">Espoo</option>
-                                    <option value="vantaa">Vantaa</option>
-                                    <option value="tampere">Tampere</option>
-                                    <option value="turku">Turku</option>
-                                    <option value="oulu">Oulu</option>
-                                </select>
-                            </div>
+                        <div className="space-y-3">
+                            <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11] ml-2">Oletuskaupunki</label>
+                            <select className="w-full bg-[#fdf2e2]/30 border-none rounded-2xl py-4 px-6 text-sm focus:ring-2 focus:ring-[#f3d179] transition-all font-bold text-[#3d1d11] appearance-none cursor-pointer">
+                                <option value="helsinki">Helsinki</option>
+                                <option value="espoo">Espoo</option>
+                                <option value="tampere">Tampere</option>
+                            </select>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
                 {/* Danger Zone */}
-                <Card className="border-2 border-red-500/50">
-                    <CardHeader>
-                        <div className="flex items-center gap-2">
-                            <Shield className="w-5 h-5 text-red-500" />
-                            <h2 className="text-2xl font-bold text-red-500">Danger Zone</h2>
+                <div className="bg-white rounded-[3rem] p-10 border-4 border-[#e74c3c]/10">
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="w-12 h-12 bg-[#e74c3c]/10 rounded-2xl flex items-center justify-center text-[#e74c3c]">
+                            <Shield className="w-6 h-6" />
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <div>
-                                <p className="font-medium mb-2">Delete Account</p>
-                                <p className="text-sm text-muted-foreground mb-4">
-                                    Once you delete your account, there is no going back. Please be certain.
-                                </p>
-                                <Button
-                                    variant="outline"
-                                    onClick={handleDeleteAccount}
-                                    className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                                >
-                                    <Trash2 className="w-4 h-4 mr-2" />
-                                    Delete Account
-                                </Button>
-                            </div>
+                        <div>
+                            <h2 className="text-2xl font-black text-[#3d1d11]">Vaara-alue</h2>
+                            <p className="text-[10px] text-[#e74c3c] font-black uppercase tracking-widest mt-1">Poista tili ja tiedot</p>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+
+                    <div className="bg-[#e74c3c]/5 p-8 rounded-[2.5rem] border border-[#e74c3c]/10">
+                        <p className="text-sm text-[#3d1d11] font-medium leading-relaxed mb-6">
+                            Kun poistat tilisi, kaikki tietosi, suosikkisi ja tilaushistoriasi poistetaan pysyvästi. Tätä toimintoa ei voi peruuttaa.
+                        </p>
+                        <button
+                            onClick={handleDeleteAccount}
+                            className="bg-[#e74c3c] text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-[#c0392b] transition-all shadow-lg active:scale-95"
+                        >
+                            Poista tili pysyvästi
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     )

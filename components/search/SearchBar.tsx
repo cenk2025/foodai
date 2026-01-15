@@ -1,27 +1,21 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, MapPin } from 'lucide-react'
-import Input from '../ui/Input'
-import Button from '../ui/Button'
-import { useLanguage } from '@/lib/i18n/context'
+import { Search, ChevronRight } from 'lucide-react'
 
 interface SearchBarProps {
     onSearch: (query: string, city: string) => void
-    cities: Array<{ id: string; name: string }>
     initialQuery?: string
     initialCity?: string
 }
 
 export default function SearchBar({
     onSearch,
-    cities,
     initialQuery = '',
     initialCity = ''
 }: SearchBarProps) {
-    const { t } = useLanguage()
     const [query, setQuery] = useState(initialQuery)
-    const [city, setCity] = useState(initialCity)
+    const [city] = useState(initialCity)
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -29,53 +23,47 @@ export default function SearchBar({
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-2 w-full">
-            <div className="relative flex-grow">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <Input
+        <form onSubmit={handleSubmit} className="search-container">
+            <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a08a7e] group-focus-within:text-[#d35400] transition-colors">
+                    <Search className="w-5 h-5" />
+                </div>
+                <input
                     type="text"
-                    placeholder={t.search.placeholder}
-                    className="pl-10 h-12 bg-gray-50 dark:bg-zinc-800/50 border-transparent focus:bg-white dark:focus:bg-zinc-900 transition-all text-lg"
+                    placeholder="Hae italialaista tai muuta herkkua..."
+                    className="search-input"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                 />
+                <button
+                    type="submit"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-[#3d1d11] text-white flex items-center justify-center hover:bg-[#d35400] transition-all active:scale-90 shadow-sm"
+                >
+                    <ChevronRight className="w-5 h-5" />
+                </button>
             </div>
 
-            <div className="relative md:w-48">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5 pointer-events-none z-10" />
-                <select
-                    className="w-full h-12 pl-10 pr-10 rounded-lg border border-transparent bg-gray-50 dark:bg-zinc-800/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/20 focus:bg-white dark:focus:bg-zinc-900 transition-all cursor-pointer appearance-none"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                >
-                    <option value="">{t.search.city_placeholder}</option>
-                    {cities.map((c) => (
-                        <option key={c.id} value={c.id}>
-                            {c.name}
-                        </option>
-                    ))}
-                </select>
-                <svg
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+            {/* Optional: Horizontal City Chips or Filter Pill */}
+            <div className="flex gap-2 mt-4 overflow-x-auto no-scrollbar pb-2">
+                <div className="bg-[#3d1d11] text-white text-[11px] font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <path d="M4 6h16M4 12h10M4 18h16" strokeLinecap="round" />
+                    </svg>
+                    Hinta: Alhaisin
+                </div>
+                <div className="bg-[#fdf2e2] text-[#3d1d11] text-[11px] font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer border border-[#3d1d11]/5">
+                    <svg className="w-3.5 h-3.5 text-[#3d1d11]/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    Ilmainen kuljetus
+                </div>
+                <div className="bg-[#fdf2e2] text-[#3d1d11] text-[11px] font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer border border-[#3d1d11]/5">
+                    <svg className="w-3.5 h-3.5 text-[#e67e22]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M7 7l3 3m0 0l3-3m-3 3l-3 3m3-3l3 3" strokeLinecap="round" />
+                    </svg>
+                    Säästö %
+                </div>
             </div>
-
-            <Button
-                type="submit"
-                size="lg"
-                className="h-12 px-8 text-lg font-bold !text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 border-0"
-                style={{
-                    background: 'linear-gradient(to right, #ff6b35, #ff4757, #ff6b35)',
-                }}
-            >
-                <Search className="w-5 h-5 text-white" />
-                <span className="text-white">{t.search.button}</span>
-            </Button>
         </form>
     )
 }

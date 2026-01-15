@@ -1,187 +1,224 @@
 @import "tailwindcss";
 
 :root {
-  /* Light Mode - Warm, Inviting, Food-focused */
-  --background: #faf8f5;
-  --foreground: #1a1a1a;
+  /* Warm App Palette - Based on reference images */
+  --background: #fffcf8;
+  --foreground: #3d1d11;
+  /* Dark Brown for text */
 
   --card: #ffffff;
-  --card-foreground: #1a1a1a;
+  --card-foreground: #3d1d11;
 
-  /* Primary - Vibrant Orange/Coral (like the example) */
-  --primary: #ff6b35;
+  /* Primary - Warm Orange */
+  --primary: #d35400;
   --primary-foreground: #ffffff;
 
-  /* Secondary - Warm Beige */
-  --secondary: #f5f1ed;
-  --secondary-foreground: #4a4a4a;
+  /* Secondary - Soft Beige/Cream */
+  --secondary: #fdf2e2;
+  --secondary-foreground: #8a6d5d;
 
-  --muted: #e8e3dd;
-  --muted-foreground: #6b6b6b;
+  --muted: #f5eee6;
+  --muted-foreground: #a08a7e;
 
-  /* Accent - Fresh Green (for healthy/vegan options) */
-  --accent: #4ade80;
+  /* Accent - Warm Yellow/Gold */
+  --accent: #f39c12;
   --accent-foreground: #ffffff;
 
-  --destructive: #ef4444;
+  --destructive: #c0392b;
   --destructive-foreground: #ffffff;
 
-  --border: #e8e3dd;
-  --input: #f5f1ed;
-  --ring: #ff6b35;
+  --border: #f1ebd8;
+  --input: #ffffff;
+  --ring: #d35400;
 
-  --radius: 1rem;
-
-  /* Custom Food Colors */
-  --food-orange: #ff6b35;
-  --food-red: #ff4757;
-  --food-green: #4ade80;
-  --food-yellow: #fbbf24;
-  --food-cream: #faf8f5;
-  --food-dark: #1a1a1a;
+  /* Very Rounded Design */
+  --radius: 1.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Dark Mode - Rich, Elegant, Appetizing */
-    --background: #0f0f0f;
-    --foreground: #f5f5f5;
+@theme {
+  --color-food-orange: #e67e22;
+  --color-food-red: #e74c3c;
+  --color-food-green: #27ae60;
+  --color-food-yellow: #f1c40f;
+  --color-food-cream: #fff9f0;
+  --color-food-dark-brown: #3d1d11;
 
-    --card: #1a1a1a;
-    --card-foreground: #f5f5f5;
+  --animate-float: float 6s ease-in-out infinite;
 
-    --primary: #ff7849;
-    --primary-foreground: #ffffff;
+  @keyframes float {
 
-    --secondary: #2a2a2a;
-    --secondary-foreground: #e5e5e5;
+    0%,
+    100% {
+      transform: translateY(0);
+    }
 
-    --muted: #2a2a2a;
-    --muted-foreground: #a3a3a3;
-
-    --accent: #4ade80;
-    --accent-foreground: #ffffff;
-
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-
-    --border: #2a2a2a;
-    --input: #2a2a2a;
-    --ring: #ff7849;
+    50% {
+      transform: translateY(-10px);
+    }
   }
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Modern FoodAi Design System */
-
-/* Hero Gradient - Subtle, warm glow */
-.gradient-hero {
-  background: radial-gradient(circle at top right, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at bottom left, rgba(74, 222, 128, 0.06) 0%, transparent 50%);
+@utility anim-float {
+  animation: var(--animate-float);
 }
 
-/* Gradient Text - Orange to Red */
-.gradient-text {
-  background: linear-gradient(135deg, #ff6b35 0%, #ff4757 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-
-  /* Fallback for browsers that don't support background-clip */
-  @supports not (background-clip: text) {
-    color: #ff6b35;
-  }
+@utility app-shadow {
+  box-shadow: 0 10px 25px -5px rgba(61, 29, 17, 0.05),
+    0 8px 10px -6px rgba(61, 29, 17, 0.03);
 }
 
-/* Card Shadows - Soft, elevated */
-.food-card-shadow {
-  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.08),
-    0 4px 12px -2px rgba(0, 0, 0, 0.04);
+@utility card-shadow {
+  box-shadow: 0 20px 40px -15px rgba(61, 29, 17, 0.1);
 }
 
-.food-card-shadow-hover {
-  box-shadow: 0 12px 40px -4px rgba(0, 0, 0, 0.12),
-    0 8px 20px -2px rgba(0, 0, 0, 0.06);
+/* Location Bar Background */
+.location-bar-bg {
+  background: linear-gradient(to bottom, #f3d179, #f7ce68);
 }
 
-/* Glass Effect - Modern, clean */
-.glass {
-  background: rgba(255, 255, 255, 0.7);
+/* Category Item Style */
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.category-icon-box {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1.5rem;
+  background-color: #feeecb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5d4037;
+  transition: all 0.2s;
+}
+
+.category-item:hover .category-icon-box {
+  transform: scale(1.05);
+  background-color: #fcd484;
+}
+
+/* Bottom Nav */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-top: 1px solid #f1ebd8;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 50;
+  box-shadow: 0 -10px 25px -10px rgba(61, 29, 17, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  .glass {
-    background: rgba(26, 26, 26, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 11px;
+  font-weight: 500;
+  color: #a08a7e;
+  transition: color 0.2s;
 }
 
-/* Scrollbar Hide */
-.scrollbar-hide::-webkit-scrollbar {
+.nav-item.active {
+  color: #d35400;
+}
+
+/* Price Badge */
+.price-badge {
+  background-color: #fee2e2;
+  color: #ef4444;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Rating Badge */
+.rating-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+/* Search Bar Container */
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.search-input {
+  width: 100%;
+  background-color: white;
+  border: none;
+  border-radius: 1rem;
+  padding: 1rem 1rem 1rem 3rem;
+  font-size: 0.875rem;
+  box-shadow: 0 10px 25px -5px rgba(61, 29, 17, 0.05),
+    0 8px 10px -6px rgba(61, 29, 17, 0.03);
+  transition: all 0.2s;
+}
+
+.search-input::placeholder {
+  color: #a08a7e;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #f3d179;
+}
+
+/* Featured Hero Card */
+.featured-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 2rem;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -15px rgba(61, 29, 17, 0.1);
+}
+
+/* Utility to hide horizontal scrollbar */
+.no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-.scrollbar-hide {
+.no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* Smooth Animations */
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
-  }
-
-  50% {
-    box-shadow: 0 0 40px rgba(255, 107, 53, 0.5);
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
-}
-
-/* Circular Image Container */
-.circle-image {
-  border-radius: 50%;
-  overflow: hidden;
-  aspect-ratio: 1;
-}
-
-/* Hover Lift Effect */
-.hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-8px);
 }
