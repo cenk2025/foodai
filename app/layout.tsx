@@ -6,6 +6,8 @@ import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
 import { LanguageProvider } from "@/lib/i18n/context";
 
+import { LocationProvider } from "@/lib/context/LocationContext";
+
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
@@ -30,12 +32,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${outfit.variable} font-outfit antialiased bg-[#fffcf8]`} suppressHydrationWarning>
         <LanguageProvider>
-          <Header />
-          <main className="pb-24 md:pb-0">
-            {children}
-          </main>
-          <BottomNav />
-          <AiAssistant />
+          <LocationProvider>
+            <Header />
+            <main className="pb-24 md:pb-0">
+              {children}
+            </main>
+            <BottomNav />
+            <AiAssistant />
+          </LocationProvider>
         </LanguageProvider>
       </body>
     </html>

@@ -7,12 +7,20 @@ interface SearchBarProps {
     onSearch: (query: string, city: string) => void
     initialQuery?: string
     initialCity?: string
+    currentSort?: string
+    isFreeDelivery?: boolean
+    onSortChange: (sort: 'price_asc' | 'savings_desc') => void
+    onToggleFreeDelivery: () => void
 }
 
 export default function SearchBar({
     onSearch,
     initialQuery = '',
-    initialCity = ''
+    initialCity = '',
+    currentSort = 'price_asc',
+    isFreeDelivery = false,
+    onSortChange,
+    onToggleFreeDelivery
 }: SearchBarProps) {
     const [query, setQuery] = useState(initialQuery)
     const [city] = useState(initialCity)
@@ -45,24 +53,47 @@ export default function SearchBar({
 
             {/* Optional: Horizontal City Chips or Filter Pill */}
             <div className="flex gap-2 mt-4 overflow-x-auto no-scrollbar pb-2">
-                <div className="bg-[#3d1d11] text-white text-[11px] font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer shadow-md">
+                <button
+                    type="button"
+                    onClick={() => onSortChange('price_asc')}
+                    className={`text-[11px] font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer transition-all ${currentSort === 'price_asc'
+                        ? 'bg-[#3d1d11] text-white shadow-md'
+                        : 'bg-[#fdf2e2] text-[#3d1d11] border border-[#3d1d11]/5 hover:bg-[#f3d179]'
+                        }`}
+                >
                     <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                         <path d="M4 6h16M4 12h10M4 18h16" strokeLinecap="round" />
                     </svg>
                     Hinta: Alhaisin
-                </div>
-                <div className="bg-[#fdf2e2] text-[#3d1d11] text-[11px] font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer border border-[#3d1d11]/5">
-                    <svg className="w-3.5 h-3.5 text-[#3d1d11]/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                </button>
+
+                <button
+                    type="button"
+                    onClick={onToggleFreeDelivery}
+                    className={`text-[11px] font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer transition-all ${isFreeDelivery
+                        ? 'bg-[#3d1d11] text-white shadow-md'
+                        : 'bg-[#fdf2e2] text-[#3d1d11] border border-[#3d1d11]/5 hover:bg-[#f3d179]'
+                        }`}
+                >
+                    <svg className={`w-3.5 h-3.5 ${isFreeDelivery ? 'text-white' : 'text-[#3d1d11]/60'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     Ilmainen kuljetus
-                </div>
-                <div className="bg-[#fdf2e2] text-[#3d1d11] text-[11px] font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer border border-[#3d1d11]/5">
-                    <svg className="w-3.5 h-3.5 text-[#e67e22]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => onSortChange('savings_desc')}
+                    className={`text-[11px] font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer transition-all ${currentSort === 'savings_desc'
+                        ? 'bg-[#3d1d11] text-white shadow-md'
+                        : 'bg-[#fdf2e2] text-[#3d1d11] border border-[#3d1d11]/5 hover:bg-[#f3d179]'
+                        }`}
+                >
+                    <svg className={`w-3.5 h-3.5 ${currentSort === 'savings_desc' ? 'text-white' : 'text-[#e67e22]'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <path d="M7 7l3 3m0 0l3-3m-3 3l-3 3m3-3l3 3" strokeLinecap="round" />
                     </svg>
                     Säästö %
-                </div>
+                </button>
             </div>
         </form>
     )

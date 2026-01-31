@@ -11,14 +11,19 @@ import { OfferWithDetails } from '@/lib/types/database'
 import { TrendingDown, Clock, Star, ChevronRight, MapPin } from 'lucide-react'
 import Footer from '@/components/layout/Footer'
 import OfferPreview from '@/components/offers/OfferPreview'
+import { useLocation } from '@/lib/context/LocationContext'
 
 export default function HomePage() {
+  const { city } = useLocation()
   const [cities, setCities] = useState<Array<{ id: string; name: string }>>([])
   const [offers, setOffers] = useState<OfferWithDetails[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCity, setSelectedCity] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('Kaikki')
   const [hoveredOffer, setHoveredOffer] = useState<OfferWithDetails | null>(null)
+
+  const [sortBy, setSortBy] = useState<'price_asc' | 'savings_desc'>('price_asc')
+  const [freeDelivery, setFreeDelivery] = useState(false)
 
   // Load cities on mount
   useEffect(() => {
@@ -83,20 +88,115 @@ export default function HomePage() {
         delivery_fee_cents: 490,
         eta_minutes: 50
       },
+      {
+        id: '7',
+        meal: { name: 'Kebab with Rice', restaurant: { name: 'Jyväskylä Kebab', rating: 4.3, city: { name: 'Jyväskylä' } }, diet_flags: [], image_path: 'pizza' },
+        source: { name: 'Foodora' },
+        price_cents: 1150,
+        old_price_cents: 1350,
+        delivery_fee_cents: 290,
+        eta_minutes: 40
+      },
+      {
+        id: '8',
+        meal: { name: 'Aura Cheese Burger', restaurant: { name: 'Revolution', rating: 4.5, city: { name: 'Jyväskylä' } }, diet_flags: [], image_path: 'burger' },
+        source: { name: 'Wolt' },
+        price_cents: 1490,
+        old_price_cents: 1890,
+        delivery_fee_cents: 0,
+        eta_minutes: 35
+      },
+      {
+        id: '9',
+        meal: { name: 'Reindeer Pizza', restaurant: { name: 'Lapland Pizzeria', rating: 4.6, city: { name: 'Oulu' } }, diet_flags: [], image_path: 'pizza' },
+        source: { name: 'Wolt' },
+        price_cents: 1550,
+        old_price_cents: 1750,
+        delivery_fee_cents: 190,
+        eta_minutes: 30
+      },
+      {
+        id: '10',
+        meal: { name: 'Aurajoki Burger', restaurant: { name: 'Turku Burger', rating: 4.4, city: { name: 'Turku' } }, diet_flags: [], image_path: 'burger' },
+        source: { name: 'Foodora' },
+        price_cents: 1290,
+        old_price_cents: 1590,
+        delivery_fee_cents: 390,
+        eta_minutes: 45
+      },
+      {
+        id: '11',
+        meal: { name: 'Vegetarian Pasta', restaurant: { name: 'Pasta & Co', rating: 4.2, city: { name: 'Kuopio' } }, diet_flags: ['vegetarian'], image_path: 'pizza' },
+        source: { name: 'UberEats' },
+        price_cents: 1190,
+        old_price_cents: null,
+        delivery_fee_cents: 250,
+        eta_minutes: 35
+      },
+      {
+        id: '12',
+        meal: { name: 'Salmon Soup', restaurant: { name: 'Fish Market', rating: 4.8, city: { name: 'Oulu' } }, diet_flags: ['healthy', 'gluten_free'], image_path: 'sushi' },
+        source: { name: 'Wolt' },
+        price_cents: 1350,
+        old_price_cents: 1600,
+        delivery_fee_cents: 0,
+        eta_minutes: 25
+      },
+      {
+        id: '13',
+        meal: { name: 'Chicken Wings (10pcs)', restaurant: { name: 'Siipiweikot', rating: 4.7, city: { name: 'Tampere' } }, diet_flags: [], image_path: 'burger' },
+        source: { name: 'Foodora' },
+        price_cents: 1250,
+        old_price_cents: 1450,
+        delivery_fee_cents: 350,
+        eta_minutes: 40
+      },
+      {
+        id: '14',
+        meal: { name: 'Kebab Pitas', restaurant: { name: 'Hervanta Kebab', rating: 4.1, city: { name: 'Tampere' } }, diet_flags: [], image_path: 'pizza' },
+        source: { name: 'Wolt' },
+        price_cents: 990,
+        old_price_cents: 1290,
+        delivery_fee_cents: 190,
+        eta_minutes: 30
+      },
+      {
+        id: '15',
+        meal: { name: 'Falafel Salad', restaurant: { name: 'Fafa\'s', rating: 4.6, city: { name: 'Jyväskylä' } }, diet_flags: ['vegan', 'gluten_free'], image_path: 'burger' },
+        source: { name: 'Wolt' },
+        price_cents: 1390,
+        old_price_cents: null,
+        delivery_fee_cents: 0,
+        eta_minutes: 25
+      }
     ]
 
     return demoDeals as unknown as OfferWithDetails[]
   }
 
-  const handleSearch = useCallback(async (query: string, city: string) => {
+  const handleSearch = useCallback(async (
+    query: string,
+    _city: string,
+    category: string = 'Kaikki',
+    sort: 'price_asc' | 'savings_desc' = sortBy,
+    isFreeDel: boolean = freeDelivery
+  ) => {
     setLoading(true)
     setSearchQuery(query)
-    setSelectedCity(city)
+    setSelectedCategory(category)
+
+    // Map city name to ID if possible, otherwise use name (lowercase)
+    const targetCityId = cities.find(c => c.name.toLowerCase() === city.toLowerCase())?.id || city.toLowerCase()
 
     const params: SearchParams = {
-      query,
-      cityId: city,
-      sortBy: 'price_asc',
+      query: category !== 'Kaikki' ? `${query} ${category}`.trim() : query,
+      cityId: targetCityId,
+      sortBy: sort,
+      freeDelivery: isFreeDel
+    }
+
+    if (category === 'Vegaani') {
+      params.dietFlags = ['vegan']
     }
 
     try {
@@ -104,20 +204,85 @@ export default function HomePage() {
       if (results && results.length > 0) {
         setOffers(results)
       } else {
-        setOffers(generateDemoOffers())
+        // Filter demo offers by selected city AND category
+        let demoOffers = generateDemoOffers().filter(offer =>
+          offer.meal.restaurant.city.name.toLowerCase() === city.toLowerCase()
+        )
+
+        // Filter by free delivery
+        if (isFreeDel) {
+          demoOffers = demoOffers.filter(offer => offer.delivery_fee_cents === 0)
+        }
+
+        if (category && category !== 'Kaikki') {
+          const catLower = category.toLowerCase()
+          demoOffers = demoOffers.filter(offer => {
+            // Basic category mapping for demo data
+            if (catLower === 'vegaani') return offer.meal.diet_flags?.includes('vegan')
+            if (catLower === 'kiinalainen') return false // No chinese in demo yet
+            if (catLower === 'leipomo') return false // No bakery in demo yet
+
+            // Default name match (Burger -> Burger, Pizza -> Pizza, Sushi -> Sushi)
+            return offer.meal.name.toLowerCase().includes(catLower.slice(0, -1)) || // Removes last char for plurals mostly
+              offer.meal.name.toLowerCase().includes(catLower)
+          })
+        }
+
+        // Filter by search query if present
+        if (query) {
+          const qLower = query.toLowerCase()
+          demoOffers = demoOffers.filter(offer =>
+            offer.meal.name.toLowerCase().includes(qLower) ||
+            offer.meal.restaurant.name.toLowerCase().includes(qLower)
+          )
+        }
+
+        // Sort demo offers
+        if (sort === 'price_asc') {
+          demoOffers.sort((a, b) => a.price_cents - b.price_cents)
+        } else if (sort === 'savings_desc') {
+          demoOffers.sort((a, b) => {
+            const aSavings = a.old_price_cents ? (a.old_price_cents - a.price_cents) / a.old_price_cents : 0
+            const bSavings = b.old_price_cents ? (b.old_price_cents - b.price_cents) / b.old_price_cents : 0
+            return bSavings - aSavings
+          })
+        }
+
+        setOffers(demoOffers)
       }
     } catch (error) {
       console.error('Search error:', error)
-      setOffers(generateDemoOffers())
+      let demoOffers = generateDemoOffers().filter(offer =>
+        offer.meal.restaurant.city.name.toLowerCase() === city.toLowerCase()
+      )
+
+      if (category && category !== 'Kaikki') {
+        const catLower = category.toLowerCase()
+        demoOffers = demoOffers.filter(offer => {
+          if (catLower === 'vegaani') return offer.meal.diet_flags?.includes('vegan')
+          return offer.meal.name.toLowerCase().includes(catLower.slice(0, 4)) // "Burg", "Pizz", "Sush"
+        })
+      }
+
+      // Filter by search query if present
+      if (query) {
+        const qLower = query.toLowerCase()
+        demoOffers = demoOffers.filter(offer =>
+          offer.meal.name.toLowerCase().includes(qLower) ||
+          offer.meal.restaurant.name.toLowerCase().includes(qLower)
+        )
+      }
+
+      setOffers(demoOffers)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [cities, city, sortBy, freeDelivery])
 
-  // Load initial offers
+  // Load initial offers and refresh when city changes
   useEffect(() => {
-    handleSearch(searchQuery, selectedCity)
-  }, [handleSearch, searchQuery, selectedCity])
+    handleSearch(searchQuery, city, selectedCategory, sortBy, freeDelivery)
+  }, [handleSearch, searchQuery, city, selectedCategory, sortBy, freeDelivery])
 
   return (
     <div className="min-h-screen bg-[#fffcf8] pb-20">
@@ -134,9 +299,13 @@ export default function HomePage() {
 
             <div className="w-full lg:max-w-xl">
               <SearchBar
-                onSearch={handleSearch}
+                onSearch={(q, c) => handleSearch(q, c, selectedCategory, sortBy, freeDelivery)}
                 initialQuery={searchQuery}
-                initialCity={selectedCity}
+                initialCity={city}
+                currentSort={sortBy}
+                isFreeDelivery={freeDelivery}
+                onSortChange={setSortBy}
+                onToggleFreeDelivery={() => setFreeDelivery(prev => !prev)}
               />
             </div>
           </div>
@@ -147,7 +316,12 @@ export default function HomePage() {
               {['Kaikki', 'Burgerit', 'Sushi', 'Pizza', 'Salaatit', 'Kiinalainen', 'Vegaani', 'Leipomo'].map((tag, i) => (
                 <button
                   key={tag}
-                  className={`flex-shrink-0 px-6 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-wider transition-all border ${i === 0
+                  onClick={() => {
+                    // If clicking same category, toggle off (back to Kaikki)? Or just select it.
+                    // Usually distinct selection.
+                    handleSearch('', city, tag, sortBy, freeDelivery)
+                  }}
+                  className={`flex-shrink-0 px-6 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-wider transition-all border ${selectedCategory === tag
                     ? 'bg-[#3d1d11] text-white border-[#3d1d11] shadow-lg scale-105'
                     : 'bg-white text-[#3d1d11] border-[#f1ebd8] hover:border-[#d35400]/30 hover:bg-[#fdf2e2]/50'
                     }`}
@@ -167,68 +341,70 @@ export default function HomePage() {
           <div className="flex-1 space-y-12">
 
             {/* Featured Section - More wide for Web */}
-            <section className="relative">
-              <div
-                className="featured-card h-[400px] md:h-[500px] group cursor-pointer shadow-2xl"
-                onMouseEnter={() => setHoveredOffer({
-                  id: 'featured-special',
-                  meal: {
-                    name: 'Gourmet Burger Kitchen Special',
-                    description: 'Ravintolan suosituimmat säästöateriat vain tänään puoleen hintaan. Koe kaupungin parhaat burgerit uskomattomin hinnoin.',
-                    restaurant: { name: 'Gourmet Burger Kitchen', rating: 4.9, city: { name: 'Helsinki' } },
-                    diet_flags: [],
-                    image_path: 'burger'
-                  },
-                  source: { name: 'Päivän Erikoistarjous' },
-                  price_cents: 890,
-                  old_price_cents: 1780,
-                  delivery_fee_cents: 0,
-                  eta_minutes: 20
-                } as any)}
-                onMouseLeave={() => setHoveredOffer(null)}
-              >
-                <Image
-                  src="/images/burger.jpg"
-                  alt="Daily Special"
-                  fill
-                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#3d1d11] via-[#3d1d11]/40 to-transparent" />
+            {!searchQuery && (
+              <section className="relative">
+                <div
+                  className="featured-card h-[400px] md:h-[500px] group cursor-pointer shadow-2xl"
+                  onMouseEnter={() => setHoveredOffer({
+                    id: 'featured-special',
+                    meal: {
+                      name: 'Gourmet Burger Kitchen Special',
+                      description: 'Ravintolan suosituimmat säästöateriat vain tänään puoleen hintaan. Koe kaupungin parhaat burgerit uskomattomin hinnoin.',
+                      restaurant: { name: 'Gourmet Burger Kitchen', rating: 4.9, city: { name: 'Helsinki' } },
+                      diet_flags: [],
+                      image_path: 'burger'
+                    },
+                    source: { name: 'Päivän Erikoistarjous' },
+                    price_cents: 890,
+                    old_price_cents: 1780,
+                    delivery_fee_cents: 0,
+                    eta_minutes: 20
+                  } as any)}
+                  onMouseLeave={() => setHoveredOffer(null)}
+                >
+                  <Image
+                    src="/images/burger.jpg"
+                    alt="Daily Special"
+                    fill
+                    className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[#3d1d11] via-[#3d1d11]/40 to-transparent" />
 
-                <div className="absolute top-10 left-10 anim-float">
-                  <div className="bg-[#f3d179] text-[#3d1d11] text-lg md:text-xl font-black px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-white/20">
-                    <div className="bg-[#3d1d11] text-white p-1 rounded-lg">
-                      <TrendingDown className="w-5 h-5" />
-                    </div>
-                    SÄÄSTÄ -50%
-                  </div>
-                </div>
-
-                <div className="absolute bottom-12 left-12 right-12 text-white">
-                  <div className="flex flex-wrap items-center gap-4 mb-6">
-                    <span className="bg-[#d35400] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg border border-white/10">PÄIVÄN ERIKOINEN</span>
-                    <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-white/10">
-                      <Clock className="w-4 h-4 text-[#f3d179]" />
-                      15–25 min
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-white/10">
-                      <Star className="w-4 h-4 text-[#f3d179] fill-[#f3d179]" />
-                      4.9 (500+)
+                  <div className="absolute top-10 left-10 anim-float">
+                    <div className="bg-[#f3d179] text-[#3d1d11] text-lg md:text-xl font-black px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-white/20">
+                      <div className="bg-[#3d1d11] text-white p-1 rounded-lg">
+                        <TrendingDown className="w-5 h-5" />
+                      </div>
+                      SÄÄSTÄ -50%
                     </div>
                   </div>
-                  <h2 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter leading-none">Gourmet Burger <br /><span className="text-[#f3d179]">Kitchen</span></h2>
-                  <p className="text-[#fdf2e2]/70 font-medium max-w-xl text-lg leading-relaxed hidden md:block border-l-4 border-[#d35400] pl-6">
-                    Ravintolan suosituimmat säästöateriat vain tänään puoleen hintaan. Koe kaupungin parhaat burgerit uskomattomin hinnoin.
-                  </p>
-                  <Link href="/search">
-                    <button className="mt-8 bg-white text-[#3d1d11] px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-[#f3d179] hover:scale-105 active:scale-95 transition-all shadow-xl">
-                      Tilaa Heti
-                    </button>
-                  </Link>
+
+                  <div className="absolute bottom-12 left-12 right-12 text-white">
+                    <div className="flex flex-wrap items-center gap-4 mb-6">
+                      <span className="bg-[#d35400] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg border border-white/10">PÄIVÄN ERIKOINEN</span>
+                      <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-white/10">
+                        <Clock className="w-4 h-4 text-[#f3d179]" />
+                        15–25 min
+                      </div>
+                      <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-white/10">
+                        <Star className="w-4 h-4 text-[#f3d179] fill-[#f3d179]" />
+                        4.9 (500+)
+                      </div>
+                    </div>
+                    <h2 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter leading-none">Gourmet Burger <br /><span className="text-[#f3d179]">Kitchen</span></h2>
+                    <p className="text-[#fdf2e2]/70 font-medium max-w-xl text-lg leading-relaxed hidden md:block border-l-4 border-[#d35400] pl-6">
+                      Ravintolan suosituimmat säästöateriat vain tänään puoleen hintaan. Koe kaupungin parhaat burgerit uskomattomin hinnoin.
+                    </p>
+                    <Link href="/search">
+                      <button className="mt-8 bg-white text-[#3d1d11] px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-[#f3d179] hover:scale-105 active:scale-95 transition-all shadow-xl">
+                        Tilaa Heti
+                      </button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            )}
 
             {/* Daily Best Deals - Responsive Grid */}
             <section>

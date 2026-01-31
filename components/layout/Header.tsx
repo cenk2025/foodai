@@ -5,11 +5,13 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { MapPin, User, LogOut, Settings, ChevronDown, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/context'
+import { useLocation } from '@/lib/context/LocationContext'
 import { createClient } from '@/lib/supabase/client'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 export default function Header() {
     const { t, locale, setLocale } = useLanguage()
+    const { location, setLocation, setCity } = useLocation()
     const router = useRouter()
     const [user, setUser] = useState<SupabaseUser | null>(null)
     const [loading, setLoading] = useState(true)
@@ -40,7 +42,6 @@ export default function Header() {
         return user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
     }
 
-    const [location, setLocation] = useState('Helsinki, Kamppi')
     const [isDetecting, setIsDetecting] = useState(false)
 
     const detectLocation = () => {
@@ -60,6 +61,7 @@ export default function Header() {
                     const city = data.address.city || data.address.town || data.address.village || 'Tuntematon'
                     const suburb = data.address.suburb || data.address.neighbourhood || ''
                     setLocation(`${city}${suburb ? ', ' + suburb : ''}`)
+                    setCity(city)
                 } catch (error) {
                     console.error('Location error:', error)
                 } finally {

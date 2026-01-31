@@ -11,7 +11,8 @@ export interface SearchParams {
     minRating?: number
     deliveryOnly?: boolean
     pickupOnly?: boolean
-    sortBy?: 'price_asc' | 'price_desc' | 'rating' | 'eta'
+    freeDelivery?: boolean
+    sortBy?: 'price_asc' | 'price_desc' | 'rating' | 'eta' | 'savings_desc'
 }
 
 export async function searchOffers(params: SearchParams): Promise<OfferWithDetails[]> {
@@ -35,7 +36,12 @@ export async function searchOffers(params: SearchParams): Promise<OfferWithDetai
 
     // City filter
     if (params.cityId) {
-        query = query.eq('city_id', params.cityId)
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.cityId)
+        if (isUUID) {
+            query = query.eq('city_id', params.cityId)
+        } else {
+            return []
+        }
     }
 
     // Price filter
@@ -49,6 +55,11 @@ export async function searchOffers(params: SearchParams): Promise<OfferWithDetai
     }
     if (params.pickupOnly) {
         query = query.eq('is_pickup', true)
+    }
+
+    // Free Delivery filter
+    if (params.freeDelivery) {
+        query = query.eq('delivery_fee_cents', 0)
     }
 
     const { data: offers, error } = await query
@@ -99,6 +110,13 @@ export async function searchOffers(params: SearchParams): Promise<OfferWithDetai
                 const aEta = a.eta_minutes || 999
                 const bEta = b.eta_minutes || 999
                 return aEta - bEta
+            })
+            break
+        case 'savings_desc':
+            filteredOffers.sort((a, b) => {
+                const aSavings = a.old_price_cents ? (a.old_price_cents - a.price_cents) / a.old_price_cents : 0
+                const bSavings = b.old_price_cents ? (b.old_price_cents - b.price_cents) / b.old_price_cents : 0
+                return bSavings - aSavings
             })
             break
         case 'price_asc':
