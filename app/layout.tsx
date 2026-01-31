@@ -12,16 +12,67 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "FoodAi - Find the Cheapest Meals in Finland",
-  description: "Compare food prices from multiple delivery platforms and restaurants across Finland. Find the best deals on pizza, kebab, sushi, and more in Helsinki, Espoo, Tampere, and other cities.",
-  keywords: ["food delivery", "price comparison", "Finland", "Helsinki", "cheap food", "restaurant deals"],
-  authors: [{ name: "FoodAi" }],
+  title: {
+    default: "FoodAi - Suomen Parhaat Ruokatarjoukset",
+    template: "%s | FoodAi"
+  },
+  description: "Vertaile ruokien hintoja Wolt, Foodora ja UberEats alustoilla. Löydä halvin pizza, burgeri tai sushi Helsingissä, Espoossa ja Vantaalla. Säästä jopa 50% jokaisesta tilauksesta.",
+  keywords: ["ruokatarjoukset", "hintavertailu", "Wolt alennuskoodi", "Foodora tarjous", "Helsinki ravintolat", "ilmainen kuljetus", "halpa ruoka"],
+  authors: [{ name: "FoodAi Team" }],
+  metadataBase: new URL('https://foodai.fi'),
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
-    title: "FoodAi - Find the Cheapest Meals in Finland",
-    description: "Compare food prices and save money on every order",
+    title: "FoodAi - Suomen Parhaat Ruokatarjoukset | Säästä Ruoassa",
+    description: "Tekoäly etsii puolestasi kaupungin parhaat ravintolatarjoukset ja alennukset. Vertaile hinnat ja tilaa halvemmalla.",
     type: "website",
+    locale: 'fi_FI',
+    siteName: 'FoodAi',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "name": "FoodAi",
+      "url": "https://foodai.fi",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://foodai.fi/search?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "name": "FoodAi Suomi",
+      "url": "https://foodai.fi",
+      "logo": "https://foodai.fi/logo.png",
+      "description": "Suomen johtava ruoan hintavertailupalvelu, joka käyttää tekoälyä parhaiden tarjousten löytämiseen.",
+      "sameAs": [
+        "https://facebook.com/foodai",
+        "https://twitter.com/foodai",
+        "https://instagram.com/foodai"
+      ]
+    }
+  ]
+}
 
 export default function RootLayout({
   children,
@@ -31,6 +82,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${outfit.variable} font-outfit antialiased bg-[#fffcf8]`} suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <LanguageProvider>
           <LocationProvider>
             <Header />
