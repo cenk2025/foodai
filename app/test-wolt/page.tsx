@@ -20,7 +20,7 @@ export default function TestWoltPage() {
         try {
             const response = await getWoltLiveOffers()
 
-            if (response.success) {
+            if (response.success && response.data) {
                 addLog(`Success! Received ${response.data.length} items.`)
                 setResult(response.data)
             } else {

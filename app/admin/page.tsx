@@ -15,6 +15,7 @@ import {
     Pie,
     Cell
 } from 'recharts'
+import { useRouter } from 'next/navigation'
 import {
     DollarSign,
     TrendingUp,
@@ -22,7 +23,9 @@ import {
     Users,
     ArrowUpRight,
     ArrowDownRight,
-    Filter
+    Filter,
+    Lock,
+    LogOut
 } from 'lucide-react'
 
 // Mock Data
@@ -52,9 +55,53 @@ const RECENT_CLICKS = [
 
 export default function AdminDashboard() {
     const [timeRange, setTimeRange] = useState('7d')
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
+    const [logoutLoading, setLogoutLoading] = useState(false)
+    const router = useRouter()
+
+    const handleLogout = async () => {
+        setLogoutLoading(true)
+        await fetch('/api/admin/logout', { method: 'POST' })
+        router.push('/admin/login')
+        router.refresh()
+    }
 
     return (
-        <div className="min-h-screen bg-[#fffcf8] p-6 lg:p-10">
+        <div className="min-h-screen bg-[#fffcf8] p-6 lg:p-10 relative">
+            {/* Password Change Modal - Simplified for Demo */}
+            {isPasswordModalOpen && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div className="bg-white p-8 rounded-[2rem] max-w-md w-full shadow-2xl border border-[#f1ebd8]">
+                        <h2 className="text-xl font-black text-[#3d1d11] mb-2">Vaihda Salasana</h2>
+                        <p className="text-sm text-[#a08a7e] mb-6">Tämä on demo-ympäristö. Oikeassa tuotantoversiossa tämä päivittäisi tietokannan.</p>
+
+                        <div className="space-y-4">
+                            <input type="password" placeholder="Nykyinen salasana" className="w-full px-4 py-3 rounded-xl bg-[#fffcf8] border border-[#f1ebd8]" />
+                            <input type="password" placeholder="Uusi salasana" className="w-full px-4 py-3 rounded-xl bg-[#fffcf8] border border-[#f1ebd8]" />
+                            <input type="password" placeholder="Vahvista uusi salasana" className="w-full px-4 py-3 rounded-xl bg-[#fffcf8] border border-[#f1ebd8]" />
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-8">
+                            <button
+                                onClick={() => setIsPasswordModalOpen(false)}
+                                className="px-6 py-3 rounded-xl font-bold text-[#a08a7e] hover:bg-[#fffcf8] transition-colors"
+                            >
+                                Peruuta
+                            </button>
+                            <button
+                                onClick={() => {
+                                    alert('Salasana vaihdettu (Demo)!')
+                                    setIsPasswordModalOpen(false)
+                                }}
+                                className="px-6 py-3 rounded-xl font-bold bg-[#3d1d11] text-white hover:bg-[#d35400] transition-colors shadow-lg"
+                            >
+                                Tallenna
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="max-w-7xl mx-auto space-y-8">
 
                 {/* Header */}
@@ -63,25 +110,42 @@ export default function AdminDashboard() {
                         <h1 className="text-3xl font-black text-[#3d1d11]">Ylläpitäjän Dashboard</h1>
                         <p className="text-[#a08a7e]">Tervetuloa takaisin. Tässä on katsaus komissioihisi.</p>
                     </div>
-                    <div className="flex items-center gap-3">
+
+                    <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setIsPasswordModalOpen(true)}
+                                className="px-4 py-2 rounded-xl text-xs font-bold bg-white border border-[#f1ebd8] text-[#3d1d11] hover:bg-[#fffcf8] transition-colors flex items-center gap-2"
+                            >
+                                <Lock className="w-3 h-3" />
+                                Vaihda Salasana
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                disabled={logoutLoading}
+                                className="px-4 py-2 rounded-xl text-xs font-bold bg-[#3d1d11] text-white hover:bg-[#d35400] transition-colors flex items-center gap-2 shadow-lg"
+                            >
+                                <LogOut className="w-3 h-3" />
+                                {logoutLoading ? 'Kirjaudutaan ulos...' : 'Kirjaudu Ulos'}
+                            </button>
+                        </div>
+
+                        {/* Date Filter */}
                         <div className="bg-white p-1 rounded-xl shadow-sm border border-[#f1ebd8] flex">
                             {['24h', '7d', '30d'].map((range) => (
                                 <button
                                     key={range}
                                     onClick={() => setTimeRange(range)}
                                     className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${timeRange === range
-                                            ? 'bg-[#3d1d11] text-white shadow-md'
-                                            : 'text-[#a08a7e] hover:bg-[#fdf2e2] hover:text-[#3d1d11]'
+                                        ? 'bg-[#3d1d11] text-white shadow-md'
+                                        : 'text-[#a08a7e] hover:bg-[#fdf2e2] hover:text-[#3d1d11]'
                                         }`}
                                 >
                                     {range}
                                 </button>
                             ))}
                         </div>
-                        <button className="bg-[#3d1d11] text-white px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-[#d35400] transition-colors shadow-lg">
-                            <Filter className="w-4 h-4" />
-                            Suodata
-                        </button>
                     </div>
                 </div>
 
@@ -209,7 +273,7 @@ export default function AdminDashboard() {
                                         </td>
                                         <td className="px-8 py-4">
                                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide inline-block
-                                        ${item.platform === 'Wolt' ? 'bg-[#e0f7fa] text-[#00acc1]' :
+                                                ${item.platform === 'Wolt' ? 'bg-[#e0f7fa] text-[#00acc1]' :
                                                     item.platform === 'Foodora' ? 'bg-[#fce4ec] text-[#ec407a]' :
                                                         'bg-[#e8f5e9] text-[#43a047]'}`}>
                                                 {item.platform}
