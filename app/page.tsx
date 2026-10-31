@@ -282,6 +282,8 @@ export default function HomePage() {
 
   // Load initial offers and refresh when city changes
   useEffect(() => {
+    // Fetching on filter change: handleSearch sets loading/results state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     handleSearch(searchQuery, city, selectedCategory, sortBy, freeDelivery)
   }, [handleSearch, searchQuery, city, selectedCategory, sortBy, freeDelivery])
 
@@ -360,7 +362,7 @@ export default function HomePage() {
                     old_price_cents: 1780,
                     delivery_fee_cents: 0,
                     eta_minutes: 20
-                  } as any)}
+                  } as unknown as OfferWithDetails)}
                   onMouseLeave={() => setHoveredOffer(null)}
                 >
                   <Image

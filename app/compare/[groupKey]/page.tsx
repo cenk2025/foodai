@@ -28,7 +28,7 @@ export default async function ComparePage({ params }: PageProps) {
                     <div className="mt-12 text-center">
                         <h1 className="text-2xl font-bold mb-4">No Offers Found</h1>
                         <p className="text-muted-foreground">
-                            We couldn't find any offers to compare.
+                            We couldn&apos;t find any offers to compare.
                         </p>
                     </div>
                 </div>
@@ -99,7 +99,7 @@ export default async function ComparePage({ params }: PageProps) {
                     <p className="text-muted-foreground">
                         We compare prices from multiple sources to help you find the best deals.
                         Prices may vary based on delivery fees, promotions, and availability.
-                        Click "Go to Deal" to be redirected to the source platform.
+                        Click &quot;Go to Deal&quot; to be redirected to the source platform.
                     </p>
                 </div>
             </div>

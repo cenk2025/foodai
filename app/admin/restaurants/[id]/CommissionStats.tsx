@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Coins, TrendingUp, ReceiptText, BarChart3 } from 'lucide-react';
 import type { Order } from '@/lib/direct-ordering/types';
 import { formatEUR } from '@/lib/direct-ordering/CartContext';
@@ -14,11 +14,13 @@ import { formatEUR } from '@/lib/direct-ordering/CartContext';
 const MS_PER_DAY = 86_400_000;
 
 export default function CommissionStats({ orders }: { orders: Order[] }) {
+    // Captured once per mount so render stays pure.
+    const [now] = useState(() => Date.now());
     const stats = useMemo(() => {
         const counted = orders.filter((o) => o.status !== 'cancelled');
         const grossCents = counted.reduce((acc, o) => acc + o.subtotalCents, 0);
         const commissionCents = counted.reduce((acc, o) => acc + o.commissionCents, 0);
-        const last7 = Date.now() - 7 * MS_PER_DAY;
+        const last7 = now - 7 * MS_PER_DAY;
         const last7Commission = counted
             .filter((o) => Date.parse(o.createdAt) >= last7)
             .reduce((acc, o) => acc + o.commissionCents, 0);
@@ -36,7 +38,7 @@ export default function CommissionStats({ orders }: { orders: Order[] }) {
             last7Commission,
             avgRateBps,
         };
-    }, [orders]);
+    }, [orders, now]);
 
     return (
         <div className="bg-white border border-[#f1ebd8] rounded-[2rem] p-6 app-shadow">

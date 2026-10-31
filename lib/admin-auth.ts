@@ -36,13 +36,18 @@ export async function verifyAdminCredentials(
     if (!adminEmail || !supabaseUrl || !anonKey) return null
     if (email.trim().toLowerCase() !== adminEmail || !password) return null
 
-    const res = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', apikey: anonKey },
-        body: JSON.stringify({ email: adminEmail, password }),
-        cache: 'no-store',
-    })
-    if (!res.ok) return null
-    const data = (await res.json()) as { user?: { id?: string } }
-    return data.user?.id ?? null
+    try {
+        const res = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', apikey: anonKey },
+            body: JSON.stringify({ email: adminEmail, password }),
+            cache: 'no-store',
+        })
+        if (!res.ok) return null
+        const data = (await res.json()) as { user?: { id?: string } }
+        return data.user?.id ?? null
+    } catch (error) {
+        console.error('Admin credential check failed:', error)
+        return null
+    }
 }

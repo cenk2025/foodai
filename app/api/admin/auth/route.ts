@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { verifyAdminCredentials } from '@/lib/admin-auth'
+import { RATE_LIMIT_MESSAGE, checkAdminRateLimit, recordAdminFailure } from '@/lib/admin-rate-limit'
 import {
     ADMIN_COOKIE,
     ADMIN_SESSION_TTL_SECONDS,
@@ -8,6 +9,11 @@ import {
 } from '@/lib/admin-session'
 
 export async function POST(request: Request) {
+    const limit = await checkAdminRateLimit('login')
+    if (!limit.allowed) {
+        return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 })
+    }
+
     const body = await request.json().catch(() => null)
     const email = typeof body?.email === 'string' ? body.email : ''
     const password = typeof body?.password === 'string' ? body.password : ''
@@ -29,5 +35,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true })
     }
 
+    await recordAdminFailure('login', limit.ipHash)
     return NextResponse.json({ error: 'Virheellinen sähköposti tai salasana' }, { status: 401 })
 }

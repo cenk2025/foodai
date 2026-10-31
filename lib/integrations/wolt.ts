@@ -66,9 +66,9 @@ export class WoltClient {
     /**
      * Muuntaa Woltin datan meidän sovelluksen muotoon (Offer)
      */
-    private normalizeData(woltData: any) {
+    private normalizeData(woltData: { sections: Array<{ title: string; price: number }> }) {
         // Logiikka datan mäppäämiseen meidän tietokantaan...
-        return woltData.sections.map((section: any) => {
+        return woltData.sections.map((section) => {
             // ...
             return {
                 source: 'Wolt',

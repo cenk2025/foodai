@@ -61,7 +61,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [hydrated, setHydrated] = useState(false);
 
-    // Hydrate from localStorage on mount.
+    // Hydrate from localStorage on mount. This must run after mount to match
+    // the server render, so setting state in this effect is intentional.
+    /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         if (typeof window === 'undefined') return;
         try {
@@ -72,6 +74,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
         setHydrated(true);
     }, []);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     // Persist on every change after hydration.
     useEffect(() => {

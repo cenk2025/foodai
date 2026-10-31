@@ -33,8 +33,8 @@ export default function LoginPage() {
 
             router.push('/')
             router.refresh()
-        } catch (err: any) {
-            setError(err.message || 'An error occurred during login')
+        } catch (err) {
+            setError((err instanceof Error && err.message) || 'An error occurred during login')
         } finally {
             setLoading(false)
         }
@@ -51,8 +51,8 @@ export default function LoginPage() {
             })
             if (error) throw error
             setForgotMessage('Salasanan palautuslinkki lähetetty sähköpostiisi!')
-        } catch (err: any) {
-            setForgotMessage('Virhe: ' + (err.message || 'Yritä uudelleen'))
+        } catch (err) {
+            setForgotMessage('Virhe: ' + ((err instanceof Error && err.message) || 'Yritä uudelleen'))
         } finally {
             setForgotLoading(false)
         }
@@ -72,8 +72,8 @@ export default function LoginPage() {
             })
 
             if (error) throw error
-        } catch (err: any) {
-            setError(err.message || 'An error occurred during OAuth login')
+        } catch (err) {
+            setError((err instanceof Error && err.message) || 'An error occurred during OAuth login')
             setLoading(false)
         }
     }

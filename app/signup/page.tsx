@@ -44,8 +44,8 @@ export default function SignupPage() {
                 router.push('/')
                 router.refresh()
             }, 2000)
-        } catch (err: any) {
-            setError(err.message || 'An error occurred during signup')
+        } catch (err) {
+            setError((err instanceof Error && err.message) || 'An error occurred during signup')
         } finally {
             setLoading(false)
         }
@@ -65,8 +65,8 @@ export default function SignupPage() {
             })
 
             if (error) throw error
-        } catch (err: any) {
-            setError(err.message || 'An error occurred during OAuth signup')
+        } catch (err) {
+            setError((err instanceof Error && err.message) || 'An error occurred during OAuth signup')
             setLoading(false)
         }
     }

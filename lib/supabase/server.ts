@@ -11,7 +11,7 @@ export async function createClient() {
         // Return a dummy client or handle gracefully if keys are missing
         // This allows the app to render in "demo mode" without crashing
         console.warn("Supabase keys missing. Running in demo mode.")
-        return null as any // The actions will handle this null check
+        return null // The actions will handle this null check
     }
 
     return createServerClient(

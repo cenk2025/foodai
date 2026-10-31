@@ -28,7 +28,8 @@ export default function AdminLogin() {
             router.push('/admin')
             router.refresh()
         } else {
-            setError('Virheellinen sähköposti tai salasana')
+            const data = await response.json().catch(() => null)
+            setError(data?.error || 'Virheellinen sähköposti tai salasana')
         }
     }
 
