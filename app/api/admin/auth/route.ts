@@ -1,19 +1,28 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-
-const ADMIN_EMAIL = 'cenk.yakinlar@hotmail.com'
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
+import { verifyAdminCredentials } from '@/lib/admin-auth'
+import {
+    ADMIN_COOKIE,
+    ADMIN_SESSION_TTL_SECONDS,
+    createAdminSessionToken,
+} from '@/lib/admin-session'
 
 export async function POST(request: Request) {
-    const body = await request.json()
-    const { email, password } = body
+    const body = await request.json().catch(() => null)
+    const email = typeof body?.email === 'string' ? body.email : ''
+    const password = typeof body?.password === 'string' ? body.password : ''
 
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    // The admin password lives in Supabase Auth (same account that the
+    // forgot-password and change-password flows act on).
+    const userId = await verifyAdminCredentials(email, password)
+
+    if (userId) {
         const cookieStore = await cookies()
-        cookieStore.set('admin_session', 'true', {
+        cookieStore.set(ADMIN_COOKIE, await createAdminSessionToken(userId), {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 24, // 24 hours
+            sameSite: 'lax',
+            maxAge: ADMIN_SESSION_TTL_SECONDS,
             path: '/',
         })
 

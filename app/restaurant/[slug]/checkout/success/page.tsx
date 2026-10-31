@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getRestaurantBySlug, getOrder } from '@/lib/direct-ordering/repository';
-import { formatEUR } from '@/lib/direct-ordering/CartContext';
+import { formatEUR } from '@/lib/direct-ordering/pricing';
 
 type Params = {
     params: Promise<{ slug: string }>;

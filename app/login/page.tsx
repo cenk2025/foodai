@@ -47,7 +47,7 @@ export default function LoginPage() {
         try {
             const supabase = createClient()
             const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-                redirectTo: 'https://foodai.fi/reset-password',
+                redirectTo: `${window.location.origin}/reset-password`,
             })
             if (error) throw error
             setForgotMessage('Salasanan palautuslinkki lähetetty sähköpostiisi!')

@@ -15,10 +15,16 @@ export default function AuthHashHandler() {
     useEffect(() => {
         if (typeof window === 'undefined') return
 
+        if (window.location.pathname === '/reset-password') return
+
         const hash = window.location.hash
+        const search = new URLSearchParams(window.location.search)
         if (hash && hash.includes('type=recovery')) {
             // Preserve the full hash so /reset-password can read the access_token
             router.replace('/reset-password' + hash)
+        } else if (search.get('type') === 'recovery' && search.get('token_hash')) {
+            // token_hash style recovery link that landed on the Site URL
+            router.replace('/reset-password' + window.location.search)
         }
     }, [router])
 

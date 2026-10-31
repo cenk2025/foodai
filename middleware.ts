@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { ADMIN_COOKIE, verifyAdminSessionToken } from '@/lib/admin-session'
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
     // Only protect /admin routes
     if (request.nextUrl.pathname.startsWith('/admin')) {
 
@@ -10,12 +11,14 @@ export function middleware(request: NextRequest) {
             return NextResponse.next()
         }
 
-        // Check for admin session cookie
-        const adminSession = request.cookies.get('admin_session')
+        // Require a validly signed, unexpired admin session cookie
+        const session = await verifyAdminSessionToken(request.cookies.get(ADMIN_COOKIE)?.value)
 
-        if (!adminSession) {
+        if (!session) {
             // Redirect to login if no session
-            return NextResponse.redirect(new URL('/admin/login', request.url))
+            const response = NextResponse.redirect(new URL('/admin/login', request.url))
+            response.cookies.delete(ADMIN_COOKIE)
+            return response
         }
     }
 

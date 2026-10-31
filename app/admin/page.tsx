@@ -120,7 +120,7 @@ export default function AdminDashboard() {
                             />
                             <input
                                 type="password"
-                                placeholder="Uusi salasana (min. 8 merkkiä)"
+                                placeholder="Uusi salasana (min. 12 merkkiä)"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 className="w-full px-4 py-3 rounded-xl bg-[#fffcf8] border border-[#f1ebd8] outline-none focus:border-[#3d1d11] transition-colors"
