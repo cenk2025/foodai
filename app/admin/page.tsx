@@ -369,7 +369,16 @@ export default function AdminDashboard() {
     )
 }
 
-function StatCard({ title, value, trend, isPositive, icon, color }: any) {
+type StatCardProps = {
+    title: string
+    value: string
+    trend: string
+    isPositive: boolean
+    icon: React.ReactNode
+    color: string
+}
+
+function StatCard({ title, value, trend, isPositive, icon, color }: StatCardProps) {
     return (
         <div className="bg-white p-6 rounded-[2rem] card-shadow border border-[#f1ebd8] hover:scale-[1.02] transition-transform">
             <div className="flex items-start justify-between mb-4">

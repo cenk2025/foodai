@@ -21,25 +21,21 @@ export default function MenuItemDetailModal({ item, onClose }: Props) {
     const { addLine, openCart } = useCart();
 
     const [qty, setQty] = useState(1);
-    const [sizeId, setSizeId] = useState<string | undefined>(undefined);
-    const [selected, setSelected] = useState<SelOpt[]>([]);
+    const [sizeId, setSizeId] = useState<string | undefined>(() => item?.sizes?.[0]?.id);
+    const [selected, setSelected] = useState<SelOpt[]>(() => initialPicks(item));
 
-    // Reset state every time the modal opens with a fresh item.
-    useEffect(() => {
-        if (!item) return;
-        setQty(1);
-        const firstSize = item.sizes?.[0]?.id;
-        setSizeId(firstSize);
-        // For 'single' groups, pre-select the first option so the form starts in
-        // a valid state — matches Wolt UX where a base is always pre-checked.
-        const initialPicks: SelOpt[] = [];
-        for (const g of item.customizationGroups ?? []) {
-            if (g.type === 'single' && g.options[0]) {
-                initialPicks.push({ groupId: g.id, optionId: g.options[0].id });
-            }
+    // Reset state every time the modal opens with a fresh item. Done during
+    // render (React's "adjust state on prop change" pattern) instead of in an
+    // effect, so the modal never paints with the previous item's selections.
+    const [prevItem, setPrevItem] = useState(item);
+    if (item !== prevItem) {
+        setPrevItem(item);
+        if (item) {
+            setQty(1);
+            setSizeId(item.sizes?.[0]?.id);
+            setSelected(initialPicks(item));
         }
-        setSelected(initialPicks);
-    }, [item]);
+    }
 
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
@@ -60,17 +56,7 @@ export default function MenuItemDetailModal({ item, onClose }: Props) {
         [item, sizeId, selected],
     );
 
-    // Validation: every group's minSelect must be met, maxSelect respected.
-    const validation = useMemo(() => {
-        if (!item) return { ok: true, firstError: null as null | { groupId: string; need: number } };
-        for (const g of item.customizationGroups ?? []) {
-            const count = selected.filter((s) => s.groupId === g.id).length;
-            if (count < g.minSelect) {
-                return { ok: false, firstError: { groupId: g.id, need: g.minSelect - count } };
-            }
-        }
-        return { ok: true, firstError: null };
-    }, [item, selected]);
+    const validation = validateSelection(item, selected);
 
     if (!item) return null;
 
@@ -360,4 +346,31 @@ function Checkbox({ checked }: { checked: boolean }) {
 function helperFromGroup(group: CustomizationGroup, tpl: string): string | undefined {
     if (group.minSelect > 0) return tpl.replace('{n}', String(group.minSelect));
     return undefined;
+}
+
+// For 'single' groups, pre-select the first option so the form starts in
+// a valid state — matches Wolt UX where a base is always pre-checked.
+function initialPicks(item: MenuItem | null): SelOpt[] {
+    const picks: SelOpt[] = [];
+    for (const g of item?.customizationGroups ?? []) {
+        if (g.type === 'single' && g.options[0]) {
+            picks.push({ groupId: g.id, optionId: g.options[0].id });
+        }
+    }
+    return picks;
+}
+
+// Validation: every group's minSelect must be met, maxSelect respected.
+function validateSelection(
+    item: MenuItem | null,
+    selected: SelOpt[],
+): { ok: boolean; firstError: null | { groupId: string; need: number } } {
+    if (!item) return { ok: true, firstError: null };
+    for (const g of item.customizationGroups ?? []) {
+        const count = selected.filter((s) => s.groupId === g.id).length;
+        if (count < g.minSelect) {
+            return { ok: false, firstError: { groupId: g.id, need: g.minSelect - count } };
+        }
+    }
+    return { ok: true, firstError: null };
 }

@@ -32,11 +32,12 @@ export async function getLocationFromCoords(lat: number, lon: number) {
             city: city
         }
 
-    } catch (error: any) {
-        console.error('Server Geocoding Error:', error.message)
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
+        console.error('Server Geocoding Error:', message)
         return {
             success: false,
-            error: error.message
+            error: message
         }
     }
 }

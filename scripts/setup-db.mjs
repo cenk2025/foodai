@@ -1,9 +1,18 @@
-const { Client } = require('pg');
-const fs = require('fs');
-const path = require('path');
+import pg from 'pg';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Connection string constructed from user provided info
-const connectionString = 'postgres://postgres:axqFi7bCO9l90g3s@db.hozeubjyefjwmozxazsb.supabase.co:5432/postgres';
+const { Client } = pg;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Usage: DATABASE_URL="postgres://postgres:<password>@db.<project>.supabase.co:5432/postgres" node scripts/setup-db.mjs
+// Never commit the connection string — it contains the database password.
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+    console.error('DATABASE_URL is not set.');
+    process.exit(1);
+}
 
 async function setupDatabase() {
     console.log('🔌 Connecting to Supabase database...');

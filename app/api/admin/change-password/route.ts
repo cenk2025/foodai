@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getAdminUserId } from '@/lib/admin-auth'
+import { RATE_LIMIT_MESSAGE, checkAdminRateLimit, recordAdminFailure } from '@/lib/admin-rate-limit'
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL!
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -10,6 +11,11 @@ export async function POST(request: Request) {
     const adminUserId = await getAdminUserId()
     if (!adminUserId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const limit = await checkAdminRateLimit('change-password')
+    if (!limit.allowed) {
+        return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 })
     }
 
     const body = await request.json().catch(() => ({}))
@@ -37,6 +43,7 @@ export async function POST(request: Request) {
     })
 
     if (!verifyRes.ok) {
+        await recordAdminFailure('change-password', limit.ipHash)
         return NextResponse.json({ error: 'Nykyinen salasana on väärä' }, { status: 400 })
     }
 

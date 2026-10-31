@@ -25,7 +25,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
     const [isOpen, setIsOpen] = useState(false)
 
     const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        onFilterChange({ ...filters, sortBy: e.target.value as any })
+        onFilterChange({ ...filters, sortBy: e.target.value as FiltersProps['filters']['sortBy'] })
     }
 
     const toggleDietFlag = (flag: string) => {
