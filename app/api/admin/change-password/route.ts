@@ -1,20 +1,18 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { getAdminUserId } from '@/lib/admin-auth'
 
-const ADMIN_EMAIL = 'cenk.yakinlar@hotmail.com'
-const ADMIN_USER_ID = '805a6568-e5ef-41b9-8c86-2df6d79db571'
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL!
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 export async function POST(request: Request) {
     // Check admin session
-    const cookieStore = await cookies()
-    const adminSession = cookieStore.get('admin_session')
-    if (!adminSession) {
+    const adminUserId = await getAdminUserId()
+    if (!adminUserId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json()
+    const body = await request.json().catch(() => ({}))
     const { currentPassword, newPassword, confirmPassword } = body
 
     // Validation
@@ -24,8 +22,8 @@ export async function POST(request: Request) {
     if (newPassword !== confirmPassword) {
         return NextResponse.json({ error: 'Uudet salasanat eivät täsmää' }, { status: 400 })
     }
-    if (newPassword.length < 8) {
-        return NextResponse.json({ error: 'Salasanan on oltava vähintään 8 merkkiä pitkä' }, { status: 400 })
+    if (typeof newPassword !== 'string' || newPassword.length < 12) {
+        return NextResponse.json({ error: 'Salasanan on oltava vähintään 12 merkkiä pitkä' }, { status: 400 })
     }
 
     // Verify current password by trying to sign in with Supabase
@@ -43,7 +41,7 @@ export async function POST(request: Request) {
     }
 
     // Update password via Admin API
-    const updateRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${ADMIN_USER_ID}`, {
+    const updateRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${adminUserId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

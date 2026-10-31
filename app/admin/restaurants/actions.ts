@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { requireAdmin } from '@/lib/admin-auth';
 import {
     upsertMenuItem,
     deleteMenuItem,
@@ -105,11 +106,11 @@ function parseCustomizationGroupsJson(raw: string | undefined): CustomizationGro
     }
 }
 
-// Admin actions guarded by the existing /admin middleware cookie. Same trust
-// boundary as the platform-admin pages — the middleware redirects unauth'd
-// requests to /admin/login before this code ever runs.
+// Every admin action calls requireAdmin() first. Server actions are public
+// POST endpoints, so the /admin middleware alone is not a sufficient gate.
 
 export async function adminUpsertMenuItem(formData: FormData) {
+    await requireAdmin();
     const restaurantId = String(formData.get('restaurantId') ?? '');
     const id = formData.get('id') ? String(formData.get('id')) : undefined;
     const name = String(formData.get('name') ?? '').trim();
@@ -153,6 +154,7 @@ export async function adminUpsertMenuItem(formData: FormData) {
 }
 
 export async function adminDeleteMenuItem(formData: FormData) {
+    await requireAdmin();
     const restaurantId = String(formData.get('restaurantId') ?? '');
     const id = String(formData.get('id') ?? '');
     if (!id || !restaurantId) return { ok: false, error: 'invalid_input' as const };
@@ -181,6 +183,7 @@ function normalizeSlug(input: string): string {
 }
 
 export async function adminUpsertRestaurant(formData: FormData): Promise<AdminRestaurantFormResult> {
+    await requireAdmin();
     const id = formData.get('id') ? String(formData.get('id')) : undefined;
     const name = String(formData.get('name') ?? '').trim();
     const rawSlug = String(formData.get('slug') ?? '').trim();
@@ -240,6 +243,7 @@ export type AdminDeliveryZoneResult =
     | { ok: false; error: 'invalid_input' | 'restaurant_not_found' | 'write_failed'; message?: string };
 
 export async function adminUpsertDeliveryZone(formData: FormData): Promise<AdminDeliveryZoneResult> {
+    await requireAdmin();
     const restaurantId = String(formData.get('restaurantId') ?? '');
     const centerLat = Number(formData.get('centerLat') ?? NaN);
     const centerLon = Number(formData.get('centerLon') ?? NaN);

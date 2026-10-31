@@ -12,12 +12,12 @@ import {
 import { checkDeliveryZone } from '@/lib/direct-ordering/delivery-zone';
 import { shopifyPayments } from '@/lib/integrations/payments/shopify';
 import { uberEatsDelivery } from '@/lib/integrations/delivery/uber-eats-delivery';
-import { UBER_EATS_DELIVERY_FEE_CENTS } from '@/lib/direct-ordering/constants';
+import { MAX_LINE_QUANTITY, UBER_EATS_DELIVERY_FEE_CENTS } from '@/lib/direct-ordering/constants';
 import type {
     OrderItem,
     OrderOptionSnapshot,
 } from '@/lib/direct-ordering/types';
-import { computeUnitPrice } from '@/lib/direct-ordering/CartContext';
+import { computeUnitPrice } from '@/lib/direct-ordering/pricing';
 
 export type PlaceOrderInput = {
     slug: string;
@@ -53,7 +53,7 @@ export type PlaceOrderResult =
 
 export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResult> {
     const restaurant = await getRestaurantBySlug(input.slug);
-    if (!restaurant) return { ok: false, error: 'restaurant_not_found' };
+    if (!restaurant || !restaurant.isActive) return { ok: false, error: 'restaurant_not_found' };
 
     if (!input.cartLines || input.cartLines.length === 0) {
         return { ok: false, error: 'empty_cart' };
@@ -66,7 +66,20 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResu
     const orderItems: OrderItem[] = [];
     for (const line of input.cartLines) {
         const item = byId.get(line.menuItemId);
-        if (!item) return { ok: false, error: 'menu_mismatch' };
+        if (!item || !item.isAvailable) return { ok: false, error: 'menu_mismatch' };
+
+        // Quantity comes from the client: without this, negative or fractional
+        // quantities could produce zero/negative totals or skip the minimum.
+        if (
+            !Number.isInteger(line.quantity) ||
+            line.quantity < 1 ||
+            line.quantity > MAX_LINE_QUANTITY
+        ) {
+            return { ok: false, error: 'invalid_selection', message: 'invalid_quantity' };
+        }
+        if (!Array.isArray(line.selectedOptions)) {
+            return { ok: false, error: 'invalid_selection', message: 'invalid_options' };
+        }
 
         // Validate the cart line against the live menu — same rules the modal
         // enforces, but trustworthy because it runs server-side.

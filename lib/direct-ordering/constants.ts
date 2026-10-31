@@ -28,3 +28,6 @@ export function computeCommissionCents(
 ): number {
     return Math.round((subtotalCents * rateBps) / 10_000);
 }
+
+// Upper bound on the quantity of a single cart line accepted at checkout.
+export const MAX_LINE_QUANTITY = 50;

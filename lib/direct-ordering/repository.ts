@@ -22,8 +22,8 @@ function isSupabaseConfigured(): boolean {
 
 // Service-role client is used for the admin-gated write paths (menu CRUD,
 // order create/update). RLS would otherwise block these because our admin
-// auth is cookie-based, not a Supabase JWT. The cookie middleware at
-// /admin/* enforces the trust boundary — Supabase's RLS isn't the gate.
+// auth is a signed cookie, not a Supabase JWT. requireAdmin() in each admin
+// server action enforces the trust boundary — Supabase's RLS isn't the gate.
 function hasServiceRole(): boolean {
     return Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
