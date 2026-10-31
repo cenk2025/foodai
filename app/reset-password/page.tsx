@@ -14,27 +14,72 @@ function ResetPasswordForm() {
     const [success, setSuccess] = useState(false)
     const [sessionReady, setSessionReady] = useState(false)
 
-    useEffect(() => {
-        // Supabase recovery links use hash fragments (#access_token=...&type=recovery)
-        // We need to exchange the hash token for a session
-        const supabase = createClient()
+    const searchParams = useSearchParams()
+    const [linkError, setLinkError] = useState('')
 
-        const hash = window.location.hash
-        if (hash && hash.includes('type=recovery')) {
-            // Let the Supabase client detect the recovery token from the hash automatically
-            supabase.auth.onAuthStateChange((event, session) => {
-                if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && session)) {
-                    setSessionReady(true)
+    useEffect(() => {
+        // Recovery links can arrive in several shapes depending on the Supabase
+        // auth flow and email template, so establish the session for each:
+        //   ?token_hash=...&type=recovery  (recommended template, works cross-device)
+        //   ?code=...                      (PKCE; only works in the browser that asked)
+        //   #access_token=...&type=recovery (implicit flow)
+        //   #error=...&error_description=... (expired / already used link)
+        const supabase = createClient()
+        let cancelled = false
+
+        const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+            if (!cancelled && session && (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN')) {
+                setSessionReady(true)
+            }
+        })
+
+        async function establishSession() {
+            const hashParams = new URLSearchParams(window.location.hash.slice(1))
+            const tokenHash = searchParams.get('token_hash')
+            const code = searchParams.get('code')
+            const urlError =
+                searchParams.get('error_description') ?? hashParams.get('error_description')
+
+            if (urlError) throw new Error(urlError)
+
+            if (tokenHash) {
+                const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' })
+                if (error) throw error
+            } else if (code) {
+                // The browser client may already have exchanged the code on init.
+                const { data } = await supabase.auth.getSession()
+                if (!data.session) {
+                    const { error } = await supabase.auth.exchangeCodeForSession(code)
+                    if (error) {
+                        throw new Error(
+                            'Linkki täytyy avata samassa selaimessa, jossa palautusta pyydettiin. Pyydä uusi linkki.',
+                        )
+                    }
                 }
-            })
-        } else {
-            // Check if already in a session
-            supabase.auth.getSession().then(({ data: { session } }) => {
-                if (session) setSessionReady(true)
-                else router.push('/login')
-            })
+            } else if (hashParams.get('access_token') && hashParams.get('refresh_token')) {
+                const { error } = await supabase.auth.setSession({
+                    access_token: hashParams.get('access_token')!,
+                    refresh_token: hashParams.get('refresh_token')!,
+                })
+                if (error) throw error
+            }
+
+            const { data } = await supabase.auth.getSession()
+            if (!data.session) {
+                throw new Error('Palautuslinkki puuttuu tai on vanhentunut. Pyydä uusi linkki.')
+            }
+            if (!cancelled) setSessionReady(true)
         }
-    }, [router])
+
+        establishSession().catch((err: Error) => {
+            if (!cancelled) setLinkError(err.message || 'Palautuslinkki ei kelpaa. Pyydä uusi linkki.')
+        })
+
+        return () => {
+            cancelled = true
+            listener.subscription.unsubscribe()
+        }
+    }, [searchParams])
 
     const handleReset = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -60,8 +105,8 @@ function ResetPasswordForm() {
             if (error) throw error
             setSuccess(true)
             setTimeout(() => router.push('/'), 2500)
-        } catch (err: any) {
-            setError(err.message || 'Salasanan vaihto epäonnistui')
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Salasanan vaihto epäonnistui')
         } finally {
             setLoading(false)
         }
@@ -75,6 +120,27 @@ function ResetPasswordForm() {
                 </div>
                 <h2 className="text-2xl font-black text-[#3d1d11] mb-2">Salasana vaihdettu!</h2>
                 <p className="text-[#a08a7e]">Sinut ohjataan automaattisesti etusivulle...</p>
+            </div>
+        )
+    }
+
+    if (!sessionReady) {
+        return (
+            <div className="text-center space-y-4">
+                {linkError ? (
+                    <>
+                        <p className="text-sm text-[#e74c3c] font-bold">{linkError}</p>
+                        <button
+                            type="button"
+                            onClick={() => router.push('/admin/login')}
+                            className="text-xs font-black uppercase tracking-[0.2em] text-[#3d1d11] underline"
+                        >
+                            Pyydä uusi linkki
+                        </button>
+                    </>
+                ) : (
+                    <p className="text-[#a08a7e]">Tarkistetaan palautuslinkkiä...</p>
+                )}
             </div>
         )
     }
