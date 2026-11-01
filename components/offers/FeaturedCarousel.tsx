@@ -8,6 +8,7 @@ import { calculateDiscount, formatPrice, getSourceLabel, getTrackingUrl, isDemoS
 import { getOfferTotal } from '@/lib/offers/compare'
 import { useLanguage } from '@/lib/i18n/context'
 import MealImage from './MealImage'
+import OfferViewMarker from './OfferViewMarker'
 
 const ROTATE_MS = 6000
 
@@ -46,6 +47,7 @@ export default function FeaturedCarousel({ offers }: FeaturedCarouselProps) {
             onBlur={() => setPaused(false)}
         >
             <div className="featured-card h-[440px] md:h-[400px] group shadow-2xl">
+                <OfferViewMarker offerId={offer.id} isDemo={isDemo} />
                 <Link href={`/offer/${offer.id}`} className="absolute inset-0 z-0" aria-label={`${offer.meal.name}, ${offer.meal.restaurant.name}`}>
                     <MealImage
                         key={offer.id}

@@ -13,7 +13,8 @@ const TABLE = 'rate_limit_events'
 
 type Limit = { scope: string; max: number; windowMs: number }
 
-async function clientKey(): Promise<string> {
+// Keyed hash of the visitor's IP, so stored values can't be turned back into addresses.
+export async function clientKey(): Promise<string> {
     const h = await headers()
     const ip =
         h.get('x-real-ip') ??

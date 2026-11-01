@@ -173,17 +173,3 @@ export function parseUtmParams(url: string): {
         return {}
     }
 }
-
-/**
- * Hash IP address for privacy
- */
-export function hashIp(ip: string): string {
-    // Simple hash for demo - in production use crypto
-    let hash = 0
-    for (let i = 0; i < ip.length; i++) {
-        const char = ip.charCodeAt(i)
-        hash = ((hash << 5) - hash) + char
-        hash = hash & hash
-    }
-    return hash.toString(36)
-}

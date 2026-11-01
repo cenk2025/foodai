@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { OfferWithDetails } from '@/lib/types/database'
 import { getOfferById, getOffersForMeal } from '@/app/actions/offers'
+import OfferViewMarker from '@/components/offers/OfferViewMarker'
 import {
     formatPrice,
     getDiscountBadge,
@@ -88,6 +89,7 @@ export default function OfferDetailPage() {
 
     return (
         <div className="min-h-screen bg-page font-outfit pb-24 md:pb-12">
+            <OfferViewMarker offerId={offer.id} isDemo={isDemo} />
             {/* Header / Back Navigation */}
             <div className="bg-brand pt-12 pb-32 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-brand/10 blur-3xl rounded-full" />

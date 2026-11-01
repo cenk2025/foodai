@@ -1,7 +1,8 @@
 'use server'
 
 import { createServiceClient } from '@/lib/supabase/service'
-import { hashIp, parseUtmParams } from '@/lib/utils'
+import { clientKey } from '@/lib/rate-limit'
+import { parseUtmParams } from '@/lib/utils'
 import { headers } from 'next/headers'
 
 export async function trackClick(
@@ -14,10 +15,7 @@ export async function trackClick(
 
         // Get request metadata
         const userAgent = headersList.get('user-agent') || undefined
-        const forwardedFor = headersList.get('x-forwarded-for')
-        const realIp = headersList.get('x-real-ip')
-        const ip = forwardedFor?.split(',')[0] || realIp || 'unknown'
-        const ipHash = hashIp(ip)
+        const ipHash = await clientKey()
 
         // Parse UTM parameters from referrer
         const utmParams = referrer ? parseUtmParams(referrer) : {}

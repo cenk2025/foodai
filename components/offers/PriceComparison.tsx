@@ -6,6 +6,7 @@ import { OfferWithDetails } from '@/lib/types/database'
 import { getOfferTotal, sortByTotal } from '@/lib/offers/compare'
 import { formatDeliveryTime, formatPrice, getSourceLabel, getTrackingUrl, isDemoSource } from '@/lib/utils'
 import { useLanguage } from '@/lib/i18n/context'
+import OfferViewMarker from './OfferViewMarker'
 
 interface PriceComparisonProps {
     offers: OfferWithDetails[]
@@ -30,6 +31,7 @@ export default function PriceComparison({ offers, currentOfferId }: PriceCompari
                     const isDemo = isDemoSource(offer.source)
                     return (
                         <li key={offer.id}>
+                            <OfferViewMarker offerId={offer.id} isDemo={isDemo} />
                             <Link
                                 href={isDemo ? `/offer/${offer.id}` : getTrackingUrl(offer.id)}
                                 {...(isDemo ? {} : { target: '_blank', rel: 'noopener' })}

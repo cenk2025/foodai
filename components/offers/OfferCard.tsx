@@ -15,6 +15,7 @@ import {
 import { getOfferTotal } from '@/lib/offers/compare'
 import { useLanguage } from '@/lib/i18n/context'
 import MealImage from './MealImage'
+import OfferViewMarker from './OfferViewMarker'
 
 interface OfferCardProps {
     offer: OfferWithDetails
@@ -45,6 +46,7 @@ export default function OfferCard({ offer, others = [], priority = false }: Offe
         <div
             className="group bg-white rounded-[2rem] overflow-hidden app-shadow hover:shadow-2xl transition-all duration-300 flex flex-col h-full cursor-pointer border border-line/50 relative"
         >
+            <OfferViewMarker offerId={offer.id} isDemo={isDemo} />
             <Link href={`/offer/${offer.id}`} className="absolute inset-0 z-0" />
 
             {/* Image Container */}
