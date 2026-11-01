@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { MapPin, User, LogOut, Settings, ChevronDown, ChevronRight } from 'lucide-react'
+import { MapPin, User, LogOut, Settings, ChevronDown, ChevronRight, LocateFixed, Check } from 'lucide-react'
+import { getCities } from '@/app/actions/offers'
 import { useLanguage } from '@/lib/i18n/context'
 import { useLocation } from '@/lib/context/LocationContext'
 import { createClient } from '@/lib/supabase/client'
@@ -11,7 +12,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 export default function Header() {
     const { t, locale, setLocale } = useLanguage()
-    const { location, setLocation, setCity } = useLocation()
+    const { location, setLocation, city, setCity } = useLocation()
     const router = useRouter()
     const [user, setUser] = useState<SupabaseUser | null>(null)
     const [loading, setLoading] = useState(true)
@@ -43,6 +44,19 @@ export default function Header() {
     }
 
     const [isDetecting, setIsDetecting] = useState(false)
+    const [showCityMenu, setShowCityMenu] = useState(false)
+    const [cities, setCities] = useState<Array<{ id: string; name: string }>>([])
+
+    const openCityMenu = () => {
+        setShowCityMenu((open) => !open)
+        if (cities.length === 0) getCities().then(setCities).catch(() => setCities([]))
+    }
+
+    const chooseCity = (name: string) => {
+        setCity(name)
+        setLocation(name)
+        setShowCityMenu(false)
+    }
 
     const detectLocation = () => {
         if (!navigator.geolocation) {
@@ -102,15 +116,54 @@ export default function Header() {
                     >
                         <MapPin className={`w-4 h-4 text-[#3d1d11] ${isDetecting ? 'animate-bounce' : ''}`} />
                     </button>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col relative">
                         <span className="text-[10px] uppercase font-bold tracking-tight opacity-60">Toimitusosoite</span>
-                        <div className="flex items-center gap-2 cursor-pointer hover:opacity-70 group transition-all" onClick={detectLocation}>
+                        <button
+                            type="button"
+                            onClick={openCityMenu}
+                            aria-haspopup="listbox"
+                            aria-expanded={showCityMenu}
+                            className="flex items-center gap-2 cursor-pointer hover:opacity-70 group transition-all text-left"
+                        >
                             <span className="text-xs font-black">{location}</span>
-                            <ChevronDown className="w-3 h-3 group-hover:translate-y-0.5 transition-transform" />
+                            <ChevronDown className={`w-3 h-3 transition-transform ${showCityMenu ? 'rotate-180' : 'group-hover:translate-y-0.5'}`} />
                             {isDetecting && (
                                 <span className="text-[9px] bg-[#3d1d11] text-white px-1.5 py-0.5 rounded-md animate-pulse">Etsitään...</span>
                             )}
-                        </div>
+                        </button>
+
+                        {showCityMenu && (
+                            <>
+                                <div className="fixed inset-0 z-[60]" onClick={() => setShowCityMenu(false)} />
+                                <div role="listbox" aria-label="Valitse kaupunki" className="absolute top-full left-0 mt-2 z-[70] w-60 max-h-80 overflow-y-auto bg-white rounded-2xl shadow-2xl border border-[#f1ebd8] py-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => { setShowCityMenu(false); detectLocation() }}
+                                        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-[#d35400] hover:bg-[#fdf2e2]/60 transition-colors"
+                                    >
+                                        <LocateFixed className="w-4 h-4" />
+                                        Käytä nykyistä sijaintia
+                                    </button>
+                                    <div className="h-px bg-[#f1ebd8] my-1" />
+                                    {cities.length === 0 && (
+                                        <p className="px-4 py-3 text-xs text-[#a08a7e]">Ladataan…</p>
+                                    )}
+                                    {cities.map((c) => (
+                                        <button
+                                            key={c.id}
+                                            type="button"
+                                            role="option"
+                                            aria-selected={c.name === city}
+                                            onClick={() => chooseCity(c.name)}
+                                            className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold text-[#3d1d11] hover:bg-[#fdf2e2]/60 transition-colors"
+                                        >
+                                            {c.name}
+                                            {c.name === city && <Check className="w-4 h-4 text-[#d35400]" />}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
 
