@@ -7,6 +7,12 @@
 export const DIET_FLAGS = ['vegan', 'vegetarian', 'gluten_free', 'halal', 'healthy', 'pescatarian'] as const
 export const SORT_OPTIONS = ['price_asc', 'savings_desc', 'rating', 'eta'] as const
 
+const GENERIC_QUERY_WORDS = new Set([
+    'food', 'meal', 'meals', 'lunch', 'dinner', 'breakfast', 'snack', 'deal', 'deals', 'cheap', 'restaurant',
+    'ruoka', 'lounas', 'päivällinen', 'illallinen', 'aamiainen', 'halpa', 'tarjous', 'ravintola',
+    'vegan', 'vegetarian', 'gluten free', 'gluten-free', 'halal', 'healthy', 'pescatarian',
+])
+
 export type DietFlag = (typeof DIET_FLAGS)[number]
 export type SortOption = (typeof SORT_OPTIONS)[number]
 
@@ -30,13 +36,16 @@ export function buildIntentPrompt(cityNames: string[]): string {
         'The request may be in Finnish or English. Reply with ONE JSON object and nothing else.',
         'Fields (omit any field the user did not ask for):',
         '- "search": true if the user wants to find food or deals, false for greetings or unrelated questions.',
-        '- "query": ONE short English keyword for the dish or cuisine, as it would appear in an English menu item name',
+        '- "query": ONE short English keyword for a SPECIFIC dish or cuisine, as it would appear in an English menu item name',
         '  (e.g. "pizza", "sushi", "burger", "kebab", "salad", "pasta", "bowl", "wrap"). Translate Finnish dish names to English.',
+        '  Omit it for generic words like food/ruoka, lunch/lounas, dinner, meal, and for diets (those go in dietFlags).',
         '- "city": one of ' + JSON.stringify(cityNames) + '. Map districts to their city (Kamppi, Kallio -> Helsinki; Tapiola -> Espoo).',
-        '- "maxPriceEuros": number, the maximum meal price in euros ("alle 10 €" -> 10).',
+        '- "maxPriceEuros": number, ONLY if the user states a price limit ("alle 10 €" -> 10). "halpa"/"cheap" is NOT a price limit: use sortBy price_asc.',
         '- "dietFlags": array, subset of ' + JSON.stringify(DIET_FLAGS) + '.',
-        '- "freeDelivery": true if they want free delivery ("ilmainen toimitus/kuljetus").',
-        '- "deliveryOnly": true if they want delivery; "pickupOnly": true if they want to pick it up ("nouto").',
+        '- "freeDelivery": true ONLY if they explicitly ask for free delivery ("ilmainen toimitus/kuljetus", "free delivery").',
+        '- "deliveryOnly": true if they want home delivery ("kotiinkuljetus").',
+        '- "pickupOnly": true if they will pick it up themselves ("nouto", "noutona", "haen itse", "pickup", "pick it up").',
+        '- "fast"/"nopea" means sortBy eta, not a delivery filter.',
         '- "minRating": number 1-5 if they ask for well-rated places ("hyvät arvostelut" -> 4).',
         '- "sortBy": one of ' + JSON.stringify(SORT_OPTIONS) + ' ("halvin" -> price_asc, "isoin alennus" -> savings_desc, "nopein" -> eta, "paras" -> rating).',
         'Use only information from the conversation. Never invent restaurants or prices.',
@@ -53,7 +62,9 @@ export function validateIntent(raw: unknown, cityNames: string[]): SearchIntent 
 
     if (typeof raw.query === 'string') {
         const q = raw.query.trim().toLowerCase()
-        if (/^[\p{L}\p{N} '-]{2,30}$/u.test(q)) intent.query = q
+        // The query is a substring match on meal names, so generic or diet words
+        // would only hide results the other filters already cover.
+        if (/^[\p{L}\p{N} '-]{2,30}$/u.test(q) && !GENERIC_QUERY_WORDS.has(q)) intent.query = q
     }
 
     if (typeof raw.city === 'string') {
