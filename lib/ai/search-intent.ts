@@ -56,7 +56,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-export function validateIntent(raw: unknown, cityNames: string[]): SearchIntent {
+// userText is what the user actually wrote. Filters that would hide results
+// are only kept when the text gives evidence for them, so a model that
+// "helpfully" adds a price cap or free delivery can't empty the results.
+export function validateIntent(raw: unknown, cityNames: string[], userText = ''): SearchIntent {
     if (!isRecord(raw)) return { search: true }
     const intent: SearchIntent = { search: raw.search !== false }
 
@@ -64,7 +67,8 @@ export function validateIntent(raw: unknown, cityNames: string[]): SearchIntent 
         const q = raw.query.trim().toLowerCase()
         // The query is a substring match on meal names, so generic or diet words
         // would only hide results the other filters already cover.
-        if (/^[\p{L}\p{N} '-]{2,30}$/u.test(q) && !GENERIC_QUERY_WORDS.has(q)) intent.query = q
+        const specific = q.split(/\s+/).filter((w) => !GENERIC_QUERY_WORDS.has(w)).join(' ')
+        if (/^[\p{L}\p{N} '-]{2,30}$/u.test(specific)) intent.query = specific
     }
 
     if (typeof raw.city === 'string') {
@@ -73,7 +77,7 @@ export function validateIntent(raw: unknown, cityNames: string[]): SearchIntent 
     }
 
     const maxPrice = Number(raw.maxPriceEuros)
-    if (Number.isFinite(maxPrice) && maxPrice > 0 && maxPrice <= 200) {
+    if (Number.isFinite(maxPrice) && maxPrice > 0 && maxPrice <= 200 && /\d/.test(userText)) {
         intent.maxPriceCents = Math.round(maxPrice * 100)
     }
 
@@ -82,7 +86,7 @@ export function validateIntent(raw: unknown, cityNames: string[]): SearchIntent 
         if (flags.length) intent.dietFlags = [...new Set(flags)]
     }
 
-    if (raw.freeDelivery === true) intent.freeDelivery = true
+    if (raw.freeDelivery === true && /ilmai|maksuto|\bfree\b|0\s?€|€\s?0\b/i.test(userText)) intent.freeDelivery = true
     if (raw.pickupOnly === true) intent.pickupOnly = true
     else if (raw.deliveryOnly === true) intent.deliveryOnly = true
 
