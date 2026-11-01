@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
-import { searchOffers, getCities, SearchParams } from './actions/offers'
+import { searchOffers, getCities, SearchParams } from '@/app/actions/offers'
 import SearchBar from '@/components/search/SearchBar'
 import OfferCard from '@/components/offers/OfferCard'
 import OfferShelf from '@/components/offers/OfferShelf'

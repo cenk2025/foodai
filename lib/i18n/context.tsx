@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { dictionary, Locale } from './dictionary';
 
 interface LanguageContextType {
@@ -22,6 +22,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         }
         return 'fi';
     });
+
+    useEffect(() => {
+        document.documentElement.lang = locale;
+    }, [locale]);
 
     const changeLocale = (newLocale: Locale) => {
         setLocale(newLocale);

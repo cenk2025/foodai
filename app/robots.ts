@@ -5,7 +5,8 @@ export default function robots(): MetadataRoute.Robots {
         rules: {
             userAgent: '*',
             allow: '/',
-            disallow: ['/profile/', '/settings/', '/auth/'],
+            // /go records a click for the partner, so crawlers must stay out of it
+            disallow: ['/profile/', '/settings/', '/auth/', '/go/', '/api/', '/admin/'],
         },
         sitemap: 'https://foodai.fi/sitemap.xml',
     }

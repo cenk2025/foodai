@@ -128,7 +128,7 @@ export default function FeaturedCarousel({ offers }: FeaturedCarouselProps) {
                         </div>
                         <a
                             href={isDemo ? `/offer/${offer.id}` : getTrackingUrl(offer.id)}
-                            {...(isDemo ? {} : { target: '_blank', rel: 'noopener' })}
+                            {...(isDemo ? {} : { target: '_blank', rel: 'nofollow noopener' })}
                             className="pointer-events-auto bg-white text-ink px-5 py-3 md:px-8 md:py-4 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-line hover:scale-105 active:scale-95 transition-all shadow-xl"
                         >
                             {t.card.order}

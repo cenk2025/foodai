@@ -266,7 +266,7 @@ export default function OfferDetailPage() {
                                     <DemoNotice />
                                 ) : (
                                     <>
-                                        <Link href={trackingUrl} target="_blank" className="block">
+                                        <Link href={trackingUrl} target="_blank" rel="nofollow noopener" className="block">
                                             <button className="w-full bg-brand hover:bg-brand-dark text-white py-6 rounded-2xl font-black uppercase text-sm tracking-[0.2em] transition-all transform hover:scale-[1.02] active:scale-95 shadow-2xl flex items-center justify-center gap-4 group/btn">
                                                 {t.card.order}
                                                 <ExternalLink className="w-5 h-5" />

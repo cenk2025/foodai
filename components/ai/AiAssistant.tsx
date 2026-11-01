@@ -142,7 +142,7 @@ export default function AiAssistant() {
                                                     <a
                                                         href={getTrackingUrl(offer.id)}
                                                         target="_blank"
-                                                        rel="noopener"
+                                                        rel="nofollow noopener"
                                                         className="shrink-0 text-[11px] font-bold uppercase bg-brand hover:bg-brand-dark text-white px-2.5 py-1.5 rounded-lg transition-colors"
                                                     >
                                                         {t.ai.view}

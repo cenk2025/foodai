@@ -11,29 +11,18 @@ import AuthHashHandler from "@/components/auth/AuthHashHandler";
 import { CartProvider } from "@/lib/direct-ordering/CartContext";
 import CartPanel from "@/components/direct-ordering/CartPanel";
 import { DIRECT_ORDERING_ENABLED } from "@/lib/features";
+import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", weight: ["400", "500", "600", "700", "800"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "FoodAi - Suomen Parhaat Ruokatarjoukset",
-    template: "%s | FoodAi"
+    default: `${SITE_NAME} – vertaile alennettuja ruokatarjouksia`,
+    template: `%s | ${SITE_NAME}`
   },
-  description: "Vertaile ruokien hintoja Wolt ja Uber Eats alustoilla. Löydä halvin pizza, burgeri tai sushi Helsingissä, Espoossa ja Vantaalla. Säästä jopa 50% jokaisesta tilauksesta.",
-  keywords: ["ruokatarjoukset", "hintavertailu", "Wolt alennuskoodi", "Uber Eats tarjous", "Helsinki ravintolat", "ilmainen kuljetus", "halpa ruoka"],
-  authors: [{ name: "FoodAi Team" }],
+  description: SITE_DESCRIPTION,
   metadataBase: new URL('https://foodai.fi'),
-  alternates: {
-    canonical: '/',
-  },
-  openGraph: {
-    title: "FoodAi - Suomen Parhaat Ruokatarjoukset | Säästä Ruoassa",
-    description: "Tekoäly etsii puolestasi kaupungin parhaat ravintolatarjoukset ja alennukset. Vertaile hinnat ja tilaa halvemmalla.",
-    type: "website",
-    locale: 'fi_FI',
-    siteName: 'FoodAi',
-  },
   robots: {
     index: true,
     follow: true,
@@ -52,8 +41,9 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "WebSite",
-      "name": "FoodAi",
+      "name": SITE_NAME,
       "url": "https://foodai.fi",
+      "inLanguage": "fi",
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
@@ -65,15 +55,9 @@ const jsonLd = {
     },
     {
       "@type": "Organization",
-      "name": "FoodAi Suomi",
+      "name": SITE_NAME,
       "url": "https://foodai.fi",
-      "logo": "https://foodai.fi/logo.png",
-      "description": "Suomen johtava ruoan hintavertailupalvelu, joka käyttää tekoälyä parhaiden tarjousten löytämiseen.",
-      "sameAs": [
-        "https://facebook.com/foodai",
-        "https://twitter.com/foodai",
-        "https://instagram.com/foodai"
-      ]
+      "description": SITE_DESCRIPTION
     }
   ]
 }
@@ -84,7 +68,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fi">
       <body className={`${inter.variable} ${jakarta.variable} font-sans antialiased bg-page`} suppressHydrationWarning>
         <script
           type="application/ld+json"

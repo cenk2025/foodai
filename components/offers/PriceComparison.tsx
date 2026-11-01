@@ -34,7 +34,7 @@ export default function PriceComparison({ offers, currentOfferId }: PriceCompari
                             <OfferViewMarker offerId={offer.id} isDemo={isDemo} />
                             <Link
                                 href={isDemo ? `/offer/${offer.id}` : getTrackingUrl(offer.id)}
-                                {...(isDemo ? {} : { target: '_blank', rel: 'noopener' })}
+                                {...(isDemo ? {} : { target: '_blank', rel: 'nofollow noopener' })}
                                 aria-current={isCurrent ? 'true' : undefined}
                                 className={`flex items-center justify-between gap-3 rounded-2xl border p-4 transition-colors hover:border-brand/40 ${isCurrent ? 'border-line bg-soft' : 'border-line'}`}
                             >
