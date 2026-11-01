@@ -116,7 +116,7 @@ export default function OfferCard({ offer, priority = false, onMouseEnter, onMou
                         </div>
                         {discountBadge && (
                             <span className="price-badge inline-block text-[10px] px-2 py-0.5">
-                                -{discountBadge}
+                                {discountBadge}
                             </span>
                         )}
                     </div>
