@@ -80,6 +80,9 @@ export const dictionary = {
         header: {
             location: 'Sijainti',
             home: 'Koti',
+            discover: 'Löydä',
+            search: 'Haku',
+            favorites: 'Suosikit',
             how_it_works: 'Miten se toimii',
             about: 'Tietoa',
             signin: 'Kirjaudu',
@@ -386,6 +389,9 @@ export const dictionary = {
         header: {
             location: 'Location',
             home: 'Home',
+            discover: 'Discover',
+            search: 'Search',
+            favorites: 'Favorites',
             how_it_works: 'How It Works',
             about: 'About',
             signin: 'Sign In',

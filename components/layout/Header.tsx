@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { MapPin, User, LogOut, Settings, ChevronDown, ChevronRight, LocateFixed, Check } from 'lucide-react'
 import { getCities } from '@/app/actions/offers'
 import { useLanguage } from '@/lib/i18n/context'
@@ -14,6 +14,7 @@ export default function Header() {
     const { t, locale, setLocale } = useLanguage()
     const { location, setLocation, city, setCity } = useLocation()
     const router = useRouter()
+    const pathname = usePathname()
     const [user, setUser] = useState<SupabaseUser | null>(null)
     const [loading, setLoading] = useState(true)
     const [showDropdown, setShowDropdown] = useState(false)
@@ -42,6 +43,13 @@ export default function Header() {
         if (!user) return ''
         return user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
     }
+
+    // Desktop counterpart of the mobile BottomNav.
+    const navLinks = [
+        { label: t.header.discover, href: '/' },
+        { label: t.header.search, href: '/search' },
+        { label: t.header.favorites, href: '/favorites' },
+    ]
 
     const [isDetecting, setIsDetecting] = useState(false)
     const [showCityMenu, setShowCityMenu] = useState(false)
@@ -198,6 +206,19 @@ export default function Header() {
                         Food<span className="text-[#d35400]">AI</span>
                     </span>
                 </Link>
+
+                <nav className="hidden md:flex items-center gap-8">
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            aria-current={pathname === link.href ? 'page' : undefined}
+                            className={`text-sm font-bold transition-colors hover:text-[#d35400] ${pathname === link.href ? 'text-[#d35400]' : 'text-[#3d1d11]'}`}
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
+                </nav>
 
                 {/* User Profile / Auth */}
                 <div className="flex items-center gap-4">

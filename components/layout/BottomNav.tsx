@@ -17,7 +17,7 @@ export default function BottomNav() {
     ].filter((item) => DIRECT_ORDERING_ENABLED || item.href !== '/orders')
 
     return (
-        <div className="bottom-nav md:hidden pb-safe">
+        <div className="bottom-nav flex md:hidden pb-safe">
             {navItems.map((item) => {
                 const isActive = pathname === item.href
                 return (
