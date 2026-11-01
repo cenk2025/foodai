@@ -8,15 +8,18 @@ import SearchBar from '@/components/search/SearchBar'
 import OfferCard from '@/components/offers/OfferCard'
 import { SkeletonCard } from '@/components/ui/Skeleton'
 import { OfferWithDetails } from '@/lib/types/database'
-import { TrendingDown, Clock, Star, ChevronRight, MapPin } from 'lucide-react'
+import { TrendingDown, Clock, Star, ChevronRight, MapPin, Sparkles, X } from 'lucide-react'
 import Footer from '@/components/layout/Footer'
 import OfferPreview from '@/components/offers/OfferPreview'
 import { useLocation } from '@/lib/context/LocationContext'
 import HomepageDirectRestaurants from '@/components/direct-ordering/HomepageDirectRestaurants'
 import { DIRECT_ORDERING_ENABLED } from '@/lib/features'
+import { useLanguage } from '@/lib/i18n/context'
+import { describeIntent, looksLikeNaturalLanguage, type SearchIntent } from '@/lib/ai/search-intent'
 
 export default function HomePage() {
   const { city } = useLocation()
+  const { t } = useLanguage()
   const [cities, setCities] = useState<Array<{ id: string; name: string }>>([])
   const [offers, setOffers] = useState<OfferWithDetails[]>([])
   const [loading, setLoading] = useState(true)
@@ -26,6 +29,8 @@ export default function HomePage() {
 
   const [sortBy, setSortBy] = useState<'price_asc' | 'savings_desc'>('price_asc')
   const [freeDelivery, setFreeDelivery] = useState(false)
+  // Set while the grid shows results of a natural-language (AI) search
+  const [aiLabels, setAiLabels] = useState<string[] | null>(null)
 
   // Load cities on mount
   useEffect(() => {
@@ -184,6 +189,7 @@ export default function HomePage() {
     isFreeDel: boolean = freeDelivery
   ) => {
     setLoading(true)
+    setAiLabels(null)
     setSearchQuery(query)
     setSelectedCategory(category)
 
@@ -281,6 +287,29 @@ export default function HomePage() {
     }
   }, [cities, city, sortBy, freeDelivery])
 
+  // Sentences ("vegaani alle 10 € ilmainen toimitus") are interpreted by the AI;
+  // if it is unavailable we fall back to the plain keyword search.
+  const handleAiSearch = async (text: string) => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/ai/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, city }),
+      })
+      if (!res.ok) throw new Error(`AI search failed: ${res.status}`)
+      const data = (await res.json()) as { intent: SearchIntent; city: string | null; offers: OfferWithDetails[] }
+      setOffers(data.offers)
+      setAiLabels(describeIntent(data.intent, data.city, t.ai))
+      setLoading(false)
+    } catch (error) {
+      console.error(error)
+      handleSearch(text, city, selectedCategory, sortBy, freeDelivery)
+    }
+  }
+
+  const clearAiSearch = () => handleSearch(searchQuery, city, selectedCategory, sortBy, freeDelivery)
+
   // Load initial offers and refresh when city changes
   useEffect(() => {
     // Fetching on filter change: handleSearch sets loading/results state.
@@ -303,7 +332,9 @@ export default function HomePage() {
 
             <div className="w-full lg:max-w-xl">
               <SearchBar
-                onSearch={(q, c) => handleSearch(q, c, selectedCategory, sortBy, freeDelivery)}
+                onSearch={(q, c) => looksLikeNaturalLanguage(q)
+                  ? handleAiSearch(q)
+                  : handleSearch(q, c, selectedCategory, sortBy, freeDelivery)}
                 initialQuery={searchQuery}
                 initialCity={city}
                 currentSort={sortBy}
@@ -433,6 +464,31 @@ export default function HomePage() {
                   </button>
                 </Link>
               </div>
+
+              {aiLabels && (
+                <div className="flex flex-wrap items-center gap-2 mb-8">
+                  <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#d35400]">
+                    <Sparkles className="w-4 h-4" />
+                    {t.ai.understood}
+                  </span>
+                  {aiLabels.map((label) => (
+                    <span key={label} className="px-3 py-1.5 rounded-xl bg-[#fdf2e2] text-[#3d1d11] text-xs font-bold border border-[#f1ebd8]">
+                      {label}
+                    </span>
+                  ))}
+                  <button
+                    onClick={clearAiSearch}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[#a08a7e] hover:text-[#d35400] text-xs font-bold transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    {t.ai.clear}
+                  </button>
+                </div>
+              )}
+
+              {aiLabels && !loading && offers.length === 0 && (
+                <p className="text-[#a08a7e] font-medium mb-8">{t.ai.no_results}</p>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                 {loading ? (
