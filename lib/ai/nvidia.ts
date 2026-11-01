@@ -160,3 +160,29 @@ export function extractJsonObject(text: string): unknown {
         return null
     }
 }
+
+export type ModelProbe = { model: string; status: number | 'timeout'; ms: number; sample?: string }
+
+// Admin diagnostics: which models this API key can actually use, how fast,
+// and what they answer to a real FoodAi prompt. Runs a few at a time to stay
+// under the free tier's per-minute limit.
+export async function probeModels(models: string[], messages: ChatMessage[]): Promise<ModelProbe[]> {
+    const results: ModelProbe[] = []
+    const queue = [...models]
+    const worker = async () => {
+        for (let model = queue.shift(); model; model = queue.shift()) {
+            const start = Date.now()
+            const res = await requestCompletion(model, withoutSystemRole(messages), 120, 0, 15_000)
+            const probe: ModelProbe = { model, status: res ? res.status : 'timeout', ms: Date.now() - start }
+            if (res?.ok) {
+                const data = (await res.json().catch(() => null)) as
+                    | { choices?: { message?: { content?: string | null } }[] }
+                    | null
+                probe.sample = (data?.choices?.[0]?.message?.content ?? '').replace(/\s+/g, ' ').slice(0, 200)
+            }
+            results.push(probe)
+        }
+    }
+    await Promise.all(Array.from({ length: 4 }, worker))
+    return results.sort((a, b) => Number(a.status !== 200) - Number(b.status !== 200) || a.ms - b.ms)
+}
