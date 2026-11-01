@@ -17,6 +17,7 @@ import {
 import { searchOffers, getCities, type SearchParams } from '@/app/actions/offers'
 import OfferCard from '@/components/offers/OfferCard'
 import DemoNotice from '@/components/offers/DemoNotice'
+import FulfilmentToggle, { type Fulfilment } from '@/components/offers/FulfilmentToggle'
 import { isDemoSource } from '@/lib/utils'
 import { compareByMeal } from '@/lib/offers/compare'
 import { SkeletonCard } from '@/components/ui/Skeleton'
@@ -72,6 +73,7 @@ function SearchPageContent() {
     const [loading, setLoading] = useState(false)
     const [aiLabels, setAiLabels] = useState<string[] | null>(null)
     const [activeLabel, setActiveLabel] = useState<string | null>(null)
+    const [fulfilment, setFulfilment] = useState<Fulfilment>('delivery')
 
     useEffect(() => {
         getCities().then(setCities)
@@ -81,6 +83,7 @@ function SearchPageContent() {
         setLoading(true)
         setAiLabels(null)
         setActiveLabel(label)
+        if (params.freeDelivery) setFulfilment('delivery')
         const cityId = cities?.find((c) => c.name.toLowerCase() === city.toLowerCase())?.id
         try {
             setResults(await searchOffers({ sortBy: 'price_asc', ...params, cityId }))
@@ -108,6 +111,8 @@ function SearchPageContent() {
                 const data = (await res.json()) as { intent: SearchIntent; city: string | null; offers: OfferWithDetails[] }
                 setResults(data.offers)
                 setAiLabels(describeIntent(data.intent, data.city, t.ai))
+                if (data.intent.pickupOnly) setFulfilment('pickup')
+                else if (data.intent.deliveryOnly || data.intent.freeDelivery) setFulfilment('delivery')
                 setLoading(false)
                 return
             } catch (error) {
@@ -149,7 +154,10 @@ function SearchPageContent() {
     }
 
     const showResults = loading || results !== null
-    const comparisons = useMemo(() => compareByMeal(results ?? []), [results])
+    const comparisons = useMemo(
+        () => compareByMeal((results ?? []).filter((o) => o.is_pickup === (fulfilment === 'pickup'))),
+        [results, fulfilment]
+    )
 
     return (
         <div className="min-h-screen bg-[#fffcf8] font-outfit pb-24 md:pb-12">
@@ -222,6 +230,7 @@ function SearchPageContent() {
                                 {loading ? 'Haetaan…' : `${comparisons.length} tarjousta`}
                                 {!loading && city && <span className="text-[#a08a7e] font-medium text-base"> · {city}</span>}
                             </h2>
+                            <FulfilmentToggle value={fulfilment} onChange={setFulfilment} />
                             <button onClick={clear} className="flex items-center gap-1 text-[#a08a7e] hover:text-[#d35400] text-xs font-bold uppercase tracking-widest transition-colors">
                                 <X className="w-4 h-4" />
                                 {t.ai.clear}
@@ -246,9 +255,9 @@ function SearchPageContent() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
                             </div>
-                        ) : results && results.length > 0 ? (
+                        ) : comparisons.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                {results.some(o => isDemoSource(o.source)) && <DemoNotice className="md:col-span-2" />}
+                                {results?.some(o => isDemoSource(o.source)) && <DemoNotice className="md:col-span-2" />}
                                 {comparisons.map(({ best, others }) => <OfferCard key={best.id} offer={best} others={others} />)}
                             </div>
                         ) : (

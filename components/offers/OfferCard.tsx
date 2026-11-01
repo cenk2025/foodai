@@ -21,11 +21,9 @@ interface OfferCardProps {
     // Other sources selling the same meal, cheapest first
     others?: OfferWithDetails[]
     priority?: boolean
-    onMouseEnter?: () => void
-    onMouseLeave?: () => void
 }
 
-export default function OfferCard({ offer, others = [], priority = false, onMouseEnter, onMouseLeave }: OfferCardProps) {
+export default function OfferCard({ offer, others = [], priority = false }: OfferCardProps) {
     const { t } = useLanguage()
     const router = useRouter()
     const discountBadge = getDiscountBadge(offer.old_price_cents, offer.price_cents)
@@ -46,8 +44,6 @@ export default function OfferCard({ offer, others = [], priority = false, onMous
     return (
         <div
             className="group bg-white rounded-[2rem] overflow-hidden app-shadow hover:shadow-2xl transition-all duration-300 flex flex-col h-full cursor-pointer border border-[#f1ebd8]/50 relative"
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
         >
             <Link href={`/offer/${offer.id}`} className="absolute inset-0 z-0" />
 

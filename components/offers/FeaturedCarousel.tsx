@@ -14,10 +14,9 @@ const ROTATE_MS = 6000
 interface FeaturedCarouselProps {
     // Real offers, best deal first. Callers remount (key) when the city changes.
     offers: OfferWithDetails[]
-    onHover?: (offer: OfferWithDetails | null) => void
 }
 
-export default function FeaturedCarousel({ offers, onHover }: FeaturedCarouselProps) {
+export default function FeaturedCarousel({ offers }: FeaturedCarouselProps) {
     const { t } = useLanguage()
     const [index, setIndex] = useState(0)
     const [paused, setPaused] = useState(false)
@@ -41,20 +40,20 @@ export default function FeaturedCarousel({ offers, onHover }: FeaturedCarouselPr
             className="relative"
             aria-roledescription="carousel"
             aria-label="Päivän parhaat alennukset"
-            onMouseEnter={() => { setPaused(true); onHover?.(offer) }}
-            onMouseLeave={() => { setPaused(false); onHover?.(null) }}
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
             onFocus={() => setPaused(true)}
             onBlur={() => setPaused(false)}
         >
-            <div className="featured-card h-[440px] md:h-[500px] group shadow-2xl">
+            <div className="featured-card h-[440px] md:h-[400px] group shadow-2xl">
                 <Link href={`/offer/${offer.id}`} className="absolute inset-0 z-0" aria-label={`${offer.meal.name}, ${offer.meal.restaurant.name}`}>
                     <MealImage
                         key={offer.id}
                         meal={offer.meal}
-                        sizes="(max-width: 1280px) 100vw, 850px"
+                        sizes="(max-width: 1280px) 100vw, 1248px"
                         priority={index === 0}
                         className="transition-transform duration-1000 group-hover:scale-110 animate-in fade-in duration-700"
-                        emojiClassName="text-7xl md:text-9xl -translate-y-[120px] md:-translate-y-24"
+                        emojiClassName="text-7xl md:text-9xl lg:text-[11rem] -translate-y-[120px] md:translate-x-40 md:translate-y-0 lg:translate-x-80"
                     />
                     <div className="absolute inset-0 bg-gradient-to-tr from-[#3d1d11] via-[#3d1d11]/40 to-transparent" />
                 </Link>
@@ -89,7 +88,7 @@ export default function FeaturedCarousel({ offers, onHover }: FeaturedCarouselPr
                     </div>
                 )}
 
-                <div className="absolute bottom-9 left-5 right-5 md:bottom-10 md:left-12 md:right-12 text-white pointer-events-none" aria-live="polite">
+                <div className="absolute bottom-9 left-5 right-5 md:left-12 md:right-12 text-white pointer-events-none" aria-live="polite">
                     <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-3 md:mb-5">
                         <span className="hidden md:inline bg-[#d35400] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg border border-white/10">
                             Päivän tarjous
@@ -110,7 +109,7 @@ export default function FeaturedCarousel({ offers, onHover }: FeaturedCarouselPr
                             </div>
                         )}
                     </div>
-                    <h2 className="text-3xl md:text-6xl font-black mb-2 md:mb-3 tracking-tighter leading-none line-clamp-2">{offer.meal.name}</h2>
+                    <h2 className="text-3xl md:text-5xl font-black mb-2 md:mb-3 tracking-tighter leading-none line-clamp-2">{offer.meal.name}</h2>
                     <p className="text-[#fdf2e2]/80 font-medium md:text-lg mb-4 md:mb-6">
                         {offer.meal.restaurant.name}
                         {offer.meal.restaurant.city?.name ? ` · ${offer.meal.restaurant.city.name}` : ''}
