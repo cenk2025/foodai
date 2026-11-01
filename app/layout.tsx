@@ -85,7 +85,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${jakarta.variable} font-sans antialiased bg-[#fffcf8]`} suppressHydrationWarning>
+      <body className={`${inter.variable} ${jakarta.variable} font-sans antialiased bg-page`} suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -43,15 +43,15 @@ export default function RestaurantFormModal({
                 className="bg-white rounded-[2rem] w-full max-w-xl overflow-hidden app-shadow flex flex-col max-h-[90vh]"
                 onClick={(e) => e.stopPropagation()}
             >
-                <header className="flex items-center justify-between px-6 py-5 border-b border-[#f1ebd8]">
-                    <h3 className="text-lg font-black text-[#3d1d11] tracking-tight">
+                <header className="flex items-center justify-between px-6 py-5 border-b border-line">
+                    <h3 className="text-lg font-black text-ink tracking-tight">
                         {isEdit ? 'Edit restaurant' : 'Add restaurant'}
                     </h3>
                     <button
                         type="button"
                         onClick={onClose}
                         disabled={isPending}
-                        className="w-9 h-9 rounded-full bg-[#fdf2e2] hover:bg-[#f1ebd8] text-[#3d1d11] flex items-center justify-center transition-colors disabled:opacity-50"
+                        className="w-9 h-9 rounded-full bg-soft hover:bg-line text-ink flex items-center justify-center transition-colors disabled:opacity-50"
                         aria-label="Close"
                     >
                         <X className="w-4 h-4" />
@@ -202,7 +202,7 @@ export default function RestaurantFormModal({
                         </Field>
                     </div>
 
-                    <label className="flex items-center gap-3 text-sm font-bold text-[#3d1d11]">
+                    <label className="flex items-center gap-3 text-sm font-bold text-ink">
                         <input
                             type="checkbox"
                             name="isActive"
@@ -213,7 +213,7 @@ export default function RestaurantFormModal({
                     </label>
 
                     {!isEdit && (
-                        <p className="text-xs text-[#a08a7e] bg-[#fdf2e2]/60 rounded-xl p-3">
+                        <p className="text-xs text-subtle bg-soft/60 rounded-xl p-3">
                             A default delivery zone is provisioned around the restaurant
                             coordinates (5 km radius, 2,90 € fee, 15 € minimum). You can fine-tune
                             it later from the Settings tab.
@@ -226,19 +226,19 @@ export default function RestaurantFormModal({
                         </p>
                     )}
 
-                    <div className="flex justify-end gap-3 pt-3 border-t border-[#f1ebd8]">
+                    <div className="flex justify-end gap-3 pt-3 border-t border-line">
                         <button
                             type="button"
                             onClick={onClose}
                             disabled={isPending}
-                            className="px-5 py-3 text-xs font-black uppercase tracking-[0.2em] text-[#a08a7e] hover:text-[#3d1d11] disabled:opacity-50"
+                            className="px-5 py-3 text-xs font-black uppercase tracking-[0.2em] text-subtle hover:text-ink disabled:opacity-50"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isPending}
-                            className="bg-[#3d1d11] hover:bg-[#d35400] disabled:bg-[#a08a7e] text-white rounded-xl px-6 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors"
+                            className="bg-brand hover:bg-brand-dark disabled:bg-subtle text-white rounded-xl px-6 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors"
                         >
                             {isPending ? 'Saving…' : isEdit ? 'Save changes' : 'Create restaurant'}
                         </button>
@@ -248,16 +248,16 @@ export default function RestaurantFormModal({
                 <style jsx>{`
                     .form-input {
                         width: 100%;
-                        background: #fffcf8;
-                        border: 1px solid #f1ebd8;
+                        background: #fbfaf9;
+                        border: 1px solid #ece9e6;
                         border-radius: 0.875rem;
                         padding: 0.75rem 1rem;
                         font-size: 0.875rem;
-                        color: #3d1d11;
+                        color: #1f1a17;
                     }
                     .form-input:focus {
                         outline: none;
-                        border-color: #d35400;
+                        border-color: #d92d20;
                     }
                 `}</style>
             </div>
@@ -275,13 +275,13 @@ function Field({
 }) {
     return (
         <label className="block space-y-1.5">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3d1d11]">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-ink">
                 {label}
-                {required && <span className="text-[#d35400]"> *</span>}
+                {required && <span className="text-brand"> *</span>}
             </span>
             {children}
             {helper && (
-                <span className="block text-[11px] font-medium text-[#a08a7e] mt-1">{helper}</span>
+                <span className="block text-[11px] font-medium text-subtle mt-1">{helper}</span>
             )}
         </label>
     );

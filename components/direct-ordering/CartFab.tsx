@@ -16,11 +16,11 @@ export default function CartFab() {
             <button
                 type="button"
                 onClick={openCart}
-                className="pointer-events-auto bg-[#3d1d11] hover:bg-[#d35400] text-white rounded-full pl-3 pr-6 py-3 flex items-center gap-4 shadow-2xl transition-colors group font-black uppercase text-xs tracking-[0.15em]"
+                className="pointer-events-auto bg-brand hover:bg-brand-dark text-white rounded-full pl-3 pr-6 py-3 flex items-center gap-4 shadow-2xl transition-colors group font-black uppercase text-xs tracking-[0.15em]"
             >
-                <span className="w-9 h-9 rounded-full bg-[#f3d179] text-[#3d1d11] flex items-center justify-center relative">
+                <span className="w-9 h-9 rounded-full bg-white text-ink flex items-center justify-center relative">
                     <ShoppingBag className="w-4 h-4" />
-                    <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#d35400] text-white text-[10px] flex items-center justify-center border-2 border-[#3d1d11]">
+                    <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-brand text-white text-[10px] flex items-center justify-center border-2 border-brand">
                         {itemCount}
                     </span>
                 </span>

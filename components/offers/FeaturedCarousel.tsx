@@ -55,13 +55,13 @@ export default function FeaturedCarousel({ offers }: FeaturedCarouselProps) {
                         className="transition-transform duration-1000 group-hover:scale-110 animate-in fade-in duration-700"
                         emojiClassName="text-7xl md:text-9xl lg:text-[11rem] -translate-y-[120px] md:translate-x-40 md:translate-y-0 lg:translate-x-80"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#3d1d11] via-[#3d1d11]/70 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-transparent" />
                 </Link>
 
                 {discount > 0 && (
                     <div className="absolute top-4 left-4 md:top-10 md:left-10 anim-float pointer-events-none">
-                        <div className="bg-[#f3d179] text-[#3d1d11] text-sm md:text-xl font-black px-3 py-2 md:px-6 md:py-3 rounded-2xl shadow-2xl flex items-center gap-2 md:gap-3 border-2 border-white/20">
-                            <div className="bg-[#3d1d11] text-white p-1 rounded-lg">
+                        <div className="bg-save text-white text-sm md:text-xl font-black px-3 py-2 md:px-6 md:py-3 rounded-2xl shadow-2xl flex items-center gap-2 md:gap-3 border-2 border-white/20">
+                            <div className="bg-white/20 text-white p-1 rounded-lg">
                                 <TrendingDown className="w-4 h-4 md:w-5 md:h-5" />
                             </div>
                             SÄÄSTÄ -{discount}%
@@ -90,7 +90,7 @@ export default function FeaturedCarousel({ offers }: FeaturedCarouselProps) {
 
                 <div className="absolute bottom-9 left-5 right-5 md:left-12 md:right-12 text-white pointer-events-none" aria-live="polite">
                     <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-3 md:mb-5">
-                        <span className="hidden md:inline bg-[#d35400] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg border border-white/10">
+                        <span className="hidden md:inline bg-brand text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg border border-white/10">
                             Päivän tarjous
                         </span>
                         <span className="bg-white/10 backdrop-blur-xl px-3 md:px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider md:tracking-[0.2em] border border-white/10">
@@ -98,25 +98,25 @@ export default function FeaturedCarousel({ offers }: FeaturedCarouselProps) {
                         </span>
                         {offer.eta_minutes && (
                             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-3 md:px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider md:tracking-[0.2em] border border-white/10">
-                                <Clock className="w-4 h-4 text-[#f3d179]" />
+                                <Clock className="w-4 h-4 text-white" />
                                 {offer.eta_minutes} min
                             </div>
                         )}
                         {offer.meal.restaurant.rating > 0 && (
                             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-3 md:px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider md:tracking-[0.2em] border border-white/10">
-                                <Star className="w-4 h-4 text-[#f3d179] fill-[#f3d179]" />
+                                <Star className="w-4 h-4 text-star fill-star" />
                                 {Number(offer.meal.restaurant.rating).toFixed(1)}
                             </div>
                         )}
                     </div>
                     <h2 className="text-3xl md:text-5xl font-black mb-2 md:mb-3 tracking-tighter leading-none line-clamp-2">{offer.meal.name}</h2>
-                    <p className="text-[#fdf2e2]/80 font-medium md:text-lg mb-4 md:mb-6">
+                    <p className="text-white/80 font-medium md:text-lg mb-4 md:mb-6">
                         {offer.meal.restaurant.name}
                         {offer.meal.restaurant.city?.name ? ` · ${offer.meal.restaurant.city.name}` : ''}
                     </p>
                     <div className="flex flex-wrap items-center justify-between md:justify-start gap-3 md:gap-6">
                         <div className="flex items-baseline gap-3">
-                            <span className="text-3xl md:text-4xl font-black text-[#f3d179]">{formatPrice(offer.price_cents)}</span>
+                            <span className="text-3xl md:text-4xl font-black text-white">{formatPrice(offer.price_cents)}</span>
                             {offer.old_price_cents && offer.old_price_cents > offer.price_cents && (
                                 <span className="text-lg font-bold text-white/50 line-through">{formatPrice(offer.old_price_cents)}</span>
                             )}
@@ -127,7 +127,7 @@ export default function FeaturedCarousel({ offers }: FeaturedCarouselProps) {
                         <a
                             href={isDemo ? `/offer/${offer.id}` : getTrackingUrl(offer.id)}
                             {...(isDemo ? {} : { target: '_blank', rel: 'noopener' })}
-                            className="pointer-events-auto bg-white text-[#3d1d11] px-5 py-3 md:px-8 md:py-4 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-[#f3d179] hover:scale-105 active:scale-95 transition-all shadow-xl"
+                            className="pointer-events-auto bg-white text-ink px-5 py-3 md:px-8 md:py-4 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-line hover:scale-105 active:scale-95 transition-all shadow-xl"
                         >
                             {t.card.order}
                         </a>
@@ -142,7 +142,7 @@ export default function FeaturedCarousel({ offers }: FeaturedCarouselProps) {
                                 onClick={() => setIndex(i)}
                                 aria-label={`Tarjous ${i + 1}/${count}`}
                                 aria-current={i === index % count}
-                                className={`h-2 rounded-full transition-all ${i === index % count ? 'w-8 bg-[#f3d179]' : 'w-2 bg-white/40 hover:bg-white/70'}`}
+                                className={`h-2 rounded-full transition-all ${i === index % count ? 'w-8 bg-white' : 'w-2 bg-white/40 hover:bg-white/70'}`}
                             />
                         ))}
                     </div>

@@ -75,7 +75,7 @@ export default function AiAssistant() {
                     <button
                         onClick={() => setIsOpen(true)}
                         aria-label={t.ai.button}
-                        className="group flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                        className="group flex items-center gap-2 bg-gradient-to-r from-brand to-brand-dark text-white p-4 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
                     >
                         <Sparkles className="w-6 h-6 animate-pulse" />
                         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 whitespace-nowrap font-medium">
@@ -88,16 +88,16 @@ export default function AiAssistant() {
             {/* Chat Window */}
             {isOpen && (
                 <div className="fixed bottom-24 right-4 left-4 md:left-auto md:right-6 md:w-96 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
-                    <Card className="flex flex-col h-[520px] max-h-[75vh] border border-violet-100 shadow-2xl overflow-hidden bg-white/95 backdrop-blur-md">
+                    <Card className="flex flex-col h-[520px] max-h-[75vh] border border-line shadow-2xl overflow-hidden bg-white/95 backdrop-blur-md">
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-violet-600 to-indigo-600 p-4 flex justify-between items-start text-white">
+                        <div className="bg-gradient-to-r from-brand to-brand-dark p-4 flex justify-between items-start text-white">
                             <div className="flex items-center gap-2">
                                 <div className="bg-white/20 p-1.5 rounded-lg">
                                     <Bot className="w-5 h-5" />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-sm">{t.ai.title}</h3>
-                                    <p className="text-[10px] text-violet-100 leading-snug">{t.ai.disclosure}</p>
+                                    <p className="text-[10px] text-white/80 leading-snug">{t.ai.disclosure}</p>
                                 </div>
                             </div>
                             <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white hover:bg-white/10 p-1 rounded transition-colors">
@@ -117,7 +117,7 @@ export default function AiAssistant() {
                                     <div className={`
                                 max-w-[85%] rounded-2xl p-3 text-sm whitespace-pre-line
                                 ${msg.role === 'user'
-                                            ? 'bg-blue-600 text-white rounded-br-none shadow-md'
+                                            ? 'bg-brand text-white rounded-br-none shadow-md'
                                             : 'bg-white text-gray-700 rounded-bl-none shadow-sm border border-gray-100'}
                             `}>
                                         {msg.content}
@@ -143,7 +143,7 @@ export default function AiAssistant() {
                                                         href={getTrackingUrl(offer.id)}
                                                         target="_blank"
                                                         rel="noopener"
-                                                        className="shrink-0 text-[11px] font-bold uppercase bg-violet-600 hover:bg-violet-700 text-white px-2.5 py-1.5 rounded-lg transition-colors"
+                                                        className="shrink-0 text-[11px] font-bold uppercase bg-brand hover:bg-brand-dark text-white px-2.5 py-1.5 rounded-lg transition-colors"
                                                     >
                                                         {t.ai.view}
                                                     </a>
@@ -173,12 +173,12 @@ export default function AiAssistant() {
                                     onChange={(e) => setInputValue(e.target.value)}
                                     placeholder={t.ai.placeholder}
                                     maxLength={500}
-                                    className="flex-1 text-sm bg-gray-50 border-gray-200 focus:ring-violet-500 rounded-xl"
+                                    className="flex-1 text-sm bg-gray-50 border-gray-200 focus:ring-brand rounded-xl"
                                 />
                                 <button
                                     type="submit"
                                     disabled={!inputValue.trim() || isTyping}
-                                    className="bg-violet-600 hover:bg-violet-700 text-white p-2 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="bg-brand hover:bg-brand-dark text-white p-2 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <Send className="w-5 h-5" />
                                 </button>

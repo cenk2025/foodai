@@ -173,18 +173,18 @@ export default function HomePage() {
   }, [handleSearch, searchQuery, city, selectedCategory, sortBy, freeDelivery])
 
   const filterClass = (active: boolean) => `flex flex-shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-[11px] font-bold transition-all ${active
-    ? 'bg-[#3d1d11] text-white shadow-md'
-    : 'bg-[#fdf2e2] text-[#3d1d11] hover:bg-[#f3d179]'
+    ? 'bg-brand text-white shadow-md'
+    : 'bg-soft text-ink hover:bg-line'
     }`
 
   return (
-    <div className="min-h-screen bg-[#fffcf8] pb-20">
+    <div className="min-h-screen bg-page pb-20">
       {/* Search first: one box that takes both keywords and sentences */}
-      <section className="bg-white px-4 pt-5 pb-5 border-b border-[#f1ebd8] rounded-b-[2rem] card-shadow relative z-10">
+      <section className="bg-white px-4 pt-5 pb-5 border-b border-line rounded-b-[2rem] card-shadow relative z-10">
         <div className="max-w-7xl mx-auto space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-10">
-            <h1 className="flex-shrink-0 text-2xl md:text-3xl font-black text-[#3d1d11] tracking-tight">
-              Mitä tekisi mieli <span className="text-[#d35400]">syödä?</span>
+            <h1 className="flex-shrink-0 text-2xl md:text-3xl font-black text-ink tracking-tight">
+              Mitä tekisi mieli <span className="text-brand">syödä?</span>
             </h1>
             <div className="w-full">
               <SearchBar
@@ -224,8 +224,8 @@ export default function HomePage() {
                 onClick={() => handleSearch('', label, sortBy, freeDelivery)}
                 aria-pressed={selectedCategory === label}
                 className={`flex-shrink-0 px-5 py-2 rounded-2xl text-[11px] font-black uppercase tracking-wider transition-all border ${selectedCategory === label
-                  ? 'bg-[#3d1d11] text-white border-[#3d1d11] shadow-lg'
-                  : 'bg-white text-[#3d1d11] border-[#f1ebd8] hover:border-[#d35400]/30 hover:bg-[#fdf2e2]/50'
+                  ? 'bg-brand text-white border-brand shadow-lg'
+                  : 'bg-white text-ink border-line hover:border-brand/30 hover:bg-soft/50'
                   }`}
               >
                 {label}
@@ -257,15 +257,15 @@ export default function HomePage() {
         <section>
           <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
             <div className="space-y-1">
-              <h2 className="text-3xl font-black text-[#3d1d11] tracking-tight">{t.card.all_deals}</h2>
-              <p className="text-sm text-[#a08a7e] font-medium">
+              <h2 className="text-3xl font-black text-ink tracking-tight">{t.card.all_deals}</h2>
+              <p className="text-sm text-subtle font-medium">
                 {sortBy === 'price_asc' ? t.card.ranking_price : t.card.ranking_savings} {t.card.ranking_note}
               </p>
             </div>
             <Link href="/search">
-              <span className="flex items-center gap-3 text-[#3d1d11] hover:text-[#d35400] transition-colors p-3 rounded-2xl bg-white border border-[#f1ebd8] shadow-sm font-black uppercase text-[10px] tracking-widest group">
+              <span className="flex items-center gap-3 text-ink hover:text-brand transition-colors p-3 rounded-2xl bg-white border border-line shadow-sm font-black uppercase text-[10px] tracking-widest group">
                 {t.card.see_all}
-                <span className="bg-[#3d1d11] group-hover:bg-[#d35400] p-1 rounded-lg transition-colors">
+                <span className="bg-brand group-hover:bg-brand-dark p-1 rounded-lg transition-colors">
                   <ChevronRight className="w-4 h-4 text-white" />
                 </span>
               </span>
@@ -274,18 +274,18 @@ export default function HomePage() {
 
           {aiLabels && (
             <div className="flex flex-wrap items-center gap-2 mb-6">
-              <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#d35400]">
+              <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-brand">
                 <Sparkles className="w-4 h-4" />
                 {t.ai.understood}
               </span>
               {aiLabels.map((label) => (
-                <span key={label} className="px-3 py-1.5 rounded-xl bg-[#fdf2e2] text-[#3d1d11] text-xs font-bold border border-[#f1ebd8]">
+                <span key={label} className="px-3 py-1.5 rounded-xl bg-soft text-ink text-xs font-bold border border-line">
                   {label}
                 </span>
               ))}
               <button
                 onClick={clearAiSearch}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[#a08a7e] hover:text-[#d35400] text-xs font-bold transition-colors"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-subtle hover:text-brand text-xs font-bold transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
                 {t.ai.clear}
@@ -295,11 +295,11 @@ export default function HomePage() {
 
           {!loading && comparisons.length === 0 && (
             aiLabels ? (
-              <p className="text-[#a08a7e] font-medium mb-8">{t.ai.no_results}</p>
+              <p className="text-subtle font-medium mb-8">{t.ai.no_results}</p>
             ) : (
-              <div className="rounded-[2rem] border-2 border-dashed border-[#f1ebd8] px-6 py-16 text-center">
-                <h3 className="text-lg font-black text-[#3d1d11] mb-2">{t.results.no_results_title}</h3>
-                <p className="text-[#a08a7e] font-medium">{t.results.no_results_desc}</p>
+              <div className="rounded-[2rem] border-2 border-dashed border-line px-6 py-16 text-center">
+                <h3 className="text-lg font-black text-ink mb-2">{t.results.no_results_title}</h3>
+                <p className="text-subtle font-medium">{t.results.no_results_desc}</p>
               </div>
             )
           )}

@@ -22,7 +22,7 @@ export default function MealImage({ meal, sizes, priority, className = '', emoji
         <div
             role="img"
             aria-label={meal.name}
-            className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#fdf2e2] to-[#f6dfb8] ${className}`}
+            className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br from-soft to-line ${className}`}
         >
             <span aria-hidden="true" className={emojiClassName}>{emoji}</span>
         </div>

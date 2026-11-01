@@ -108,14 +108,14 @@ export default function MenuItemDetailModal({ item, onClose }: Props) {
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Sticky header (matches Wolt: title + close, always visible while scrolling) */}
-                <header className="relative flex items-center justify-between px-6 py-4 border-b border-[#f1ebd8] bg-white z-10">
-                    <h2 className="text-base font-black text-[#3d1d11] tracking-tight truncate pr-10">
+                <header className="relative flex items-center justify-between px-6 py-4 border-b border-line bg-white z-10">
+                    <h2 className="text-base font-black text-ink tracking-tight truncate pr-10">
                         {item.name}
                     </h2>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="w-10 h-10 rounded-full bg-white border border-[#f1ebd8] text-[#3d1d11] flex items-center justify-center hover:bg-[#fdf2e2] transition-colors"
+                        className="w-10 h-10 rounded-full bg-white border border-line text-ink flex items-center justify-center hover:bg-soft transition-colors"
                         aria-label={t.direct.item.close}
                     >
                         <X className="w-5 h-5" />
@@ -126,7 +126,7 @@ export default function MenuItemDetailModal({ item, onClose }: Props) {
                 <div className="flex-1 overflow-y-auto">
                     {/* Image */}
                     {item.imageUrl && (
-                        <div className="relative h-48 sm:h-56 bg-[#fdf2e2]">
+                        <div className="relative h-48 sm:h-56 bg-soft">
                             <Image
                                 src={item.imageUrl}
                                 alt={item.name}
@@ -139,7 +139,7 @@ export default function MenuItemDetailModal({ item, onClose }: Props) {
 
                     <div className="p-6 sm:p-8 space-y-7">
                         {item.description && (
-                            <p className="text-sm text-[#a08a7e] font-medium leading-relaxed">
+                            <p className="text-sm text-subtle font-medium leading-relaxed">
                                 {item.description}
                             </p>
                         )}
@@ -147,17 +147,17 @@ export default function MenuItemDetailModal({ item, onClose }: Props) {
                         {/* Size group */}
                         {item.sizes && item.sizes.length > 0 && (
                             <Section title={t.direct.item.size}>
-                                <ul className="divide-y divide-[#f1ebd8]">
+                                <ul className="divide-y divide-line">
                                     {item.sizes.map((s) => (
                                         <li key={s.id}>
                                             <label className="flex items-center justify-between py-3 cursor-pointer group">
                                                 <span className="flex items-center gap-3">
                                                     <Radio checked={sizeId === s.id} />
-                                                    <span className="font-bold text-[#3d1d11] group-hover:text-[#d35400] transition-colors">
+                                                    <span className="font-bold text-ink group-hover:text-brand transition-colors">
                                                         {s.label}
                                                     </span>
                                                 </span>
-                                                <span className="text-sm font-black text-[#3d1d11]">
+                                                <span className="text-sm font-black text-ink">
                                                     {formatEUR(s.priceCents)}
                                                 </span>
                                                 <input
@@ -185,7 +185,7 @@ export default function MenuItemDetailModal({ item, onClose }: Props) {
                                     helperFromGroup(group, t.direct.item.choose_at_least)
                                 }
                             >
-                                <ul className="divide-y divide-[#f1ebd8]">
+                                <ul className="divide-y divide-line">
                                     {group.options.map((opt) => {
                                         const checked = isSelected(group.id, opt.id);
                                         return (
@@ -200,8 +200,8 @@ export default function MenuItemDetailModal({ item, onClose }: Props) {
                                                         <span
                                                             className={`font-bold transition-colors ${
                                                                 checked
-                                                                    ? 'text-[#3d1d11]'
-                                                                    : 'text-[#3d1d11] group-hover:text-[#d35400]'
+                                                                    ? 'text-ink'
+                                                                    : 'text-ink group-hover:text-brand'
                                                             }`}
                                                         >
                                                             {opt.label}
@@ -210,8 +210,8 @@ export default function MenuItemDetailModal({ item, onClose }: Props) {
                                                     <span
                                                         className={`text-sm font-black ${
                                                             opt.priceCents === 0
-                                                                ? 'text-[#a08a7e]'
-                                                                : 'text-[#3d1d11]'
+                                                                ? 'text-subtle'
+                                                                : 'text-ink'
                                                         }`}
                                                     >
                                                         {opt.priceCents === 0
@@ -241,22 +241,22 @@ export default function MenuItemDetailModal({ item, onClose }: Props) {
                 </div>
 
                 {/* Sticky footer with quantity + add CTA */}
-                <footer className="border-t border-[#f1ebd8] p-4 sm:p-5 flex items-center gap-3 bg-white">
+                <footer className="border-t border-line p-4 sm:p-5 flex items-center gap-3 bg-white">
                     {/* Qty stepper */}
-                    <div className="flex items-center gap-2 bg-[#fdf2e2]/70 rounded-full px-2 py-1.5">
+                    <div className="flex items-center gap-2 bg-soft/70 rounded-full px-2 py-1.5">
                         <button
                             type="button"
                             onClick={() => setQty((q) => Math.max(1, q - 1))}
-                            className="w-9 h-9 rounded-full bg-white text-[#3d1d11] flex items-center justify-center shadow-sm hover:bg-[#fdf2e2] transition-colors"
+                            className="w-9 h-9 rounded-full bg-white text-ink flex items-center justify-center shadow-sm hover:bg-soft transition-colors"
                             aria-label="-"
                         >
                             <Minus className="w-4 h-4" />
                         </button>
-                        <span className="w-7 text-center font-black text-[#3d1d11]">{qty}</span>
+                        <span className="w-7 text-center font-black text-ink">{qty}</span>
                         <button
                             type="button"
                             onClick={() => setQty((q) => q + 1)}
-                            className="w-9 h-9 rounded-full bg-white text-[#3d1d11] flex items-center justify-center shadow-sm hover:bg-[#fdf2e2] transition-colors"
+                            className="w-9 h-9 rounded-full bg-white text-ink flex items-center justify-center shadow-sm hover:bg-soft transition-colors"
                             aria-label="+"
                         >
                             <Plus className="w-4 h-4" />
@@ -270,8 +270,8 @@ export default function MenuItemDetailModal({ item, onClose }: Props) {
                         disabled={!validation.ok}
                         className={`flex-1 rounded-full py-4 px-5 font-black text-sm flex items-center justify-between gap-3 transition-colors shadow-lg ${
                             validation.ok
-                                ? 'bg-[#3d1d11] hover:bg-[#d35400] text-white'
-                                : 'bg-[#fdf2e2] text-[#a08a7e] cursor-not-allowed'
+                                ? 'bg-brand hover:bg-brand-dark text-white'
+                                : 'bg-soft text-subtle cursor-not-allowed'
                         }`}
                     >
                         <span className="flex items-center gap-2">
@@ -303,9 +303,9 @@ function Section({
     return (
         <section>
             <header className="mb-1">
-                <h3 className="text-base font-black text-[#3d1d11] tracking-tight">{title}</h3>
+                <h3 className="text-base font-black text-ink tracking-tight">{title}</h3>
                 {helper && (
-                    <p className="text-xs font-bold text-[#a08a7e] mt-1">{helper}</p>
+                    <p className="text-xs font-bold text-subtle mt-1">{helper}</p>
                 )}
             </header>
             {children}
@@ -317,11 +317,11 @@ function Radio({ checked }: { checked: boolean }) {
     return (
         <span
             className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                checked ? 'border-[#d35400] bg-white' : 'border-[#a08a7e]'
+                checked ? 'border-brand bg-white' : 'border-subtle'
             }`}
             aria-hidden="true"
         >
-            {checked && <span className="w-2.5 h-2.5 rounded-full bg-[#d35400]" />}
+            {checked && <span className="w-2.5 h-2.5 rounded-full bg-brand" />}
         </span>
     );
 }
@@ -330,7 +330,7 @@ function Checkbox({ checked }: { checked: boolean }) {
     return (
         <span
             className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors ${
-                checked ? 'border-[#d35400] bg-[#d35400]' : 'border-[#a08a7e] bg-white'
+                checked ? 'border-brand bg-brand' : 'border-subtle bg-white'
             }`}
             aria-hidden="true"
         >

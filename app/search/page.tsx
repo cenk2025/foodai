@@ -40,10 +40,10 @@ const POPULAR: Preset[] = [
 ]
 
 const CATEGORIES = [
-    { name: 'Pizza', icon: Pizza, color: '#f3d179', params: { query: 'pizza' } },
-    { name: 'Burger', icon: Sandwich, color: '#d35400', params: { query: 'burger' } },
-    { name: 'Kebab', icon: Utensils, color: '#3d1d11', params: { query: 'kebab' } },
-    { name: 'Sushi', icon: ChefHat, color: '#27ae60', params: { query: 'sushi' } },
+    { name: 'Pizza', icon: Pizza, color: '#d92d20', params: { query: 'pizza' } },
+    { name: 'Burger', icon: Sandwich, color: '#d92d20', params: { query: 'burger' } },
+    { name: 'Kebab', icon: Utensils, color: '#1f1a17', params: { query: 'kebab' } },
+    { name: 'Sushi', icon: ChefHat, color: '#15803d', params: { query: 'sushi' } },
 ]
 
 // Meal names in the data are English; map common Finnish keywords so plain
@@ -160,31 +160,31 @@ function SearchPageContent() {
     )
 
     return (
-        <div className="min-h-screen bg-[#fffcf8] font-outfit pb-24 md:pb-12">
+        <div className="min-h-screen bg-page font-outfit pb-24 md:pb-12">
             {/* Search Header */}
-            <div className="bg-[#3d1d11] pt-16 pb-32 relative overflow-hidden">
+            <div className="bg-brand pt-16 pb-32 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full">
-                    <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[150%] bg-[#d35400]/20 rounded-full blur-3xl transform rotate-12" />
+                    <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[150%] bg-brand/20 rounded-full blur-3xl transform rotate-12" />
                 </div>
 
                 <div className="container mx-auto px-6 relative z-10 max-w-4xl">
-                    <Link href="/" className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-8 group">
+                    <Link href="/" className="inline-flex items-center gap-2 text-white/90 hover:text-white transition-colors mb-8 group">
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em]">Takaisin</span>
                     </Link>
                     <h1 className="text-4xl font-black text-white mb-3">Mitä tekisi mieli?</h1>
-                    <p className="text-white/60 font-medium mb-8">
+                    <p className="text-white/90 font-medium mb-8">
                         Hae ruokaa tai kirjoita toiveesi omin sanoin, esim. &quot;vegaaninen alle 12 € ilmaisella toimituksella&quot;.
                     </p>
 
                     <form onSubmit={submit} className="relative group">
-                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[#a08a7e] group-focus-within:text-[#d35400] transition-colors">
+                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-subtle group-focus-within:text-brand transition-colors">
                             <SearchIcon className="w-6 h-6" />
                         </div>
                         <input
                             type="search"
                             placeholder="Etsi ravintolaa tai ruokaa..."
-                            className="w-full bg-white border-none rounded-[2rem] py-6 pl-16 pr-20 text-lg focus:ring-4 focus:ring-[#f3d179]/50 transition-all font-medium app-shadow"
+                            className="w-full bg-white border-none rounded-[2rem] py-6 pl-16 pr-20 text-lg focus:ring-4 focus:ring-brand/30 transition-all font-medium app-shadow"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             maxLength={200}
@@ -193,7 +193,7 @@ function SearchPageContent() {
                         <button
                             type="submit"
                             aria-label="Hae"
-                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-[#3d1d11] text-white p-3 rounded-2xl hover:bg-[#d35400] transition-all"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-brand text-white p-3 rounded-2xl hover:bg-brand-dark transition-all"
                         >
                             <SearchIcon className="w-5 h-5" />
                         </button>
@@ -203,9 +203,9 @@ function SearchPageContent() {
 
             <div className="container mx-auto px-6 max-w-4xl -mt-16 relative z-20 space-y-12">
                 {/* Popular Searches */}
-                <div className="bg-white rounded-[3rem] p-10 app-shadow border border-[#f1ebd8]">
-                    <h2 className="text-xl font-black text-[#3d1d11] mb-8 uppercase tracking-widest flex items-center gap-3">
-                        <TrendingDown className="w-5 h-5 text-[#d35400]" />
+                <div className="bg-white rounded-[3rem] p-10 app-shadow border border-line">
+                    <h2 className="text-xl font-black text-ink mb-8 uppercase tracking-widest flex items-center gap-3">
+                        <TrendingDown className="w-5 h-5 text-brand" />
                         Suosituimmat haut
                     </h2>
                     <div className="flex flex-wrap gap-3">
@@ -214,8 +214,8 @@ function SearchPageContent() {
                                 key={preset.label}
                                 onClick={() => choosePreset(preset)}
                                 className={`px-6 py-3 rounded-2xl text-sm font-bold border transition-all ${activeLabel === preset.label
-                                    ? 'bg-[#d35400] text-white border-[#d35400]'
-                                    : 'bg-[#fdf2e2]/30 text-[#3d1d11] border-[#f1ebd8] hover:bg-[#d35400] hover:text-white hover:border-[#d35400]'}`}
+                                    ? 'bg-brand text-white border-brand'
+                                    : 'bg-soft/30 text-ink border-line hover:bg-brand-dark hover:text-white hover:border-brand'}`}
                             >
                                 {preset.label}
                             </button>
@@ -226,12 +226,12 @@ function SearchPageContent() {
                 {showResults ? (
                     <section>
                         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                            <h2 className="text-2xl font-black text-[#3d1d11]">
+                            <h2 className="text-2xl font-black text-ink">
                                 {loading ? 'Haetaan…' : `${comparisons.length} tarjousta`}
-                                {!loading && city && <span className="text-[#a08a7e] font-medium text-base"> · {city}</span>}
+                                {!loading && city && <span className="text-subtle font-medium text-base"> · {city}</span>}
                             </h2>
                             <FulfilmentToggle value={fulfilment} onChange={setFulfilment} />
-                            <button onClick={clear} className="flex items-center gap-1 text-[#a08a7e] hover:text-[#d35400] text-xs font-bold uppercase tracking-widest transition-colors">
+                            <button onClick={clear} className="flex items-center gap-1 text-subtle hover:text-brand text-xs font-bold uppercase tracking-widest transition-colors">
                                 <X className="w-4 h-4" />
                                 {t.ai.clear}
                             </button>
@@ -239,12 +239,12 @@ function SearchPageContent() {
 
                         {aiLabels && (
                             <div className="flex flex-wrap items-center gap-2 mb-8">
-                                <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#d35400]">
+                                <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-brand">
                                     <Sparkles className="w-4 h-4" />
                                     {t.ai.understood}
                                 </span>
                                 {aiLabels.map((label) => (
-                                    <span key={label} className="px-3 py-1.5 rounded-xl bg-[#fdf2e2] text-[#3d1d11] text-xs font-bold border border-[#f1ebd8]">
+                                    <span key={label} className="px-3 py-1.5 rounded-xl bg-soft text-ink text-xs font-bold border border-line">
                                         {label}
                                     </span>
                                 ))}
@@ -261,9 +261,9 @@ function SearchPageContent() {
                                 {comparisons.map(({ best, others }) => <OfferCard key={best.id} offer={best} others={others} />)}
                             </div>
                         ) : (
-                            <div className="text-center py-16 bg-white rounded-[3rem] border border-[#f1ebd8]">
-                                <h3 className="text-xl font-black text-[#3d1d11] mb-2">Ei tarjouksia</h3>
-                                <p className="text-[#a08a7e] font-medium max-w-sm mx-auto">{t.ai.no_results}</p>
+                            <div className="text-center py-16 bg-white rounded-[3rem] border border-line">
+                                <h3 className="text-xl font-black text-ink mb-2">Ei tarjouksia</h3>
+                                <p className="text-subtle font-medium max-w-sm mx-auto">{t.ai.no_results}</p>
                             </div>
                         )}
                     </section>
@@ -271,18 +271,18 @@ function SearchPageContent() {
                     <>
                         {/* Categories Grid */}
                         <div>
-                            <h2 className="text-2xl font-black text-[#3d1d11] mb-8">Selaa kategorioittain</h2>
+                            <h2 className="text-2xl font-black text-ink mb-8">Selaa kategorioittain</h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                                 {CATEGORIES.map((cat) => (
                                     <button
                                         key={cat.name}
                                         onClick={() => choosePreset({ label: cat.name, params: cat.params })}
-                                        className="bg-white p-8 rounded-[2.5rem] border border-[#f1ebd8] app-shadow hover:translate-y-[-8px] transition-all cursor-pointer group text-center"
+                                        className="bg-white p-8 rounded-[2.5rem] border border-line app-shadow hover:translate-y-[-8px] transition-all cursor-pointer group text-center"
                                     >
                                         <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform" style={{ backgroundColor: `${cat.color}20`, color: cat.color }}>
                                             <cat.icon className="w-8 h-8" />
                                         </div>
-                                        <span className="font-black text-[#3d1d11] uppercase text-xs tracking-widest">{cat.name}</span>
+                                        <span className="font-black text-ink uppercase text-xs tracking-widest">{cat.name}</span>
                                     </button>
                                 ))}
                             </div>
@@ -290,11 +290,11 @@ function SearchPageContent() {
 
                         {/* Empty State / Prompt */}
                         <div className="text-center py-20">
-                            <div className="w-24 h-24 bg-[#fdf2e2]/50 rounded-[2.5rem] flex items-center justify-center text-[#a08a7e]/30 mx-auto mb-8">
+                            <div className="w-24 h-24 bg-soft/50 rounded-[2.5rem] flex items-center justify-center text-subtle/30 mx-auto mb-8">
                                 <Utensils className="w-12 h-12" />
                             </div>
-                            <h3 className="text-2xl font-black text-[#3d1d11] mb-3">Aloita haku ylhäältä</h3>
-                            <p className="text-[#a08a7e] font-medium max-w-xs mx-auto">Löydämme sinulle kaupungin parhaat diilit ja herkullisimmat ruoka-annokset silmänräpäyksessä.</p>
+                            <h3 className="text-2xl font-black text-ink mb-3">Aloita haku ylhäältä</h3>
+                            <p className="text-subtle font-medium max-w-xs mx-auto">Löydämme sinulle kaupungin parhaat diilit ja herkullisimmat ruoka-annokset silmänräpäyksessä.</p>
                         </div>
                     </>
                 )}

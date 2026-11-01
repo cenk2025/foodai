@@ -92,21 +92,21 @@ export default function CheckoutClient({ restaurant, menuItems, zone }: Props) {
     };
 
     return (
-        <div className="min-h-screen bg-[#fffcf8] pb-32">
-            <header className="bg-white border-b border-[#f1ebd8] px-6 py-5">
+        <div className="min-h-screen bg-page pb-32">
+            <header className="bg-white border-b border-line px-6 py-5">
                 <div className="max-w-5xl mx-auto flex items-center gap-4">
                     <Link
                         href={`/restaurant/${restaurant.slug}`}
-                        className="w-10 h-10 rounded-full bg-[#fdf2e2] text-[#3d1d11] flex items-center justify-center hover:bg-[#f1ebd8] transition-colors"
+                        className="w-10 h-10 rounded-full bg-soft text-ink flex items-center justify-center hover:bg-line transition-colors"
                         aria-label={t.direct.restaurant.back}
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <div>
-                        <p className="text-xs font-black uppercase tracking-[0.2em] text-[#d35400]">
+                        <p className="text-xs font-black uppercase tracking-[0.2em] text-brand">
                             {restaurant.name}
                         </p>
-                        <h1 className="text-2xl font-black text-[#3d1d11] tracking-tight">
+                        <h1 className="text-2xl font-black text-ink tracking-tight">
                             {t.direct.checkout.title}
                         </h1>
                     </div>
@@ -117,8 +117,8 @@ export default function CheckoutClient({ restaurant, menuItems, zone }: Props) {
                 {/* Form column */}
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Contact */}
-                    <fieldset className="bg-white rounded-[2rem] border border-[#f1ebd8] p-7 app-shadow space-y-4">
-                        <legend className="text-xs font-black uppercase tracking-[0.2em] text-[#d35400] px-2">
+                    <fieldset className="bg-white rounded-[2rem] border border-line p-7 app-shadow space-y-4">
+                        <legend className="text-xs font-black uppercase tracking-[0.2em] text-brand px-2">
                             {t.direct.checkout.contact}
                         </legend>
                         <Field label={t.direct.checkout.name} required>
@@ -151,8 +151,8 @@ export default function CheckoutClient({ restaurant, menuItems, zone }: Props) {
                     </fieldset>
 
                     {/* Delivery */}
-                    <fieldset className="bg-white rounded-[2rem] border border-[#f1ebd8] p-7 app-shadow space-y-4">
-                        <legend className="text-xs font-black uppercase tracking-[0.2em] text-[#d35400] px-2">
+                    <fieldset className="bg-white rounded-[2rem] border border-line p-7 app-shadow space-y-4">
+                        <legend className="text-xs font-black uppercase tracking-[0.2em] text-brand px-2">
                             {t.direct.checkout.delivery}
                         </legend>
                         <Field label={t.direct.checkout.street} required>
@@ -184,7 +184,7 @@ export default function CheckoutClient({ restaurant, menuItems, zone }: Props) {
                         <button
                             type="button"
                             onClick={handleCheckZone}
-                            className="text-xs font-black uppercase tracking-[0.2em] text-[#d35400] hover:text-[#3d1d11] transition-colors"
+                            className="text-xs font-black uppercase tracking-[0.2em] text-brand hover:text-ink transition-colors"
                         >
                             {t.direct.checkout.check_zone}
                         </button>
@@ -213,14 +213,14 @@ export default function CheckoutClient({ restaurant, menuItems, zone }: Props) {
                             !zoneCheck?.inZone ||
                             belowMin
                         }
-                        className="w-full bg-[#3d1d11] hover:bg-[#d35400] disabled:bg-[#a08a7e] disabled:cursor-not-allowed text-white rounded-2xl py-5 font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 transition-colors shadow-lg"
+                        className="w-full bg-brand hover:bg-brand-dark disabled:bg-subtle disabled:cursor-not-allowed text-white rounded-2xl py-5 font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 transition-colors shadow-lg"
                     >
                         <ShieldCheck className="w-4 h-4" />
                         {isPending ? t.direct.checkout.placing : t.direct.checkout.pay_with_shopify}
                     </button>
 
                     {belowMin && (
-                        <p className="text-sm font-bold text-[#d35400] text-center">
+                        <p className="text-sm font-bold text-brand text-center">
                             {t.direct.checkout.error_min_order} ({formatEUR(minOrder)})
                         </p>
                     )}
@@ -235,13 +235,13 @@ export default function CheckoutClient({ restaurant, menuItems, zone }: Props) {
 
                 {/* Summary column */}
                 <aside className="lg:sticky lg:top-8 self-start">
-                    <div className="bg-white rounded-[2rem] border border-[#f1ebd8] p-7 app-shadow space-y-5">
-                        <h2 className="text-lg font-black tracking-tight text-[#3d1d11]">
+                    <div className="bg-white rounded-[2rem] border border-line p-7 app-shadow space-y-5">
+                        <h2 className="text-lg font-black tracking-tight text-ink">
                             {t.direct.checkout.summary}
                         </h2>
 
                         {lines.length === 0 ? (
-                            <p className="text-sm font-bold text-[#a08a7e]">{t.direct.cart.empty}</p>
+                            <p className="text-sm font-bold text-subtle">{t.direct.cart.empty}</p>
                         ) : (
                             <ul className="space-y-3">
                                 {lines.map((l) => {
@@ -258,19 +258,19 @@ export default function CheckoutClient({ restaurant, menuItems, zone }: Props) {
                                     return (
                                         <li
                                             key={l.lineId}
-                                            className="flex justify-between gap-3 text-sm font-bold text-[#3d1d11]"
+                                            className="flex justify-between gap-3 text-sm font-bold text-ink"
                                         >
                                             <div className="min-w-0">
                                                 <p className="truncate">
                                                     {l.quantity}× {item.name}
                                                 </p>
                                                 {sizeLabel && (
-                                                    <p className="text-xs font-medium text-[#a08a7e]">
+                                                    <p className="text-xs font-medium text-subtle">
                                                         {sizeLabel}
                                                     </p>
                                                 )}
                                                 {optionLabels.length > 0 && (
-                                                    <p className="text-xs font-medium text-[#a08a7e] truncate">
+                                                    <p className="text-xs font-medium text-subtle truncate">
                                                         + {optionLabels.join(', ')}
                                                     </p>
                                                 )}
@@ -282,7 +282,7 @@ export default function CheckoutClient({ restaurant, menuItems, zone }: Props) {
                             </ul>
                         )}
 
-                        <div className="space-y-2 text-sm font-bold pt-3 border-t border-[#f1ebd8]">
+                        <div className="space-y-2 text-sm font-bold pt-3 border-t border-line">
                             <Row label={t.direct.cart.subtotal} value={formatEUR(subtotalCents)} />
                             <Row
                                 label={t.direct.cart.delivery_fee}
@@ -306,21 +306,21 @@ export default function CheckoutClient({ restaurant, menuItems, zone }: Props) {
             <style jsx>{`
                 .form-input {
                     width: 100%;
-                    background: #fffcf8;
-                    border: 1px solid #f1ebd8;
+                    background: #fbfaf9;
+                    border: 1px solid #ece9e6;
                     border-radius: 1rem;
                     padding: 0.875rem 1rem;
                     font-size: 0.875rem;
-                    color: #3d1d11;
+                    color: #1f1a17;
                     transition: border-color 0.2s;
                 }
                 .form-input:focus {
                     outline: none;
-                    border-color: #d35400;
+                    border-color: #d92d20;
                 }
                 .form-input:disabled {
-                    background: #fdf2e2;
-                    color: #a08a7e;
+                    background: #f5f3f1;
+                    color: #6b625c;
                 }
             `}</style>
         </div>
@@ -338,9 +338,9 @@ function Field({
 }) {
     return (
         <label className="block space-y-1.5">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3d1d11]">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-ink">
                 {label}
-                {required && <span className="text-[#d35400]"> *</span>}
+                {required && <span className="text-brand"> *</span>}
             </span>
             {children}
         </label>
@@ -358,8 +358,8 @@ function Row({
     return (
         <div
             className={`flex justify-between ${
-                muted ? 'text-[#a08a7e]' : 'text-[#3d1d11]'
-            } ${bold ? 'text-lg font-black pt-2 border-t border-[#f1ebd8]' : ''}`}
+                muted ? 'text-subtle' : 'text-ink'
+            } ${bold ? 'text-lg font-black pt-2 border-t border-line' : ''}`}
         >
             <span>{label}</span>
             <span>{value}</span>

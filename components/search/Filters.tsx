@@ -117,7 +117,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                                         key={rating}
                                         onClick={() => onFilterChange({ ...filters, minRating: filters.minRating === rating ? undefined : rating })}
                                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${filters.minRating === rating
-                                            ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/30'
+                                            ? 'bg-brand text-white border-brand shadow-lg shadow-brand/30'
                                             : 'bg-background hover:bg-muted border-input hover:border-primary'
                                             }`}
                                     >
@@ -136,7 +136,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                                         type="checkbox"
                                         checked={filters.deliveryOnly}
                                         onChange={() => onFilterChange({ ...filters, deliveryOnly: !filters.deliveryOnly, pickupOnly: false })}
-                                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                                        className="w-4 h-4 rounded border-gray-300 text-brand focus:ring-2 focus:ring-brand cursor-pointer"
                                     />
                                     <span className="group-hover:text-primary transition-colors">{t.filters.delivery_only}</span>
                                 </label>
@@ -145,7 +145,7 @@ export default function Filters({ filters, onFilterChange }: FiltersProps) {
                                         type="checkbox"
                                         checked={filters.pickupOnly}
                                         onChange={() => onFilterChange({ ...filters, pickupOnly: !filters.pickupOnly, deliveryOnly: false })}
-                                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                                        className="w-4 h-4 rounded border-gray-300 text-brand focus:ring-2 focus:ring-brand cursor-pointer"
                                     />
                                     <span className="group-hover:text-primary transition-colors">{t.filters.pickup_only}</span>
                                 </label>

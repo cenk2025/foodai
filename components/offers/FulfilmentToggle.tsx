@@ -20,7 +20,7 @@ export default function FulfilmentToggle({ value, onChange }: FulfilmentTogglePr
     ]
 
     return (
-        <div role="group" aria-label={t.card.fulfilment_label} className="inline-flex flex-shrink-0 rounded-xl bg-[#fdf2e2] p-1">
+        <div role="group" aria-label={t.card.fulfilment_label} className="inline-flex flex-shrink-0 rounded-xl bg-soft p-1">
             {options.map(({ id, label, icon: Icon }) => (
                 <button
                     key={id}
@@ -28,8 +28,8 @@ export default function FulfilmentToggle({ value, onChange }: FulfilmentTogglePr
                     onClick={() => onChange(id)}
                     aria-pressed={value === id}
                     className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-bold transition-all ${value === id
-                        ? 'bg-[#3d1d11] text-white shadow-md'
-                        : 'text-[#3d1d11] hover:bg-[#f3d179]'
+                        ? 'bg-brand text-white shadow-md'
+                        : 'text-ink hover:bg-line'
                         }`}
                 >
                     <Icon className="h-3.5 w-3.5" />

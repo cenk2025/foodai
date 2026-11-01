@@ -20,9 +20,9 @@ export default function PriceComparison({ offers, currentOfferId }: PriceCompari
     const ranked = sortByTotal(offers)
 
     return (
-        <section className="bg-white rounded-[3rem] p-6 md:p-10 app-shadow border border-[#f1ebd8]">
-            <h2 className="text-2xl font-black text-[#3d1d11] tracking-tight">{t.card.compare_title}</h2>
-            <p className="text-sm text-[#a08a7e] font-medium mb-6">{t.card.compare_subtitle}</p>
+        <section className="bg-white rounded-[3rem] p-6 md:p-10 app-shadow border border-line">
+            <h2 className="text-2xl font-black text-ink tracking-tight">{t.card.compare_title}</h2>
+            <p className="text-sm text-subtle font-medium mb-6">{t.card.compare_subtitle}</p>
 
             <ul className="space-y-3">
                 {ranked.map((offer, i) => {
@@ -34,23 +34,23 @@ export default function PriceComparison({ offers, currentOfferId }: PriceCompari
                                 href={isDemo ? `/offer/${offer.id}` : getTrackingUrl(offer.id)}
                                 {...(isDemo ? {} : { target: '_blank', rel: 'noopener' })}
                                 aria-current={isCurrent ? 'true' : undefined}
-                                className={`flex items-center justify-between gap-3 rounded-2xl border p-4 transition-colors hover:border-[#d35400]/40 ${isCurrent ? 'border-[#f3d179] bg-[#fff9f0]' : 'border-[#f1ebd8]'}`}
+                                className={`flex items-center justify-between gap-3 rounded-2xl border p-4 transition-colors hover:border-brand/40 ${isCurrent ? 'border-line bg-soft' : 'border-line'}`}
                             >
                                 <div className="min-w-0">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <span className="font-black text-[#3d1d11]">{getSourceLabel(offer.source, t.card.example)}</span>
+                                        <span className="font-black text-ink">{getSourceLabel(offer.source, t.card.example)}</span>
                                         {i === 0 && (
-                                            <span className="rounded-lg bg-[#27ae60]/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#27ae60]">
+                                            <span className="rounded-lg bg-save/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-save">
                                                 {t.card.lowest}
                                             </span>
                                         )}
                                         {isCurrent && (
-                                            <span className="rounded-lg bg-[#f3d179]/40 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#3d1d11]">
+                                            <span className="rounded-lg bg-soft px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-ink">
                                                 {t.card.current}
                                             </span>
                                         )}
                                     </div>
-                                    <p className="mt-1 text-xs font-medium text-[#a08a7e]">
+                                    <p className="mt-1 text-xs font-medium text-subtle">
                                         {t.card.meal} {formatPrice(offer.price_cents)}
                                         {' · '}
                                         {offer.is_pickup
@@ -63,8 +63,8 @@ export default function PriceComparison({ offers, currentOfferId }: PriceCompari
                                     </p>
                                 </div>
                                 <div className="flex flex-shrink-0 items-center gap-2">
-                                    <span className="text-lg font-black text-[#e67e22]">{formatPrice(getOfferTotal(offer))}</span>
-                                    <ChevronRight className="h-4 w-4 text-[#a08a7e]" />
+                                    <span className="text-lg font-black text-ink">{formatPrice(getOfferTotal(offer))}</span>
+                                    <ChevronRight className="h-4 w-4 text-subtle" />
                                 </div>
                             </Link>
                         </li>

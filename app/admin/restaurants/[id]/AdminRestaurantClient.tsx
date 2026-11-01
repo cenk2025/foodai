@@ -146,7 +146,7 @@ export default function AdminRestaurantClient({ restaurant, menuItems, orders, z
             <CommissionStats orders={orders} />
 
             {/* Tabs */}
-            <div className="flex gap-2 border-b border-[#f1ebd8]">
+            <div className="flex gap-2 border-b border-line">
                 <TabButton active={tab === 'menu'} onClick={() => setTab('menu')}>
                     Menu ({menuItems.length})
                 </TabButton>
@@ -164,7 +164,7 @@ export default function AdminRestaurantClient({ restaurant, menuItems, orders, z
                         <button
                             type="button"
                             onClick={() => setEditing('new')}
-                            className="inline-flex items-center gap-2 bg-[#3d1d11] hover:bg-[#d35400] text-white rounded-xl px-5 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors"
+                            className="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white rounded-xl px-5 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors"
                         >
                             <Plus className="w-4 h-4" />
                             Add item
@@ -172,25 +172,25 @@ export default function AdminRestaurantClient({ restaurant, menuItems, orders, z
                     </div>
 
                     {menuItems.length === 0 ? (
-                        <p className="text-center text-[#a08a7e] py-12 bg-white rounded-2xl border border-[#f1ebd8]">
+                        <p className="text-center text-subtle py-12 bg-white rounded-2xl border border-line">
                             No menu items yet.
                         </p>
                     ) : (
-                        <ul className="bg-white border border-[#f1ebd8] rounded-[2rem] divide-y divide-[#f1ebd8] overflow-hidden">
+                        <ul className="bg-white border border-line rounded-[2rem] divide-y divide-line overflow-hidden">
                             {menuItems.map((item) => (
                                 <li
                                     key={item.id}
-                                    className="p-5 flex items-center gap-5 hover:bg-[#fffcf8] transition-colors"
+                                    className="p-5 flex items-center gap-5 hover:bg-page transition-colors"
                                 >
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-black text-[#3d1d11] truncate">
+                                        <h3 className="font-black text-ink truncate">
                                             {item.name}
                                         </h3>
-                                        <p className="text-sm font-medium text-[#a08a7e] line-clamp-1">
+                                        <p className="text-sm font-medium text-subtle line-clamp-1">
                                             {item.description}
                                         </p>
                                     </div>
-                                    <span className="text-sm font-black text-[#3d1d11]">
+                                    <span className="text-sm font-black text-ink">
                                         {formatEUR(item.priceCents)}
                                     </span>
                                     <span
@@ -205,7 +205,7 @@ export default function AdminRestaurantClient({ restaurant, menuItems, orders, z
                                     <button
                                         type="button"
                                         onClick={() => setEditing(item)}
-                                        className="w-9 h-9 rounded-full bg-[#fdf2e2] hover:bg-[#f1ebd8] text-[#3d1d11] flex items-center justify-center transition-colors"
+                                        className="w-9 h-9 rounded-full bg-soft hover:bg-line text-ink flex items-center justify-center transition-colors"
                                         aria-label="Edit"
                                     >
                                         <Pencil className="w-4 h-4" />
@@ -238,13 +238,13 @@ export default function AdminRestaurantClient({ restaurant, menuItems, orders, z
             {tab === 'orders' && (
                 <section>
                     {orders.length === 0 ? (
-                        <p className="text-center text-[#a08a7e] py-12 bg-white rounded-2xl border border-[#f1ebd8]">
+                        <p className="text-center text-subtle py-12 bg-white rounded-2xl border border-line">
                             No orders yet.
                         </p>
                     ) : (
-                        <div className="bg-white border border-[#f1ebd8] rounded-[2rem] overflow-hidden">
+                        <div className="bg-white border border-line rounded-[2rem] overflow-hidden">
                             <table className="w-full text-sm">
-                                <thead className="bg-[#fdf2e2]/60 text-xs font-black uppercase tracking-widest text-[#a08a7e]">
+                                <thead className="bg-soft/60 text-xs font-black uppercase tracking-widest text-subtle">
                                     <tr>
                                         <th className="px-6 py-4 text-left">Customer</th>
                                         <th className="px-6 py-4 text-left">Address</th>
@@ -255,22 +255,22 @@ export default function AdminRestaurantClient({ restaurant, menuItems, orders, z
                                         <th className="px-6 py-4 text-left">Placed</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-[#f1ebd8]">
+                                <tbody className="divide-y divide-line">
                                     {orders.map((o) => (
-                                        <tr key={o.id} className="hover:bg-[#fffcf8]">
-                                            <td className="px-6 py-4 font-bold text-[#3d1d11]">
+                                        <tr key={o.id} className="hover:bg-page">
+                                            <td className="px-6 py-4 font-bold text-ink">
                                                 {o.customerName}
-                                                <div className="text-xs font-medium text-[#a08a7e]">
+                                                <div className="text-xs font-medium text-subtle">
                                                     {o.customerPhone}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-[#3d1d11] font-medium">
+                                            <td className="px-6 py-4 text-ink font-medium">
                                                 {o.deliveryAddress}
-                                                <div className="text-xs text-[#a08a7e]">
+                                                <div className="text-xs text-subtle">
                                                     {o.deliveryPostalCode}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-[#3d1d11] font-medium">
+                                            <td className="px-6 py-4 text-ink font-medium">
                                                 <ul className="space-y-1">
                                                     {o.items.map((i, idx) => (
                                                         <li key={idx}>
@@ -279,7 +279,7 @@ export default function AdminRestaurantClient({ restaurant, menuItems, orders, z
                                                                 {i.sizeLabel ? ` (${i.sizeLabel})` : ''}
                                                             </span>
                                                             {i.options.length > 0 && (
-                                                                <span className="block text-xs text-[#a08a7e] font-medium">
+                                                                <span className="block text-xs text-subtle font-medium">
                                                                     + {i.options.map((o) => o.optionLabel).join(', ')}
                                                                 </span>
                                                             )}
@@ -287,21 +287,21 @@ export default function AdminRestaurantClient({ restaurant, menuItems, orders, z
                                                     ))}
                                                 </ul>
                                             </td>
-                                            <td className="px-6 py-4 text-right font-black text-[#3d1d11]">
+                                            <td className="px-6 py-4 text-right font-black text-ink">
                                                 {formatEUR(o.totalCents)}
                                             </td>
-                                            <td className="px-6 py-4 text-right font-black text-[#d35400]">
+                                            <td className="px-6 py-4 text-right font-black text-brand">
                                                 {formatEUR(o.commissionCents)}
-                                                <div className="text-[10px] font-bold text-[#a08a7e]">
+                                                <div className="text-[10px] font-bold text-subtle">
                                                     {(o.commissionRateBps / 100).toFixed(1)}% × {formatEUR(o.subtotalCents)}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="text-[10px] font-black uppercase tracking-widest bg-[#fdf2e2] text-[#3d1d11] px-2 py-1 rounded-lg">
+                                                <span className="text-[10px] font-black uppercase tracking-widest bg-soft text-ink px-2 py-1 rounded-lg">
                                                     {o.status}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-xs text-[#a08a7e] font-medium">
+                                            <td className="px-6 py-4 text-xs text-subtle font-medium">
                                                 {new Date(o.createdAt).toLocaleString('fi-FI')}
                                             </td>
                                         </tr>
@@ -346,8 +346,8 @@ function TabButton({
             onClick={onClick}
             className={`px-5 py-3 text-xs font-black uppercase tracking-[0.2em] border-b-2 transition-colors ${
                 active
-                    ? 'border-[#d35400] text-[#3d1d11]'
-                    : 'border-transparent text-[#a08a7e] hover:text-[#3d1d11]'
+                    ? 'border-brand text-ink'
+                    : 'border-transparent text-subtle hover:text-ink'
             }`}
         >
             {children}
@@ -451,14 +451,14 @@ function ItemFormModal({
                 className="bg-white rounded-[2rem] w-full max-w-lg overflow-hidden app-shadow"
                 onClick={(e) => e.stopPropagation()}
             >
-                <header className="flex items-center justify-between px-6 py-5 border-b border-[#f1ebd8]">
-                    <h3 className="text-lg font-black text-[#3d1d11] tracking-tight">
+                <header className="flex items-center justify-between px-6 py-5 border-b border-line">
+                    <h3 className="text-lg font-black text-ink tracking-tight">
                         {item ? 'Edit item' : 'Add item'}
                     </h3>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="w-9 h-9 rounded-full bg-[#fdf2e2] hover:bg-[#f1ebd8] text-[#3d1d11] flex items-center justify-center transition-colors"
+                        className="w-9 h-9 rounded-full bg-soft hover:bg-line text-ink flex items-center justify-center transition-colors"
                         aria-label="Close"
                     >
                         <X className="w-4 h-4" />
@@ -541,7 +541,7 @@ function ItemFormModal({
                             className="form-input"
                         />
                     </Field>
-                    <label className="flex items-center gap-3 text-sm font-bold text-[#3d1d11]">
+                    <label className="flex items-center gap-3 text-sm font-bold text-ink">
                         <input
                             type="checkbox"
                             name="isAvailable"
@@ -552,20 +552,20 @@ function ItemFormModal({
                     </label>
 
                     {/* Sizes editor */}
-                    <div className="space-y-2 pt-3 border-t border-[#f1ebd8]">
+                    <div className="space-y-2 pt-3 border-t border-line">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3d1d11]">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-ink">
                                     Sizes
                                 </p>
-                                <p className="text-[11px] font-medium text-[#a08a7e]">
+                                <p className="text-[11px] font-medium text-subtle">
                                     Optional. When set, the customer must pick a size and these prices replace the base.
                                 </p>
                             </div>
                             <button
                                 type="button"
                                 onClick={addSize}
-                                className="inline-flex items-center gap-1.5 bg-[#fdf2e2] hover:bg-[#f1ebd8] text-[#3d1d11] rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors"
+                                className="inline-flex items-center gap-1.5 bg-soft hover:bg-line text-ink rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors"
                             >
                                 <Plus className="w-3 h-3" />
                                 Add size
@@ -573,7 +573,7 @@ function ItemFormModal({
                         </div>
 
                         {sizes.length === 0 ? (
-                            <p className="text-xs text-[#a08a7e] italic py-2">
+                            <p className="text-xs text-subtle italic py-2">
                                 No sizes — item will use the base price above.
                             </p>
                         ) : (
@@ -599,14 +599,14 @@ function ItemFormModal({
                                                 }
                                                 className="form-input pr-8"
                                             />
-                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#a08a7e] pointer-events-none">
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-subtle pointer-events-none">
                                                 €
                                             </span>
                                         </div>
                                         <button
                                             type="button"
                                             onClick={() => removeSize(idx)}
-                                            className="w-9 h-9 rounded-full text-[#a08a7e] hover:text-[#d35400] hover:bg-[#fdf2e2] flex items-center justify-center transition-colors flex-shrink-0"
+                                            className="w-9 h-9 rounded-full text-subtle hover:text-brand hover:bg-soft flex items-center justify-center transition-colors flex-shrink-0"
                                             aria-label="Remove size"
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -618,13 +618,13 @@ function ItemFormModal({
                     </div>
 
                     {/* Customization groups editor */}
-                    <div className="space-y-3 pt-3 border-t border-[#f1ebd8]">
+                    <div className="space-y-3 pt-3 border-t border-line">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3d1d11]">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-ink">
                                     Customization groups
                                 </p>
-                                <p className="text-[11px] font-medium text-[#a08a7e]">
+                                <p className="text-[11px] font-medium text-subtle">
                                     Wolt-style modifiers: single-pick (radio) or multi-pick (checkbox)
                                     sections shown in the order modal.
                                 </p>
@@ -632,7 +632,7 @@ function ItemFormModal({
                             <button
                                 type="button"
                                 onClick={addGroup}
-                                className="inline-flex items-center gap-1.5 bg-[#fdf2e2] hover:bg-[#f1ebd8] text-[#3d1d11] rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors"
+                                className="inline-flex items-center gap-1.5 bg-soft hover:bg-line text-ink rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors"
                             >
                                 <Plus className="w-3 h-3" />
                                 Add group
@@ -640,7 +640,7 @@ function ItemFormModal({
                         </div>
 
                         {groups.length === 0 ? (
-                            <p className="text-xs text-[#a08a7e] italic py-2">
+                            <p className="text-xs text-subtle italic py-2">
                                 No customization groups.
                             </p>
                         ) : (
@@ -648,7 +648,7 @@ function ItemFormModal({
                                 {groups.map((g, gIdx) => (
                                     <li
                                         key={g.id}
-                                        className="bg-[#fffcf8] border border-[#f1ebd8] rounded-2xl p-4 space-y-3"
+                                        className="bg-page border border-line rounded-2xl p-4 space-y-3"
                                     >
                                         {/* Group header row */}
                                         <div className="flex items-center gap-2">
@@ -676,7 +676,7 @@ function ItemFormModal({
                                             <button
                                                 type="button"
                                                 onClick={() => removeGroup(gIdx)}
-                                                className="w-9 h-9 rounded-full text-[#a08a7e] hover:text-[#d35400] hover:bg-[#fdf2e2] flex items-center justify-center transition-colors flex-shrink-0"
+                                                className="w-9 h-9 rounded-full text-subtle hover:text-brand hover:bg-soft flex items-center justify-center transition-colors flex-shrink-0"
                                                 aria-label="Remove group"
                                             >
                                                 <Trash2 className="w-4 h-4" />
@@ -717,15 +717,15 @@ function ItemFormModal({
                                         />
 
                                         {/* Options */}
-                                        <div className="space-y-2 pt-2 border-t border-[#f1ebd8]">
+                                        <div className="space-y-2 pt-2 border-t border-line">
                                             <div className="flex items-center justify-between">
-                                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#a08a7e]">
+                                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-subtle">
                                                     Options ({g.options.length})
                                                 </p>
                                                 <button
                                                     type="button"
                                                     onClick={() => addOption(gIdx)}
-                                                    className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#d35400] hover:text-[#3d1d11] transition-colors"
+                                                    className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-brand hover:text-ink transition-colors"
                                                 >
                                                     <Plus className="w-3 h-3" />
                                                     Add option
@@ -760,14 +760,14 @@ function ItemFormModal({
                                                                 }
                                                                 className="form-input pr-7"
                                                             />
-                                                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-[#a08a7e] pointer-events-none">
+                                                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-subtle pointer-events-none">
                                                                 €
                                                             </span>
                                                         </div>
                                                         <button
                                                             type="button"
                                                             onClick={() => removeOption(gIdx, oIdx)}
-                                                            className="w-8 h-8 rounded-full text-[#a08a7e] hover:text-[#d35400] hover:bg-[#fdf2e2] flex items-center justify-center transition-colors flex-shrink-0"
+                                                            className="w-8 h-8 rounded-full text-subtle hover:text-brand hover:bg-soft flex items-center justify-center transition-colors flex-shrink-0"
                                                             aria-label="Remove option"
                                                         >
                                                             <Trash2 className="w-3.5 h-3.5" />
@@ -782,17 +782,17 @@ function ItemFormModal({
                         )}
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-3 border-t border-[#f1ebd8]">
+                    <div className="flex justify-end gap-3 pt-3 border-t border-line">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-5 py-3 text-xs font-black uppercase tracking-[0.2em] text-[#a08a7e] hover:text-[#3d1d11]"
+                            className="px-5 py-3 text-xs font-black uppercase tracking-[0.2em] text-subtle hover:text-ink"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="bg-[#3d1d11] hover:bg-[#d35400] text-white rounded-xl px-6 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors"
+                            className="bg-brand hover:bg-brand-dark text-white rounded-xl px-6 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors"
                         >
                             Save
                         </button>
@@ -802,16 +802,16 @@ function ItemFormModal({
                 <style jsx>{`
                     .form-input {
                         width: 100%;
-                        background: #fffcf8;
-                        border: 1px solid #f1ebd8;
+                        background: #fbfaf9;
+                        border: 1px solid #ece9e6;
                         border-radius: 0.875rem;
                         padding: 0.75rem 1rem;
                         font-size: 0.875rem;
-                        color: #3d1d11;
+                        color: #1f1a17;
                     }
                     .form-input:focus {
                         outline: none;
-                        border-color: #d35400;
+                        border-color: #d92d20;
                     }
                 `}</style>
             </div>
@@ -830,9 +830,9 @@ function Field({
 }) {
     return (
         <label className="block space-y-1.5">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3d1d11]">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-ink">
                 {label}
-                {required && <span className="text-[#d35400]"> *</span>}
+                {required && <span className="text-brand"> *</span>}
             </span>
             {children}
         </label>
@@ -851,7 +851,7 @@ function NumField({
 }) {
     return (
         <label className="block space-y-1">
-            <span className="text-[9px] font-black uppercase tracking-[0.15em] text-[#a08a7e]">
+            <span className="text-[9px] font-black uppercase tracking-[0.15em] text-subtle">
                 {label}
             </span>
             <input

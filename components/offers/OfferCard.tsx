@@ -43,7 +43,7 @@ export default function OfferCard({ offer, others = [], priority = false }: Offe
 
     return (
         <div
-            className="group bg-white rounded-[2rem] overflow-hidden app-shadow hover:shadow-2xl transition-all duration-300 flex flex-col h-full cursor-pointer border border-[#f1ebd8]/50 relative"
+            className="group bg-white rounded-[2rem] overflow-hidden app-shadow hover:shadow-2xl transition-all duration-300 flex flex-col h-full cursor-pointer border border-line/50 relative"
         >
             <Link href={`/offer/${offer.id}`} className="absolute inset-0 z-0" />
 
@@ -59,7 +59,7 @@ export default function OfferCard({ offer, others = [], priority = false }: Offe
                 {/* Rating Badge */}
                 {offer.meal.restaurant.rating > 0 && (
                     <div className="rating-badge m-2">
-                        <Star className="w-3 h-3 fill-[#f39c12] text-[#f39c12]" />
+                        <Star className="w-3 h-3 fill-star text-star" />
                         <span>{offer.meal.restaurant.rating.toFixed(1)}</span>
                     </div>
                 )}
@@ -67,11 +67,11 @@ export default function OfferCard({ offer, others = [], priority = false }: Offe
                 {/* Popular/Source Badge */}
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
                     {offer.meal.restaurant.rating > 4.5 && (
-                        <span className="bg-[#e74c3c] text-white text-[9px] font-black px-2 py-1 rounded-lg uppercase tracking-wider">
+                        <span className="bg-ink text-white text-[9px] font-black px-2 py-1 rounded-lg uppercase tracking-wider">
                             SUOSITTU
                         </span>
                     )}
-                    <span className="bg-white/90 backdrop-blur-sm text-[#3d1d11] text-[9px] font-bold px-2 py-1 rounded-lg uppercase tracking-wide shadow-sm border border-black/5">
+                    <span className="bg-white/90 backdrop-blur-sm text-ink text-[9px] font-bold px-2 py-1 rounded-lg uppercase tracking-wide shadow-sm border border-black/5">
                         {getSourceLabel(offer.source, t.card.example)}
                     </span>
                 </div>
@@ -79,27 +79,27 @@ export default function OfferCard({ offer, others = [], priority = false }: Offe
 
             {/* Content */}
             <div className="p-5 flex flex-col flex-grow relative z-10 pointer-events-none">
-                <h3 className="text-base font-bold text-[#3d1d11] leading-tight line-clamp-1 group-hover:text-[#d35400] transition-colors">
+                <h3 className="text-base font-bold text-ink leading-tight line-clamp-1 group-hover:text-brand transition-colors">
                     {offer.meal.name}
                 </h3>
-                <p className="text-xs text-[#a08a7e] font-medium mb-4 line-clamp-1">{offer.meal.restaurant.name}</p>
+                <p className="text-xs text-subtle font-medium mb-4 line-clamp-1">{offer.meal.restaurant.name}</p>
 
                 {/* Total price: what the customer actually pays */}
                 <div className="flex flex-wrap items-baseline gap-x-2">
-                    <span className="text-2xl font-black text-[#e67e22]">{formatPrice(getOfferTotal(offer))}</span>
-                    <span className="text-[11px] font-bold text-[#a08a7e]">{t.card.total}</span>
+                    <span className="text-2xl font-black text-ink">{formatPrice(getOfferTotal(offer))}</span>
+                    <span className="text-[11px] font-bold text-subtle">{t.card.total}</span>
                     {others.length > 0 && (
-                        <span className="rounded-lg bg-[#27ae60]/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#27ae60]">
+                        <span className="rounded-lg bg-save/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-save">
                             {t.card.lowest}
                         </span>
                     )}
                 </div>
 
                 {/* How the total is made up */}
-                <p className="mt-1 text-[11px] text-[#a08a7e] font-medium">
+                <p className="mt-1 text-[11px] text-subtle font-medium">
                     {t.card.meal} {formatPrice(offer.price_cents)}
                     {offer.old_price_cents && offer.old_price_cents > offer.price_cents && (
-                        <span className="ml-1 line-through decoration-[#a08a7e]/50">{formatPrice(offer.old_price_cents)}</span>
+                        <span className="ml-1 line-through decoration-subtle/50">{formatPrice(offer.old_price_cents)}</span>
                     )}
                     {discountBadge && <span className="price-badge inline-block ml-1 px-1.5 py-0">{discountBadge}</span>}
                     {' · '}
@@ -114,11 +114,11 @@ export default function OfferCard({ offer, others = [], priority = false }: Offe
 
                 {/* Same meal on other sources */}
                 {others.length > 0 && (
-                    <ul className="mt-3 space-y-1 border-t border-dashed border-[#f1ebd8] pt-3">
+                    <ul className="mt-3 space-y-1 border-t border-dashed border-line pt-3">
                         {others.slice(0, 2).map((other) => (
-                            <li key={other.id} className="flex items-center justify-between gap-2 text-xs font-medium text-[#a08a7e]">
+                            <li key={other.id} className="flex items-center justify-between gap-2 text-xs font-medium text-subtle">
                                 <span className="truncate">{getSourceLabel(other.source, t.card.example)}{other.is_pickup ? ` · ${t.card.pickup}` : ''}</span>
-                                <span className="font-bold text-[#3d1d11]">{formatPrice(getOfferTotal(other))}</span>
+                                <span className="font-bold text-ink">{formatPrice(getOfferTotal(other))}</span>
                             </li>
                         ))}
                     </ul>
@@ -128,7 +128,7 @@ export default function OfferCard({ offer, others = [], priority = false }: Offe
 
                 <button
                     onClick={handleViewDeal}
-                    className="pointer-events-auto w-full bg-[#3d1d11] text-white px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-[#d35400] active:scale-95 transition-all shadow-lg"
+                    className="pointer-events-auto w-full bg-brand text-white px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-brand-dark active:scale-95 transition-all shadow-lg"
                 >
                     {t.card.order} &rarr;
                 </button>

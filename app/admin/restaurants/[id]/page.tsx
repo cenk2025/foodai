@@ -25,11 +25,11 @@ export default async function AdminRestaurantDetailPage({ params }: Params) {
     ]);
 
     return (
-        <div className="min-h-screen bg-[#fffcf8] py-12 px-6">
+        <div className="min-h-screen bg-page py-12 px-6">
             <div className="max-w-6xl mx-auto">
                 <Link
                     href="/admin/restaurants"
-                    className="text-xs font-black uppercase tracking-[0.2em] text-[#a08a7e] hover:text-[#d35400] transition-colors"
+                    className="text-xs font-black uppercase tracking-[0.2em] text-subtle hover:text-brand transition-colors"
                 >
                     ← Restaurants
                 </Link>

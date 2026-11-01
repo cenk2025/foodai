@@ -115,11 +115,11 @@ function ResetPasswordForm() {
     if (success) {
         return (
             <div className="text-center">
-                <div className="w-20 h-20 bg-[#27ae60]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Lock className="w-10 h-10 text-[#27ae60]" />
+                <div className="w-20 h-20 bg-save/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Lock className="w-10 h-10 text-save" />
                 </div>
-                <h2 className="text-2xl font-black text-[#3d1d11] mb-2">Salasana vaihdettu!</h2>
-                <p className="text-[#a08a7e]">Sinut ohjataan automaattisesti etusivulle...</p>
+                <h2 className="text-2xl font-black text-ink mb-2">Salasana vaihdettu!</h2>
+                <p className="text-subtle">Sinut ohjataan automaattisesti etusivulle...</p>
             </div>
         )
     }
@@ -129,17 +129,17 @@ function ResetPasswordForm() {
             <div className="text-center space-y-4">
                 {linkError ? (
                     <>
-                        <p className="text-sm text-[#e74c3c] font-bold">{linkError}</p>
+                        <p className="text-sm text-brand font-bold">{linkError}</p>
                         <button
                             type="button"
                             onClick={() => router.push('/admin/login')}
-                            className="text-xs font-black uppercase tracking-[0.2em] text-[#3d1d11] underline"
+                            className="text-xs font-black uppercase tracking-[0.2em] text-ink underline"
                         >
                             Pyydä uusi linkki
                         </button>
                     </>
                 ) : (
-                    <p className="text-[#a08a7e]">Tarkistetaan palautuslinkkiä...</p>
+                    <p className="text-subtle">Tarkistetaan palautuslinkkiä...</p>
                 )}
             </div>
         )
@@ -148,23 +148,23 @@ function ResetPasswordForm() {
     return (
         <>
             <div className="text-center mb-10">
-                <h1 className="text-3xl font-black text-[#3d1d11] mb-3 tracking-tight">Uusi salasana</h1>
-                <p className="text-[#a08a7e] font-medium">Valitse uusi salasana tilillesi</p>
+                <h1 className="text-3xl font-black text-ink mb-3 tracking-tight">Uusi salasana</h1>
+                <p className="text-subtle font-medium">Valitse uusi salasana tilillesi</p>
             </div>
 
             <form className="space-y-6" onSubmit={handleReset}>
                 {error && (
-                    <div className="p-4 rounded-2xl bg-[#e74c3c]/5 border border-[#e74c3c]/20">
-                        <p className="text-sm text-[#e74c3c] font-bold text-center">{error}</p>
+                    <div className="p-4 rounded-2xl bg-brand/5 border border-brand/20">
+                        <p className="text-sm text-brand font-bold text-center">{error}</p>
                     </div>
                 )}
 
                 <div className="space-y-2">
-                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11] ml-2">
+                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-ink ml-2">
                         Uusi salasana
                     </label>
                     <div className="relative">
-                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#a08a7e]" />
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-subtle" />
                         <input
                             type="password"
                             value={password}
@@ -172,17 +172,17 @@ function ResetPasswordForm() {
                             placeholder="••••••••  (min. 8 merkkiä)"
                             disabled={loading}
                             required
-                            className="w-full bg-[#fdf2e2]/50 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-[#f3d179] transition-all font-medium placeholder:text-[#a08a7e]/50"
+                            className="w-full bg-soft/50 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-brand/30 transition-all font-medium placeholder:text-subtle/50"
                         />
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-[#3d1d11] ml-2">
+                    <label className="text-[11px] font-black uppercase tracking-[0.2em] text-ink ml-2">
                         Vahvista salasana
                     </label>
                     <div className="relative">
-                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#a08a7e]" />
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-subtle" />
                         <input
                             type="password"
                             value={confirmPassword}
@@ -190,7 +190,7 @@ function ResetPasswordForm() {
                             placeholder="••••••••"
                             disabled={loading}
                             required
-                            className="w-full bg-[#fdf2e2]/50 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-[#f3d179] transition-all font-medium placeholder:text-[#a08a7e]/50"
+                            className="w-full bg-soft/50 border-none rounded-2xl py-4 pl-12 pr-4 text-sm focus:ring-2 focus:ring-brand/30 transition-all font-medium placeholder:text-subtle/50"
                         />
                     </div>
                 </div>
@@ -198,7 +198,7 @@ function ResetPasswordForm() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-[#3d1d11] text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-[#d35400] transition-all active:scale-95 shadow-xl disabled:opacity-50"
+                    className="w-full bg-brand text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-brand-dark transition-all active:scale-95 shadow-xl disabled:opacity-50"
                 >
                     {loading ? (
                         <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto" />
@@ -211,22 +211,22 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
     return (
-        <div className="min-h-screen bg-[#fffcf8] flex flex-col items-center justify-center p-6 relative overflow-hidden font-outfit">
-            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#f3d179]/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#d35400]/5 rounded-full blur-3xl" />
+        <div className="min-h-screen bg-page flex flex-col items-center justify-center p-6 relative overflow-hidden font-outfit">
+            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand/5 rounded-full blur-3xl" />
 
             <div className="w-full max-w-md relative z-10">
                 <div className="flex items-center gap-3 mb-12 justify-center">
-                    <div className="w-12 h-12 rounded-2xl bg-[#3d1d11] flex items-center justify-center shadow-xl">
+                    <div className="w-12 h-12 rounded-2xl bg-brand flex items-center justify-center shadow-xl">
                         <Utensils className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-3xl font-black tracking-tight text-[#3d1d11]">
-                        Food<span className="text-[#d35400]">AI</span>
+                    <span className="text-3xl font-black tracking-tight text-ink">
+                        Food<span className="text-brand">AI</span>
                     </span>
                 </div>
 
-                <div className="bg-white rounded-[3rem] p-10 app-shadow border border-[#f1ebd8]">
-                    <Suspense fallback={<div className="text-center text-[#a08a7e]">Ladataan...</div>}>
+                <div className="bg-white rounded-[3rem] p-10 app-shadow border border-line">
+                    <Suspense fallback={<div className="text-center text-subtle">Ladataan...</div>}>
                         <ResetPasswordForm />
                     </Suspense>
                 </div>

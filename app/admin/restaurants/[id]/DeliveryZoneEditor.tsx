@@ -34,12 +34,12 @@ export default function DeliveryZoneEditor({
     const initial = zone ?? { restaurantId, ...DEFAULTS, allowedPostalCodes: [] };
 
     return (
-        <div className="bg-white border border-[#f1ebd8] rounded-[2rem] p-8 app-shadow space-y-5">
+        <div className="bg-white border border-line rounded-[2rem] p-8 app-shadow space-y-5">
             <div>
-                <h2 className="text-lg font-black text-[#3d1d11] tracking-tight">
+                <h2 className="text-lg font-black text-ink tracking-tight">
                     Delivery zone
                 </h2>
-                <p className="text-sm text-[#a08a7e] font-medium">
+                <p className="text-sm text-subtle font-medium">
                     Circular area around a center point. When postal codes are listed, the
                     checkout zone check uses them first; otherwise it falls back to the
                     Haversine radius.
@@ -111,15 +111,15 @@ export default function DeliveryZoneEditor({
                     info row. We still post the platform fee so the server keeps
                     the row in a consistent state. */}
                 <input type="hidden" name="feeEuros" value={(UBER_EATS_DELIVERY_FEE_CENTS / 100).toFixed(2)} />
-                <div className="bg-[#fdf2e2]/60 border border-[#f1ebd8] rounded-2xl px-4 py-3 text-xs font-bold text-[#3d1d11] space-y-0.5">
+                <div className="bg-soft/60 border border-line rounded-2xl px-4 py-3 text-xs font-bold text-ink space-y-0.5">
                     <p>
                         Delivery fee:{' '}
-                        <span className="text-[#d35400]">
+                        <span className="text-brand">
                             {formatEUR(UBER_EATS_DELIVERY_FEE_CENTS)}
                         </span>{' '}
                         — fixed by FoodAi (Uber Eats logistics)
                     </p>
-                    <p className="font-medium text-[#a08a7e]">
+                    <p className="font-medium text-subtle">
                         Charged on top of the order subtotal. Restaurants don&apos;t set their own delivery fee.
                     </p>
                 </div>
@@ -149,11 +149,11 @@ export default function DeliveryZoneEditor({
                     )
                 )}
 
-                <div className="flex justify-end pt-2 border-t border-[#f1ebd8]">
+                <div className="flex justify-end pt-2 border-t border-line">
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="bg-[#3d1d11] hover:bg-[#d35400] disabled:bg-[#a08a7e] text-white rounded-xl px-6 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors"
+                        className="bg-brand hover:bg-brand-dark disabled:bg-subtle text-white rounded-xl px-6 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors"
                     >
                         {isPending ? 'Saving…' : 'Save delivery zone'}
                     </button>
@@ -163,16 +163,16 @@ export default function DeliveryZoneEditor({
             <style jsx>{`
                 .form-input {
                     width: 100%;
-                    background: #fffcf8;
-                    border: 1px solid #f1ebd8;
+                    background: #fbfaf9;
+                    border: 1px solid #ece9e6;
                     border-radius: 0.875rem;
                     padding: 0.75rem 1rem;
                     font-size: 0.875rem;
-                    color: #3d1d11;
+                    color: #1f1a17;
                 }
                 .form-input:focus {
                     outline: none;
-                    border-color: #d35400;
+                    border-color: #d92d20;
                 }
             `}</style>
         </div>
@@ -189,13 +189,13 @@ function Field({
 }) {
     return (
         <label className="block space-y-1.5">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3d1d11]">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-ink">
                 {label}
-                {required && <span className="text-[#d35400]"> *</span>}
+                {required && <span className="text-brand"> *</span>}
             </span>
             {children}
             {helper && (
-                <span className="block text-[11px] font-medium text-[#a08a7e] mt-1">{helper}</span>
+                <span className="block text-[11px] font-medium text-subtle mt-1">{helper}</span>
             )}
         </label>
     );
