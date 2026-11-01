@@ -6,12 +6,17 @@ import 'server-only'
 
 const DEFAULT_BASE_URL = 'https://integrate.api.nvidia.com/v1'
 // Tried in order after AI_MODEL. NVIDIA retires hosted models without notice
-// (410 Gone), so a single hardcoded model is not enough.
+// (410 Gone) and not every catalog model is enabled for every key, so this
+// list comes from /api/admin/ai-models measurements, fastest first.
 const FALLBACK_MODELS = [
-    'google/gemma-4-31b-it',
-    'mistralai/mistral-large-2-instruct',
-    'nvidia/nemotron-3-super-120b-a12b',
+    'nvidia/nemotron-3.5-lightning-30b-a3b',
+    'minimaxai/minimax-m3.1-flash',
+    'mistralai/mistral-large-4-1t-a52b',
 ]
+// These are reasoning models: the hidden "thinking" counts against
+// max_tokens, so callers' limits get this much extra room or the visible
+// answer comes back empty.
+const REASONING_HEADROOM_TOKENS = 1024
 // Per-model timeout and total budget per completion: a slow or queued model
 // must not use up the whole request before the fallbacks get a chance.
 const MODEL_TIMEOUT_MS = 9_000
@@ -39,10 +44,20 @@ export function isAiConfigured(): boolean {
     return Boolean(process.env.NVIDIA_API_KEY)
 }
 
+// Request shapes tried in order when a model rejects one with 400: thinking
+// switched off (fast, short answers), then the model's defaults, then
+// without a system role for models that don't support it.
+type Variant = { thinkingOff: boolean; systemRole: boolean }
+const VARIANTS: Variant[] = [
+    { thinkingOff: true, systemRole: true },
+    { thinkingOff: false, systemRole: true },
+    { thinkingOff: false, systemRole: false },
+]
+
 // Remembered per warm serverless instance so later requests skip dead or slow
-// models and don't repeat a system-role request a model has already rejected.
+// models and go straight to the request shape a model accepted.
 let workingModel: string | null = null
-const noSystemRoleModels = new Set<string>()
+const variantIndex = new Map<string, number>()
 const cooldownUntil = new Map<string, number>()
 
 function candidateModels(): string[] {
@@ -70,9 +85,12 @@ function withoutSystemRole(messages: ChatMessage[]): ChatMessage[] {
 async function requestCompletion(
     model: string,
     messages: ChatMessage[],
-    maxTokens: number,
-    temperature: number,
-    timeoutMs: number,
+    { maxTokens, temperature, timeoutMs, variant }: {
+        maxTokens: number
+        temperature: number
+        timeoutMs: number
+        variant: Variant
+    },
 ): Promise<Response | null> {
     const baseUrl = (process.env.AI_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, '')
     try {
@@ -83,7 +101,14 @@ async function requestCompletion(
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
-            body: JSON.stringify({ model, messages, max_tokens: maxTokens, temperature, stream: false }),
+            body: JSON.stringify({
+                model,
+                messages: variant.systemRole ? messages : withoutSystemRole(messages),
+                max_tokens: maxTokens + REASONING_HEADROOM_TOKENS,
+                temperature,
+                stream: false,
+                ...(variant.thinkingOff ? { chat_template_kwargs: { enable_thinking: false } } : {}),
+            }),
             signal: AbortSignal.timeout(timeoutMs),
             cache: 'no-store',
         })
@@ -107,17 +132,14 @@ export async function chatCompletion(
     let lastStatus: number | undefined
     for (const model of candidateModels()) {
         if (timeLeft() < 2_000) break
-        let res = await requestCompletion(
-            model,
-            noSystemRoleModels.has(model) ? withoutSystemRole(messages) : messages,
-            maxTokens,
-            temperature,
-            timeLeft(),
-        )
-        if (res?.status === 400 && hasSystem && !noSystemRoleModels.has(model) && timeLeft() >= 2_000) {
-            res = await requestCompletion(model, withoutSystemRole(messages), maxTokens, temperature, timeLeft())
-            if (res?.ok) noSystemRoleModels.add(model)
+        let v = variantIndex.get(model) ?? 0
+        let res = await requestCompletion(model, messages, { maxTokens, temperature, timeoutMs: timeLeft(), variant: VARIANTS[v] })
+        while (res?.status === 400 && v + 1 < VARIANTS.length && timeLeft() >= 2_000) {
+            v += 1
+            if (!hasSystem && !VARIANTS[v].systemRole) break
+            res = await requestCompletion(model, messages, { maxTokens, temperature, timeoutMs: timeLeft(), variant: VARIANTS[v] })
         }
+        if (res?.ok) variantIndex.set(model, v)
 
         if (!res) {
             lastStatus = TIMEOUT_STATUS
@@ -135,9 +157,7 @@ export async function chatCompletion(
             throw new AiUnavailableError(`AI request failed with status ${res.status}`, res.status)
         }
 
-        const data = (await res.json()) as { choices?: { message?: { content?: string | null } }[] }
-        // Reasoning models may prepend their chain of thought.
-        const content = data.choices?.[0]?.message?.content?.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
+        const content = visibleContent(await res.json().catch(() => null))
         if (!content) {
             console.error(`AI model ${model} returned an empty response`)
             coolDown(model)
@@ -161,28 +181,51 @@ export function extractJsonObject(text: string): unknown {
     }
 }
 
-export type ModelProbe = { model: string; status: number | 'timeout'; ms: number; sample?: string }
+type CompletionBody = {
+    choices?: { finish_reason?: string; message?: { content?: string | null; reasoning_content?: string | null } }[]
+} | null
+
+// The answer without any chain of thought reasoning models put in the content.
+function visibleContent(data: CompletionBody): string {
+    return (data?.choices?.[0]?.message?.content ?? '').replace(/<think>[\s\S]*?<\/think>/g, '').trim()
+}
+
+export type ModelProbe = {
+    model: string
+    thinkingOff: boolean
+    status: number | 'timeout'
+    ms: number
+    finishReason?: string
+    reasoningChars?: number
+    sample?: string
+}
 
 // Admin diagnostics: which models this API key can actually use, how fast,
-// and what they answer to a real FoodAi prompt. Runs a few at a time to stay
-// under the free tier's per-minute limit.
+// and what they answer to a real FoodAi prompt, with thinking on and off.
+// Runs a few at a time to stay under the free tier's per-minute limit.
 export async function probeModels(models: string[], messages: ChatMessage[]): Promise<ModelProbe[]> {
     const results: ModelProbe[] = []
-    const queue = [...models]
+    const queue = models.flatMap((model) => [true, false].map((thinkingOff) => ({ model, thinkingOff })))
     const worker = async () => {
-        for (let model = queue.shift(); model; model = queue.shift()) {
+        for (let job = queue.shift(); job; job = queue.shift()) {
             const start = Date.now()
-            const res = await requestCompletion(model, withoutSystemRole(messages), 120, 0, 15_000)
-            const probe: ModelProbe = { model, status: res ? res.status : 'timeout', ms: Date.now() - start }
+            const res = await requestCompletion(job.model, messages, {
+                maxTokens: 200,
+                temperature: 0,
+                timeoutMs: 20_000,
+                variant: { thinkingOff: job.thinkingOff, systemRole: false },
+            })
+            const probe: ModelProbe = { ...job, status: res ? res.status : 'timeout', ms: Date.now() - start }
             if (res?.ok) {
-                const data = (await res.json().catch(() => null)) as
-                    | { choices?: { message?: { content?: string | null } }[] }
-                    | null
-                probe.sample = (data?.choices?.[0]?.message?.content ?? '').replace(/\s+/g, ' ').slice(0, 200)
+                const data = (await res.json().catch(() => null)) as CompletionBody
+                const choice = data?.choices?.[0]
+                probe.finishReason = choice?.finish_reason
+                probe.reasoningChars = (choice?.message?.reasoning_content ?? '').length
+                probe.sample = visibleContent(data).replace(/\s+/g, ' ').slice(0, 200)
             }
             results.push(probe)
         }
     }
-    await Promise.all(Array.from({ length: 4 }, worker))
+    await Promise.all(Array.from({ length: 3 }, worker))
     return results.sort((a, b) => Number(a.status !== 200) - Number(b.status !== 200) || a.ms - b.ms)
 }
