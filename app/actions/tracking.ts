@@ -7,7 +7,7 @@ import { headers } from 'next/headers'
 export async function trackClick(
     offerId: string,
     referrer?: string
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; clickId?: string; error?: string }> {
     try {
         const supabase = createServiceClient()
         const headersList = await headers()
@@ -23,7 +23,7 @@ export async function trackClick(
         const utmParams = referrer ? parseUtmParams(referrer) : {}
 
         // Insert click event
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('click_events')
             .insert({
                 offer_id: offerId,
@@ -34,13 +34,15 @@ export async function trackClick(
                 ip_hash: ipHash,
                 user_agent: userAgent,
             })
+            .select('id')
+            .single()
 
         if (error) {
             console.error('Error tracking click:', error)
             return { success: false, error: error.message }
         }
 
-        return { success: true }
+        return { success: true, clickId: data.id }
     } catch (error) {
         console.error('Error tracking click:', error)
         return { success: false, error: 'Failed to track click' }

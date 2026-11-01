@@ -36,6 +36,7 @@ export interface Database {
                     type: 'delivery_platform' | 'restaurant_site' | 'affiliate_feed' | 'demo'
                     base_url: string | null
                     logo_url: string | null
+                    tracking_params: Record<string, string>
                     created_at: string
                 }
                 Insert: {
@@ -44,6 +45,7 @@ export interface Database {
                     type: 'delivery_platform' | 'restaurant_site' | 'affiliate_feed' | 'demo'
                     base_url?: string | null
                     logo_url?: string | null
+                    tracking_params?: Record<string, string>
                     created_at?: string
                 }
                 Update: {
@@ -52,6 +54,7 @@ export interface Database {
                     type?: 'delivery_platform' | 'restaurant_site' | 'affiliate_feed' | 'demo'
                     base_url?: string | null
                     logo_url?: string | null
+                    tracking_params?: Record<string, string>
                     created_at?: string
                 }
             }

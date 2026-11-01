@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getOfferById } from '@/app/actions/offers'
 import { trackClick } from '@/app/actions/tracking'
+import { buildPartnerUrl } from '@/lib/partner-url'
 import { headers } from 'next/headers'
 
 interface PageProps {
@@ -15,8 +16,8 @@ export default async function TrackingRedirectPage({ params }: PageProps) {
     // Get the offer
     const offer = await getOfferById(offerId)
 
-    if (!offer) {
-        // Redirect to home if offer not found
+    if (!offer || !offer.active) {
+        // Redirect to home if offer not found or no longer valid
         redirect('/')
     }
 
@@ -24,9 +25,15 @@ export default async function TrackingRedirectPage({ params }: PageProps) {
     const headersList = await headers()
     const referrer = headersList.get('referer') || undefined
 
-    // Track the click (fire and forget - don't wait)
-    trackClick(offerId, referrer).catch(console.error)
+    // Record the click first: its id is passed to the partner for attribution.
+    // A tracking failure must never block the redirect.
+    const { clickId } = await trackClick(offerId, referrer)
 
-    // Redirect to the source URL
-    redirect(offer.source_url)
+    const destination = buildPartnerUrl(offer.source_url, offer.source?.tracking_params, clickId ?? null)
+    if (!destination) {
+        console.error('Invalid source_url for offer', offerId)
+        redirect(`/offer/${offerId}`)
+    }
+
+    redirect(destination)
 }

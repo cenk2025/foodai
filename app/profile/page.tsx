@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { DIRECT_ORDERING_ENABLED } from '@/lib/features'
 import {
     ArrowLeft,
     User as UserIcon,
@@ -211,24 +212,26 @@ export default function ProfilePage() {
 
                         {/* Detailed Sections */}
                         <div className="space-y-12">
-                            <section>
-                                <div className="flex items-center justify-between mb-8">
-                                    <h2 className="text-2xl font-black text-[#3d1d11]">Viimeisimmät tilaukset</h2>
-                                    <Link href="/orders" className="text-xs font-black text-[#d35400] uppercase tracking-[0.2em] hover:opacity-70">Katso kaikki</Link>
-                                </div>
-                                <div className="bg-white rounded-[3rem] p-12 border border-[#f1ebd8] app-shadow text-center">
-                                    <div className="w-20 h-20 bg-[#fdf2e2]/50 rounded-[2rem] flex items-center justify-center text-[#a08a7e]/30 mx-auto mb-6">
-                                        <Utensils className="w-10 h-10" />
+                            {DIRECT_ORDERING_ENABLED && (
+                                <section>
+                                    <div className="flex items-center justify-between mb-8">
+                                        <h2 className="text-2xl font-black text-[#3d1d11]">Viimeisimmät tilaukset</h2>
+                                        <Link href="/orders" className="text-xs font-black text-[#d35400] uppercase tracking-[0.2em] hover:opacity-70">Katso kaikki</Link>
                                     </div>
-                                    <h3 className="text-xl font-black text-[#3d1d11] mb-2 tracking-tight">Ei tilauksia vielä</h3>
-                                    <p className="text-sm text-[#a08a7e] font-medium mb-8 max-w-xs mx-auto">Tilaa herkkusi FoodAi:n kautta ja ala kerryttämään säästöjäsi ja historiaasi!</p>
-                                    <Link href="/">
-                                        <button className="bg-[#3d1d11] text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-[#d35400] transition-colors shadow-xl">
-                                            Aloita säästäminen
-                                        </button>
-                                    </Link>
-                                </div>
-                            </section>
+                                    <div className="bg-white rounded-[3rem] p-12 border border-[#f1ebd8] app-shadow text-center">
+                                        <div className="w-20 h-20 bg-[#fdf2e2]/50 rounded-[2rem] flex items-center justify-center text-[#a08a7e]/30 mx-auto mb-6">
+                                            <Utensils className="w-10 h-10" />
+                                        </div>
+                                        <h3 className="text-xl font-black text-[#3d1d11] mb-2 tracking-tight">Ei tilauksia vielä</h3>
+                                        <p className="text-sm text-[#a08a7e] font-medium mb-8 max-w-xs mx-auto">Tilaa herkkusi FoodAi:n kautta ja ala kerryttämään säästöjäsi ja historiaasi!</p>
+                                        <Link href="/">
+                                            <button className="bg-[#3d1d11] text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-[#d35400] transition-colors shadow-xl">
+                                                Aloita säästäminen
+                                            </button>
+                                        </Link>
+                                    </div>
+                                </section>
+                            )}
 
                             <section>
                                 <div className="flex items-center justify-between mb-8">

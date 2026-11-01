@@ -13,6 +13,7 @@ import Footer from '@/components/layout/Footer'
 import OfferPreview from '@/components/offers/OfferPreview'
 import { useLocation } from '@/lib/context/LocationContext'
 import HomepageDirectRestaurants from '@/components/direct-ordering/HomepageDirectRestaurants'
+import { DIRECT_ORDERING_ENABLED } from '@/lib/features'
 
 export default function HomePage() {
   const { city } = useLocation()
@@ -410,7 +411,7 @@ export default function HomePage() {
             )}
 
             {/* Direct-order partner spotlight (additive — separate from the aggregator feed) */}
-            <HomepageDirectRestaurants />
+            {DIRECT_ORDERING_ENABLED && <HomepageDirectRestaurants />}
 
             {/* Daily Best Deals - Responsive Grid */}
             <section>
