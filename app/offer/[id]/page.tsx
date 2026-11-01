@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import {
     ArrowLeft,
@@ -10,6 +9,7 @@ import {
     Clock,
     MapPin,
     ShoppingBag,
+    ExternalLink,
     Share2,
     Heart,
     Utensils,
@@ -23,18 +23,12 @@ import {
     formatPrice,
     getDiscountBadge,
     formatDeliveryTime,
-    getTrackingUrl
+    getTrackingUrl,
+    isDemoSource
 } from '@/lib/utils'
 import { useLanguage } from '@/lib/i18n/context'
-
-// Demo image mapping helper
-function getDemoImage(mealName: string): string {
-    const lower = mealName.toLowerCase()
-    if (lower.includes('pizza')) return '/images/pizza.jpg'
-    if (lower.includes('sushi') || lower.includes('maki') || lower.includes('roll')) return '/images/sushi.jpg'
-    if (lower.includes('burger')) return '/images/burger.jpg'
-    return '/images/placeholder-meal.jpg'
-}
+import MealImage from '@/components/offers/MealImage'
+import DemoNotice from '@/components/offers/DemoNotice'
 
 export default function OfferDetailPage() {
     const params = useParams()
@@ -84,9 +78,7 @@ export default function OfferDetailPage() {
     }
 
     const discountBadge = getDiscountBadge(offer.old_price_cents, offer.price_cents)
-    const imageUrl = offer.meal.image_path?.startsWith('http')
-        ? offer.meal.image_path
-        : getDemoImage(offer.meal.name)
+    const isDemo = isDemoSource(offer.source)
     const trackingUrl = getTrackingUrl(offer.id)
 
     return (
@@ -120,12 +112,11 @@ export default function OfferDetailPage() {
                     <div className="space-y-8">
                         <div className="bg-white p-4 rounded-[3.5rem] app-shadow border border-[#f1ebd8]">
                             <div className="relative aspect-square w-full overflow-hidden rounded-[2.5rem] group">
-                                <Image
-                                    src={imageUrl}
-                                    alt={offer.meal.name}
-                                    fill
+                                <MealImage
+                                    meal={offer.meal}
                                     priority
-                                    className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                                    className="transition-transform duration-1000 group-hover:scale-110"
+                                    emojiClassName="text-9xl"
                                     sizes="(max-width: 1024px) 100vw, 50vw"
                                 />
                                 {discountBadge && (
@@ -233,10 +224,10 @@ export default function OfferDetailPage() {
                             <div className="relative bg-[#3d1d11] rounded-[3rem] p-10 text-white overflow-hidden shadow-2xl">
                                 <div className="absolute bottom-0 right-0 w-48 h-48 bg-[#d35400]/20 blur-3xl rounded-full" />
 
-                                <div className="flex items-baseline justify-between mb-10">
+                                <div className="flex flex-wrap items-baseline justify-between gap-4 mb-10">
                                     <div className="space-y-1">
                                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Hinta nyt</p>
-                                        <div className="flex items-baseline gap-4">
+                                        <div className="flex flex-wrap items-baseline gap-x-4">
                                             <span className="text-5xl font-black text-[#f3d179]">
                                                 {formatPrice(offer.price_cents)}
                                             </span>
@@ -247,26 +238,31 @@ export default function OfferDetailPage() {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="text-right space-y-1">
+                                    <div className="space-y-1">
                                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Alusta</p>
                                         <span className="text-xl font-black text-white px-4 py-1.5 rounded-xl border border-white/10 bg-white/5">
-                                            {offer.source.name}
+                                            {isDemo ? t.card.example : offer.source.name}
                                         </span>
                                     </div>
                                 </div>
 
-                                <Link href={trackingUrl} target="_blank" className="block">
-                                    <button className="w-full bg-[#f3d179] hover:bg-white text-[#3d1d11] py-6 rounded-2xl font-black uppercase text-sm tracking-[0.2em] transition-all transform hover:scale-[1.02] active:scale-95 shadow-2xl flex items-center justify-center gap-4 group/btn">
-                                        <ShoppingBag className="w-5 h-5" />
-                                        Siirry tilaamaan
-                                        <ChevronRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
-                                    </button>
-                                </Link>
+                                {isDemo ? (
+                                    <DemoNotice />
+                                ) : (
+                                    <>
+                                        <Link href={trackingUrl} target="_blank" className="block">
+                                            <button className="w-full bg-[#f3d179] hover:bg-white text-[#3d1d11] py-6 rounded-2xl font-black uppercase text-sm tracking-[0.2em] transition-all transform hover:scale-[1.02] active:scale-95 shadow-2xl flex items-center justify-center gap-4 group/btn">
+                                                {t.card.order}
+                                                <ExternalLink className="w-5 h-5" />
+                                            </button>
+                                        </Link>
 
-                                <div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/30">
-                                    <Shield className="w-4 h-4" />
-                                    Turvallinen uudelleenohjaus palveluun {offer.source.name}
-                                </div>
+                                        <div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/30">
+                                            <Shield className="w-4 h-4" />
+                                            Turvallinen uudelleenohjaus palveluun {offer.source.name}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { getOfferById } from '@/app/actions/offers'
 import { trackClick } from '@/app/actions/tracking'
 import { buildPartnerUrl } from '@/lib/partner-url'
+import { isDemoSource } from '@/lib/utils'
 import { headers } from 'next/headers'
 
 interface PageProps {
@@ -19,6 +20,11 @@ export default async function TrackingRedirectPage({ params }: PageProps) {
     if (!offer || !offer.active) {
         // Redirect to home if offer not found or no longer valid
         redirect('/')
+    }
+
+    // Example data has no real partner: no click to record, nowhere to send anyone
+    if (isDemoSource(offer.source)) {
+        redirect(`/offer/${offerId}`)
     }
 
     // Get referrer from headers

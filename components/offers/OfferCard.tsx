@@ -1,7 +1,7 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Star } from 'lucide-react'
 import { OfferWithDetails } from '@/lib/types/database'
 import {
@@ -9,9 +9,10 @@ import {
     getDiscountBadge,
     formatDeliveryTime,
     getTrackingUrl,
-    getMealImage,
+    isDemoSource,
 } from '@/lib/utils'
 import { useLanguage } from '@/lib/i18n/context'
+import MealImage from './MealImage'
 
 interface OfferCardProps {
     offer: OfferWithDetails
@@ -22,15 +23,19 @@ interface OfferCardProps {
 
 export default function OfferCard({ offer, priority = false, onMouseEnter, onMouseLeave }: OfferCardProps) {
     const { t } = useLanguage()
+    const router = useRouter()
     const discountBadge = getDiscountBadge(offer.old_price_cents, offer.price_cents)
 
-    // Demo image mapping
-    const imageUrl = getMealImage(offer.meal.name, offer.meal.image_path)
+    const isDemo = isDemoSource(offer.source)
 
     // "View Deal" goes through /go, which records the click and forwards to the partner
     const handleViewDeal = (e: React.MouseEvent) => {
         e.preventDefault()
         e.stopPropagation()
+        if (isDemo) {
+            router.push(`/offer/${offer.id}`)
+            return
+        }
         window.open(getTrackingUrl(offer.id), '_blank', 'noopener')
     }
 
@@ -44,12 +49,10 @@ export default function OfferCard({ offer, priority = false, onMouseEnter, onMou
 
             {/* Image Container */}
             <div className="relative w-full aspect-[4/3] overflow-hidden">
-                <Image
-                    src={imageUrl}
-                    alt={offer.meal.name}
-                    fill
+                <MealImage
+                    meal={offer.meal}
                     priority={priority}
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="transition-transform duration-700 group-hover:scale-110"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
 
@@ -69,7 +72,7 @@ export default function OfferCard({ offer, priority = false, onMouseEnter, onMou
                         </span>
                     )}
                     <span className="bg-white/90 backdrop-blur-sm text-[#3d1d11] text-[9px] font-bold px-2 py-1 rounded-lg uppercase tracking-tighter shadow-sm border border-black/5">
-                        {offer.source.name}
+                        {isDemo ? t.card.example : offer.source.name}
                     </span>
                 </div>
             </div>
@@ -92,7 +95,7 @@ export default function OfferCard({ offer, priority = false, onMouseEnter, onMou
                 </div>
 
                 {/* Price, Savings & CTA */}
-                <div className="mt-auto flex items-end justify-between gap-3">
+                <div className="mt-auto flex flex-wrap items-end justify-between gap-3">
                     <div className="space-y-1">
                         <div className="flex items-baseline gap-2">
                             <span className="text-xl font-black text-[#e67e22]">
@@ -115,7 +118,7 @@ export default function OfferCard({ offer, priority = false, onMouseEnter, onMou
                         onClick={handleViewDeal}
                         className="pointer-events-auto bg-[#3d1d11] text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-[#d35400] hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center gap-2"
                     >
-                        Katso <span className="hidden sm:inline">Tarjous</span> &rarr;
+                        {t.card.order} &rarr;
                     </button>
                 </div>
             </div>

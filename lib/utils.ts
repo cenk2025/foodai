@@ -78,16 +78,51 @@ export function matchesDietFilter(
     return filterDietFlags.every(flag => mealDietFlags.includes(flag))
 }
 
+const MEAT_OR_FISH_FREE = ['vegan', 'vegetarian']
+
+// The stock photos show specific food (pepperoni pizza, beef burger, salmon sushi),
+// so they are only used for meals they truthfully depict.
+function getStockPhoto(name: string, dietFlags: string[]): string | undefined {
+    if (dietFlags.some(flag => MEAT_OR_FISH_FREE.includes(flag))) return undefined
+    if (/veg|tofu|kasvis/.test(name)) return undefined
+    if (name.includes('pepperoni')) return '/images/pizza.jpg'
+    if (/burger/.test(name) && !/chicken|kana|fish|kala/.test(name)) return '/images/burger.jpg'
+    if (/sushi|maki|nigiri|california roll/.test(name)) return '/images/sushi.jpg'
+    return undefined
+}
+
+const DISH_EMOJI: Array<[RegExp, string]> = [
+    [/smoothie/, '🥤'],
+    [/veg|tofu|kasvis/, '🥦'],
+    [/pizza/, '🍕'],
+    [/burger/, '🍔'],
+    [/sushi|maki|nigiri|sashimi|roll/, '🍣'],
+    [/kebab|falafel|wrap/, '🥙'],
+    [/salad|salaatti/, '🥗'],
+    [/pasta|penne|spaghetti|lasagn|carbonara/, '🍝'],
+    [/bowl|stir-fry|wok/, '🍜'],
+    [/chicken|kana|grill/, '🍗'],
+]
+
 /**
- * Image for a meal: its own URL if it has one, otherwise a stock photo by dish
+ * What to show for a meal: its own photo, a stock photo that matches it, or a dish icon
  */
-export function getMealImage(mealName: string, imagePath?: string | null): string {
-    if (imagePath?.startsWith('http')) return imagePath
-    const lower = mealName.toLowerCase()
-    if (lower.includes('pizza')) return '/images/pizza.jpg'
-    if (lower.includes('sushi') || lower.includes('maki') || lower.includes('roll')) return '/images/sushi.jpg'
-    if (lower.includes('burger')) return '/images/burger.jpg'
-    return '/images/placeholder-meal.jpg'
+export function getMealVisual(
+    mealName: string,
+    imagePath?: string | null,
+    dietFlags?: string[] | null
+): { src?: string; emoji: string } {
+    const name = mealName.toLowerCase()
+    const emoji = DISH_EMOJI.find(([pattern]) => pattern.test(name))?.[1] ?? '🍽️'
+    if (imagePath?.startsWith('http')) return { src: imagePath, emoji }
+    return { src: getStockPhoto(name, dietFlags ?? []), emoji }
+}
+
+/**
+ * Demo sources hold example data: no real restaurant, price or partner behind them
+ */
+export function isDemoSource(source?: { type?: string | null } | null): boolean {
+    return source?.type === 'demo'
 }
 
 /**

@@ -16,6 +16,8 @@ import {
 } from 'lucide-react'
 import { searchOffers, getCities, type SearchParams } from '@/app/actions/offers'
 import OfferCard from '@/components/offers/OfferCard'
+import DemoNotice from '@/components/offers/DemoNotice'
+import { isDemoSource } from '@/lib/utils'
 import { SkeletonCard } from '@/components/ui/Skeleton'
 import { useLocation } from '@/lib/context/LocationContext'
 import { useLanguage } from '@/lib/i18n/context'
@@ -244,6 +246,7 @@ function SearchPageContent() {
                             </div>
                         ) : results && results.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {results.some(o => isDemoSource(o.source)) && <DemoNotice className="md:col-span-2" />}
                                 {results.map((offer) => <OfferCard key={offer.id} offer={offer} />)}
                             </div>
                         ) : (

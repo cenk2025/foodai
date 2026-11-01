@@ -129,7 +129,7 @@ export default function AiAssistant() {
                                                     <Link href={`/offer/${offer.id}`} className="flex-1 min-w-0">
                                                         <p className="text-sm font-bold text-gray-800 truncate">{offer.meal}</p>
                                                         <p className="text-xs text-gray-500 truncate">
-                                                            {offer.restaurant} · {offer.source}
+                                                            {offer.restaurant} · {offer.isDemo ? t.card.example : offer.source}
                                                             {offer.etaMinutes ? ` · ${offer.etaMinutes} min` : ''}
                                                         </p>
                                                     </Link>

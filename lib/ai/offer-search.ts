@@ -3,6 +3,7 @@ import { searchOffers, getCities, type SearchParams } from '@/app/actions/offers
 import type { OfferWithDetails } from '@/lib/types/database'
 import { chatCompletion, extractJsonObject, type ChatMessage } from './nvidia'
 import { buildIntentPrompt, validateIntent, type SearchIntent } from './search-intent'
+import { isDemoSource } from '@/lib/utils'
 
 // Compact, display-ready view of an offer. Prices shown to users always come
 // from here (the database), never from model output.
@@ -12,6 +13,7 @@ export type AiOffer = {
     restaurant: string
     city: string
     source: string
+    isDemo: boolean
     priceCents: number
     oldPriceCents: number | null
     deliveryFeeCents: number
@@ -69,6 +71,7 @@ export function toAiOffer(o: OfferWithDetails): AiOffer {
         restaurant: o.meal.restaurant.name,
         city: o.meal.restaurant.city?.name ?? '',
         source: o.source.name,
+        isDemo: isDemoSource(o.source),
         priceCents: o.price_cents,
         oldPriceCents: o.old_price_cents,
         deliveryFeeCents: o.delivery_fee_cents,

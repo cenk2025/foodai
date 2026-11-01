@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, Clock, Star, TrendingDown } from 'lucide-react'
 import { OfferWithDetails } from '@/lib/types/database'
-import { calculateDiscount, formatPrice, getMealImage, getTrackingUrl } from '@/lib/utils'
+import { calculateDiscount, formatPrice, getTrackingUrl, isDemoSource } from '@/lib/utils'
+import { useLanguage } from '@/lib/i18n/context'
+import MealImage from './MealImage'
 
 const ROTATE_MS = 6000
 
@@ -16,6 +17,7 @@ interface FeaturedCarouselProps {
 }
 
 export default function FeaturedCarousel({ offers, onHover }: FeaturedCarouselProps) {
+    const { t } = useLanguage()
     const [index, setIndex] = useState(0)
     const [paused, setPaused] = useState(false)
     const count = offers.length
@@ -30,6 +32,7 @@ export default function FeaturedCarousel({ offers, onHover }: FeaturedCarouselPr
     if (count === 0) return null
     const offer = offers[index % count]
     const discount = calculateDiscount(offer.old_price_cents ?? 0, offer.price_cents)
+    const isDemo = isDemoSource(offer.source)
     const go = (step: number) => setIndex((i) => (i + step + count) % count)
 
     return (
@@ -42,24 +45,24 @@ export default function FeaturedCarousel({ offers, onHover }: FeaturedCarouselPr
             onFocus={() => setPaused(true)}
             onBlur={() => setPaused(false)}
         >
-            <div className="featured-card h-[400px] md:h-[500px] group shadow-2xl">
+            <div className="featured-card h-[440px] md:h-[500px] group shadow-2xl">
                 <Link href={`/offer/${offer.id}`} className="absolute inset-0 z-0" aria-label={`${offer.meal.name}, ${offer.meal.restaurant.name}`}>
-                    <Image
+                    <MealImage
                         key={offer.id}
-                        src={getMealImage(offer.meal.name, offer.meal.image_path)}
-                        alt={offer.meal.name}
-                        fill
-                        className="object-cover transition-transform duration-1000 group-hover:scale-110 animate-in fade-in duration-700"
+                        meal={offer.meal}
+                        sizes="(max-width: 1280px) 100vw, 850px"
                         priority={index === 0}
+                        className="transition-transform duration-1000 group-hover:scale-110 animate-in fade-in duration-700"
+                        emojiClassName="text-7xl md:text-9xl -translate-y-[120px] md:-translate-y-24"
                     />
                     <div className="absolute inset-0 bg-gradient-to-tr from-[#3d1d11] via-[#3d1d11]/40 to-transparent" />
                 </Link>
 
                 {discount > 0 && (
-                    <div className="absolute top-10 left-10 anim-float pointer-events-none">
-                        <div className="bg-[#f3d179] text-[#3d1d11] text-lg md:text-xl font-black px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-white/20">
+                    <div className="absolute top-4 left-4 md:top-10 md:left-10 anim-float pointer-events-none">
+                        <div className="bg-[#f3d179] text-[#3d1d11] text-sm md:text-xl font-black px-3 py-2 md:px-6 md:py-3 rounded-2xl shadow-2xl flex items-center gap-2 md:gap-3 border-2 border-white/20">
                             <div className="bg-[#3d1d11] text-white p-1 rounded-lg">
-                                <TrendingDown className="w-5 h-5" />
+                                <TrendingDown className="w-4 h-4 md:w-5 md:h-5" />
                             </div>
                             SÄÄSTÄ -{discount}%
                         </div>
@@ -67,70 +70,69 @@ export default function FeaturedCarousel({ offers, onHover }: FeaturedCarouselPr
                 )}
 
                 {count > 1 && (
-                    <div className="absolute top-10 right-10 z-10 flex gap-2">
+                    <div className="absolute top-4 right-4 md:top-10 md:right-10 z-10 flex gap-2">
                         <button
                             onClick={() => go(-1)}
                             aria-label="Edellinen tarjous"
-                            className="w-11 h-11 rounded-full bg-white/15 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
+                            className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-white/15 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
                         >
                             <ChevronLeft className="w-5 h-5" />
                         </button>
                         <button
                             onClick={() => go(1)}
                             aria-label="Seuraava tarjous"
-                            className="w-11 h-11 rounded-full bg-white/15 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
+                            className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-white/15 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center hover:bg-white/30 transition-colors"
                         >
                             <ChevronRight className="w-5 h-5" />
                         </button>
                     </div>
                 )}
 
-                <div className="absolute bottom-10 left-8 right-8 md:left-12 md:right-12 text-white pointer-events-none" aria-live="polite">
-                    <div className="flex flex-wrap items-center gap-3 mb-5">
-                        <span className="bg-[#d35400] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg border border-white/10">
+                <div className="absolute bottom-9 left-5 right-5 md:bottom-10 md:left-12 md:right-12 text-white pointer-events-none" aria-live="polite">
+                    <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-3 md:mb-5">
+                        <span className="hidden md:inline bg-[#d35400] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg border border-white/10">
                             Päivän tarjous
                         </span>
-                        <span className="bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-white/10">
-                            {offer.source.name}
+                        <span className="bg-white/10 backdrop-blur-xl px-3 md:px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider md:tracking-[0.2em] border border-white/10">
+                            {isDemo ? t.card.example : offer.source.name}
                         </span>
                         {offer.eta_minutes && (
-                            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-white/10">
+                            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-3 md:px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider md:tracking-[0.2em] border border-white/10">
                                 <Clock className="w-4 h-4 text-[#f3d179]" />
                                 {offer.eta_minutes} min
                             </div>
                         )}
                         {offer.meal.restaurant.rating > 0 && (
-                            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-white/10">
+                            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-3 md:px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider md:tracking-[0.2em] border border-white/10">
                                 <Star className="w-4 h-4 text-[#f3d179] fill-[#f3d179]" />
                                 {Number(offer.meal.restaurant.rating).toFixed(1)}
                             </div>
                         )}
                     </div>
-                    <h2 className="text-4xl md:text-6xl font-black mb-3 tracking-tighter leading-none">{offer.meal.name}</h2>
-                    <p className="text-[#fdf2e2]/80 font-medium text-lg mb-6">
+                    <h2 className="text-3xl md:text-6xl font-black mb-2 md:mb-3 tracking-tighter leading-none line-clamp-2">{offer.meal.name}</h2>
+                    <p className="text-[#fdf2e2]/80 font-medium md:text-lg mb-4 md:mb-6">
                         {offer.meal.restaurant.name}
                         {offer.meal.restaurant.city?.name ? ` · ${offer.meal.restaurant.city.name}` : ''}
                     </p>
-                    <div className="flex flex-wrap items-center gap-6">
+                    <div className="flex flex-wrap items-center justify-between md:justify-start gap-3 md:gap-6">
                         <div className="flex items-baseline gap-3">
-                            <span className="text-4xl font-black text-[#f3d179]">{formatPrice(offer.price_cents)}</span>
+                            <span className="text-3xl md:text-4xl font-black text-[#f3d179]">{formatPrice(offer.price_cents)}</span>
                             {offer.old_price_cents && offer.old_price_cents > offer.price_cents && (
                                 <span className="text-lg font-bold text-white/50 line-through">{formatPrice(offer.old_price_cents)}</span>
                             )}
                         </div>
                         <a
-                            href={getTrackingUrl(offer.id)}
-                            target="_blank"
-                            rel="noopener"
-                            className="pointer-events-auto bg-white text-[#3d1d11] px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-[#f3d179] hover:scale-105 active:scale-95 transition-all shadow-xl"
+                            href={isDemo ? `/offer/${offer.id}` : getTrackingUrl(offer.id)}
+                            {...(isDemo ? {} : { target: '_blank', rel: 'noopener' })}
+                            className="pointer-events-auto bg-white text-[#3d1d11] px-5 py-3 md:px-8 md:py-4 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-[#f3d179] hover:scale-105 active:scale-95 transition-all shadow-xl"
                         >
-                            Katso tarjous
+                            {t.card.order}
                         </a>
                     </div>
                 </div>
 
                 {count > 1 && (
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+                    <div className="absolute bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
                         {offers.map((o, i) => (
                             <button
                                 key={o.id}

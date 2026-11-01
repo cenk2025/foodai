@@ -117,7 +117,7 @@ export default function Header() {
                         <MapPin className={`w-4 h-4 text-[#3d1d11] ${isDetecting ? 'animate-bounce' : ''}`} />
                     </button>
                     <div className="flex flex-col relative">
-                        <span className="text-[10px] uppercase font-bold tracking-tight opacity-60">Toimitusosoite</span>
+                        <span className="text-[10px] uppercase font-bold tracking-tight opacity-60">{t.header.location}</span>
                         <button
                             type="button"
                             onClick={openCityMenu}
