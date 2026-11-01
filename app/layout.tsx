@@ -11,7 +11,7 @@ import AuthHashHandler from "@/components/auth/AuthHashHandler";
 import { CartProvider } from "@/lib/direct-ordering/CartContext";
 import CartPanel from "@/components/direct-ordering/CartPanel";
 import { DIRECT_ORDERING_ENABLED } from "@/lib/features";
-import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo";
+import { COMPANY_NAME, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", weight: ["400", "500", "600", "700", "800"] });
@@ -44,6 +44,8 @@ const jsonLd = {
       "name": SITE_NAME,
       "url": "https://foodai.fi",
       "inLanguage": "fi",
+      "description": SITE_DESCRIPTION,
+      "publisher": { "@id": "https://foodai.fi/#organization" },
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
@@ -55,9 +57,9 @@ const jsonLd = {
     },
     {
       "@type": "Organization",
-      "name": SITE_NAME,
-      "url": "https://foodai.fi",
-      "description": SITE_DESCRIPTION
+      "@id": "https://foodai.fi/#organization",
+      "name": COMPANY_NAME,
+      "logo": "https://foodai.fi/images/vooniq-logo.png"
     }
   ]
 }

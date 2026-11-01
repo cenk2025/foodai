@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 export const SITE_NAME = 'FoodAi'
+export const COMPANY_NAME = 'VoonIQ'
 export const SITE_DESCRIPTION =
     'FoodAi kokoaa alennetut ruokatarjoukset yhteen näkymään. Vertaile hintoja, toimitusmaksuja ja noutoa tai hae tekoälyllä omin sanoin. Palvelu on vielä kehitysvaiheessa.'
 

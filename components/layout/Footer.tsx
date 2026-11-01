@@ -1,8 +1,10 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { Facebook, Twitter, Instagram, Linkedin, Utensils, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/context'
+import { COMPANY_NAME, SITE_NAME } from '@/lib/seo'
 
 export default function Footer() {
     const { t } = useLanguage()
@@ -60,9 +62,15 @@ export default function Footer() {
 
                 {/* Bottom Bar */}
                 <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <p className="text-xs font-medium text-subtle">
-                        © {new Date().getFullYear()} FoodAi. {t.footer.rights}
-                    </p>
+                    <div className="flex flex-col md:flex-row items-center gap-4">
+                        <p className="flex items-center gap-2 text-xs font-medium text-white/60">
+                            {SITE_NAME} by
+                            <Image src="/images/vooniq-logo.png" alt={COMPANY_NAME} width={76} height={24} />
+                        </p>
+                        <p className="text-xs font-medium text-white/60">
+                            © {new Date().getFullYear()} {COMPANY_NAME}. {t.footer.rights}
+                        </p>
+                    </div>
                     <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest text-white/40">
                         <Link href="/privacy" className="hover:text-white transition-colors">{t.footer.links.privacy}</Link>
                         <Link href="/terms" className="hover:text-white transition-colors">{t.footer.links.terms}</Link>
