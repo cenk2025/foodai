@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { searchOffers, getCities, SearchParams } from './actions/offers'
 import SearchBar from '@/components/search/SearchBar'
@@ -16,7 +16,8 @@ import { useLocation } from '@/lib/context/LocationContext'
 import HomepageDirectRestaurants from '@/components/direct-ordering/HomepageDirectRestaurants'
 import { DIRECT_ORDERING_ENABLED } from '@/lib/features'
 import { useLanguage } from '@/lib/i18n/context'
-import { isDemoSource } from '@/lib/utils'
+import { calculateDiscount, isDemoSource } from '@/lib/utils'
+import { compareByMeal } from '@/lib/offers/compare'
 import { describeIntent, looksLikeNaturalLanguage, type SearchIntent } from '@/lib/ai/search-intent'
 
 export default function HomePage() {
@@ -50,7 +51,11 @@ export default function HomePage() {
     searchOffers({ cityId, sortBy: 'savings_desc' })
       .then((results) => {
         if (cancelled) return
-        setFeatured(results.filter(o => o.old_price_cents && o.old_price_cents > o.price_cents).slice(0, 5))
+        // A meal's cheapest source is the deal we show for it, so it must be the discounted one
+        setFeatured(compareByMeal(results)
+          .map(({ best }) => best)
+          .filter(o => calculateDiscount(o.old_price_cents ?? 0, o.price_cents) > 0)
+          .slice(0, 5))
       })
       .catch(() => { if (!cancelled) setFeatured([]) })
     return () => { cancelled = true }
@@ -114,6 +119,9 @@ export default function HomePage() {
   }
 
   const clearAiSearch = () => handleSearch(searchQuery, city, selectedCategory, sortBy, freeDelivery)
+
+  // One card per meal, so the same dish on three sources reads as a comparison
+  const comparisons = useMemo(() => compareByMeal(offers, sortBy), [offers, sortBy])
 
   // Load initial offers and refresh when city changes
   useEffect(() => {
@@ -246,10 +254,11 @@ export default function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {loading ? (
                   Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
-                ) : offers.map((offer) => (
+                ) : comparisons.map(({ best: offer, others }) => (
                   <OfferCard
                     key={offer.id}
                     offer={offer}
+                    others={others}
                     onMouseEnter={() => setHoveredOffer(offer)}
                     onMouseLeave={() => setHoveredOffer(null)}
                   />
@@ -263,7 +272,7 @@ export default function HomePage() {
             <div className="sticky top-8 space-y-8">
               {/* Quick Preview Panel */}
               <div className="app-shadow rounded-[3rem]">
-                <OfferPreview offer={hoveredOffer || offers[0] || null} />
+                <OfferPreview offer={hoveredOffer || comparisons[0]?.best || null} />
               </div>
 
             </div>

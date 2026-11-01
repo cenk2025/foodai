@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useCallback, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
@@ -18,6 +18,7 @@ import { searchOffers, getCities, type SearchParams } from '@/app/actions/offers
 import OfferCard from '@/components/offers/OfferCard'
 import DemoNotice from '@/components/offers/DemoNotice'
 import { isDemoSource } from '@/lib/utils'
+import { compareByMeal } from '@/lib/offers/compare'
 import { SkeletonCard } from '@/components/ui/Skeleton'
 import { useLocation } from '@/lib/context/LocationContext'
 import { useLanguage } from '@/lib/i18n/context'
@@ -148,6 +149,7 @@ function SearchPageContent() {
     }
 
     const showResults = loading || results !== null
+    const comparisons = useMemo(() => compareByMeal(results ?? []), [results])
 
     return (
         <div className="min-h-screen bg-[#fffcf8] font-outfit pb-24 md:pb-12">
@@ -217,7 +219,7 @@ function SearchPageContent() {
                     <section>
                         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                             <h2 className="text-2xl font-black text-[#3d1d11]">
-                                {loading ? 'Haetaan…' : `${results?.length ?? 0} tarjousta`}
+                                {loading ? 'Haetaan…' : `${comparisons.length} tarjousta`}
                                 {!loading && city && <span className="text-[#a08a7e] font-medium text-base"> · {city}</span>}
                             </h2>
                             <button onClick={clear} className="flex items-center gap-1 text-[#a08a7e] hover:text-[#d35400] text-xs font-bold uppercase tracking-widest transition-colors">
@@ -247,7 +249,7 @@ function SearchPageContent() {
                         ) : results && results.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {results.some(o => isDemoSource(o.source)) && <DemoNotice className="md:col-span-2" />}
-                                {results.map((offer) => <OfferCard key={offer.id} offer={offer} />)}
+                                {comparisons.map(({ best, others }) => <OfferCard key={best.id} offer={best} others={others} />)}
                             </div>
                         ) : (
                             <div className="text-center py-16 bg-white rounded-[3rem] border border-[#f1ebd8]">

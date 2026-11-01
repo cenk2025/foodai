@@ -2,7 +2,8 @@
 
 import { Star, Clock, ExternalLink, MapPin, Info } from 'lucide-react'
 import { OfferWithDetails } from '@/lib/types/database'
-import { formatPrice, formatDeliveryTime, getTrackingUrl, isDemoSource } from '@/lib/utils'
+import { formatPrice, formatDeliveryTime, getSourceLabel, getTrackingUrl, isDemoSource } from '@/lib/utils'
+import { getOfferTotal } from '@/lib/offers/compare'
 import { useLanguage } from '@/lib/i18n/context'
 import MealImage from './MealImage'
 
@@ -44,7 +45,7 @@ export default function OfferPreview({ offer }: OfferPreviewProps) {
                     />
                     <div className="absolute top-4 left-4 flex flex-col gap-2">
                         <span className="bg-[#3d1d11] text-white text-[10px] font-black px-3 py-1.5 rounded-xl uppercase tracking-widest shadow-lg">
-                            {isDemo ? t.card.example : offer.source.name}
+                            {getSourceLabel(offer.source, t.card.example)}
                         </span>
                         {discountPercentage > 0 && (
                             <span className="bg-[#e74c3c] text-white text-[10px] font-black px-3 py-1.5 rounded-xl uppercase tracking-widest shadow-lg">
@@ -86,9 +87,9 @@ export default function OfferPreview({ offer }: OfferPreviewProps) {
 
                     <div className="flex items-center justify-between mb-4 pb-4 border-b border-dashed border-[#f1ebd8]">
                         <div>
-                            <p className="text-[10px] text-[#a08a7e] uppercase font-black tracking-widest mb-1">{t.preview.price_with_delivery}</p>
+                            <p className="text-[10px] text-[#a08a7e] uppercase font-black tracking-widest mb-1">{offer.is_pickup ? t.card.pickup : t.preview.price_with_delivery}</p>
                             <span className="text-3xl font-black text-[#e67e22]">
-                                {formatPrice(offer.price_cents + offer.delivery_fee_cents)}
+                                {formatPrice(getOfferTotal(offer))}
                             </span>
                         </div>
                         {discountPercentage > 0 && (

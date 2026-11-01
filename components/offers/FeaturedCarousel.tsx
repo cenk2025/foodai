@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, Clock, Star, TrendingDown } from 'lucide-react'
 import { OfferWithDetails } from '@/lib/types/database'
-import { calculateDiscount, formatPrice, getTrackingUrl, isDemoSource } from '@/lib/utils'
+import { calculateDiscount, formatPrice, getSourceLabel, getTrackingUrl, isDemoSource } from '@/lib/utils'
+import { getOfferTotal } from '@/lib/offers/compare'
 import { useLanguage } from '@/lib/i18n/context'
 import MealImage from './MealImage'
 
@@ -94,7 +95,7 @@ export default function FeaturedCarousel({ offers, onHover }: FeaturedCarouselPr
                             Päivän tarjous
                         </span>
                         <span className="bg-white/10 backdrop-blur-xl px-3 md:px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider md:tracking-[0.2em] border border-white/10">
-                            {isDemo ? t.card.example : offer.source.name}
+                            {getSourceLabel(offer.source, t.card.example)}
                         </span>
                         {offer.eta_minutes && (
                             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-3 md:px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider md:tracking-[0.2em] border border-white/10">
@@ -119,6 +120,9 @@ export default function FeaturedCarousel({ offers, onHover }: FeaturedCarouselPr
                             <span className="text-3xl md:text-4xl font-black text-[#f3d179]">{formatPrice(offer.price_cents)}</span>
                             {offer.old_price_cents && offer.old_price_cents > offer.price_cents && (
                                 <span className="text-lg font-bold text-white/50 line-through">{formatPrice(offer.old_price_cents)}</span>
+                            )}
+                            {getOfferTotal(offer) !== offer.price_cents && (
+                                <span className="text-sm font-bold text-white/70">{formatPrice(getOfferTotal(offer))} {t.card.total}</span>
                             )}
                         </div>
                         <a

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { OfferWithDetails } from '@/lib/types/database'
+import { getOfferTotal } from '@/lib/offers/compare'
 
 export interface SearchParams {
     query?: string
@@ -100,7 +101,7 @@ export async function searchOffers(params: SearchParams): Promise<OfferWithDetai
     // Sort
     switch (params.sortBy) {
         case 'price_desc':
-            filteredOffers.sort((a, b) => b.price_cents - a.price_cents)
+            filteredOffers.sort((a, b) => getOfferTotal(b) - getOfferTotal(a))
             break
         case 'rating':
             filteredOffers.sort((a, b) => b.meal.restaurant.rating - a.meal.restaurant.rating)
@@ -121,7 +122,7 @@ export async function searchOffers(params: SearchParams): Promise<OfferWithDetai
             break
         case 'price_asc':
         default:
-            filteredOffers.sort((a, b) => a.price_cents - b.price_cents)
+            filteredOffers.sort((a, b) => getOfferTotal(a) - getOfferTotal(b))
             break
     }
 
@@ -191,6 +192,34 @@ export async function getOfferById(offerId: string): Promise<OfferWithDetails | 
     }
 
     return data as OfferWithDetails
+}
+
+export async function getOffersForMeal(mealId: string): Promise<OfferWithDetails[]> {
+    const supabase = await createClient()
+    if (!supabase) return []
+
+    const { data, error } = await supabase
+        .from('offers')
+        .select(`
+      *,
+      meal:meals(
+        *,
+        restaurant:restaurants(
+          *,
+          city:cities(*)
+        )
+      ),
+      source:sources(*)
+    `)
+        .eq('meal_id', mealId)
+        .eq('active', true)
+
+    if (error) {
+        console.error('Error fetching offers for meal:', error)
+        return []
+    }
+
+    return (data as OfferWithDetails[]) || []
 }
 
 export async function getOffersByGroupKey(groupKey: string): Promise<OfferWithDetails[]> {

@@ -126,6 +126,14 @@ export function isDemoSource(source?: { type?: string | null } | null): boolean 
 }
 
 /**
+ * Source name for display. Demo sources must stay distinct from each other in a
+ * comparison without their made-up names passing for real platforms.
+ */
+export function getSourceLabel(source: { name: string; type?: string | null }, exampleWord: string): string {
+    return isDemoSource(source) ? `${exampleWord} ${source.name.charAt(0)}` : source.name
+}
+
+/**
  * Generate tracking URL for offer
  */
 export function getTrackingUrl(offerId: string): string {

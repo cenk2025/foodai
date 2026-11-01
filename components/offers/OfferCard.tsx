@@ -8,20 +8,24 @@ import {
     formatPrice,
     getDiscountBadge,
     formatDeliveryTime,
+    getSourceLabel,
     getTrackingUrl,
     isDemoSource,
 } from '@/lib/utils'
+import { getOfferTotal } from '@/lib/offers/compare'
 import { useLanguage } from '@/lib/i18n/context'
 import MealImage from './MealImage'
 
 interface OfferCardProps {
     offer: OfferWithDetails
+    // Other sources selling the same meal, cheapest first
+    others?: OfferWithDetails[]
     priority?: boolean
     onMouseEnter?: () => void
     onMouseLeave?: () => void
 }
 
-export default function OfferCard({ offer, priority = false, onMouseEnter, onMouseLeave }: OfferCardProps) {
+export default function OfferCard({ offer, others = [], priority = false, onMouseEnter, onMouseLeave }: OfferCardProps) {
     const { t } = useLanguage()
     const router = useRouter()
     const discountBadge = getDiscountBadge(offer.old_price_cents, offer.price_cents)
@@ -71,56 +75,67 @@ export default function OfferCard({ offer, priority = false, onMouseEnter, onMou
                             SUOSITTU
                         </span>
                     )}
-                    <span className="bg-white/90 backdrop-blur-sm text-[#3d1d11] text-[9px] font-bold px-2 py-1 rounded-lg uppercase tracking-tighter shadow-sm border border-black/5">
-                        {isDemo ? t.card.example : offer.source.name}
+                    <span className="bg-white/90 backdrop-blur-sm text-[#3d1d11] text-[9px] font-bold px-2 py-1 rounded-lg uppercase tracking-wide shadow-sm border border-black/5">
+                        {getSourceLabel(offer.source, t.card.example)}
                     </span>
                 </div>
             </div>
 
             {/* Content */}
             <div className="p-5 flex flex-col flex-grow relative z-10 pointer-events-none">
-                <h3 className="text-base font-bold text-[#3d1d11] leading-tight mb-2 line-clamp-1 group-hover:text-[#d35400] transition-colors">
+                <h3 className="text-base font-bold text-[#3d1d11] leading-tight line-clamp-1 group-hover:text-[#d35400] transition-colors">
                     {offer.meal.name}
                 </h3>
+                <p className="text-xs text-[#a08a7e] font-medium mb-4 line-clamp-1">{offer.meal.restaurant.name}</p>
 
-                {/* Meta Info */}
-                <div className="flex items-center gap-1.5 text-[11px] text-[#a08a7e] mb-4 font-medium">
-                    <span>{formatDeliveryTime(offer.eta_minutes)}</span>
-                    <span>•</span>
-                    <span>
-                        {offer.delivery_fee_cents === 0
+                {/* Total price: what the customer actually pays */}
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                    <span className="text-2xl font-black text-[#e67e22]">{formatPrice(getOfferTotal(offer))}</span>
+                    <span className="text-[11px] font-bold text-[#a08a7e]">{t.card.total}</span>
+                    {others.length > 0 && (
+                        <span className="rounded-lg bg-[#27ae60]/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#27ae60]">
+                            {t.card.lowest}
+                        </span>
+                    )}
+                </div>
+
+                {/* How the total is made up */}
+                <p className="mt-1 text-[11px] text-[#a08a7e] font-medium">
+                    {t.card.meal} {formatPrice(offer.price_cents)}
+                    {offer.old_price_cents && offer.old_price_cents > offer.price_cents && (
+                        <span className="ml-1 line-through decoration-[#a08a7e]/50">{formatPrice(offer.old_price_cents)}</span>
+                    )}
+                    {discountBadge && <span className="price-badge inline-block ml-1 px-1.5 py-0">{discountBadge}</span>}
+                    {' · '}
+                    {offer.is_pickup
+                        ? t.card.pickup
+                        : offer.delivery_fee_cents === 0
                             ? t.card.free_delivery
-                            : `Kuljetus ${formatPrice(offer.delivery_fee_cents)}`}
-                    </span>
-                </div>
+                            : `${t.card.delivery} ${formatPrice(offer.delivery_fee_cents)}`}
+                    {' · '}
+                    {formatDeliveryTime(offer.eta_minutes)}
+                </p>
 
-                {/* Price, Savings & CTA */}
-                <div className="mt-auto flex flex-wrap items-end justify-between gap-3">
-                    <div className="space-y-1">
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-xl font-black text-[#e67e22]">
-                                {formatPrice(offer.price_cents)}
-                            </span>
-                            {offer.old_price_cents && (
-                                <span className="text-xs text-[#a08a7e] line-through decoration-[#a08a7e]/50">
-                                    {formatPrice(offer.old_price_cents)}
-                                </span>
-                            )}
-                        </div>
-                        {discountBadge && (
-                            <span className="price-badge inline-block text-[10px] px-2 py-0.5">
-                                {discountBadge}
-                            </span>
-                        )}
-                    </div>
+                {/* Same meal on other sources */}
+                {others.length > 0 && (
+                    <ul className="mt-3 space-y-1 border-t border-dashed border-[#f1ebd8] pt-3">
+                        {others.slice(0, 2).map((other) => (
+                            <li key={other.id} className="flex items-center justify-between gap-2 text-xs font-medium text-[#a08a7e]">
+                                <span className="truncate">{getSourceLabel(other.source, t.card.example)}{other.is_pickup ? ` · ${t.card.pickup}` : ''}</span>
+                                <span className="font-bold text-[#3d1d11]">{formatPrice(getOfferTotal(other))}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
 
-                    <button
-                        onClick={handleViewDeal}
-                        className="pointer-events-auto bg-[#3d1d11] text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-[#d35400] hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center gap-2"
-                    >
-                        {t.card.order} &rarr;
-                    </button>
-                </div>
+                <div className="flex-grow min-h-4" />
+
+                <button
+                    onClick={handleViewDeal}
+                    className="pointer-events-auto w-full bg-[#3d1d11] text-white px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-[#d35400] active:scale-95 transition-all shadow-lg"
+                >
+                    {t.card.order} &rarr;
+                </button>
             </div>
         </div>
     )

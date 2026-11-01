@@ -18,23 +18,27 @@ import {
     Shield
 } from 'lucide-react'
 import { OfferWithDetails } from '@/lib/types/database'
-import { getOfferById } from '@/app/actions/offers'
+import { getOfferById, getOffersForMeal } from '@/app/actions/offers'
 import {
     formatPrice,
     getDiscountBadge,
     formatDeliveryTime,
+    getSourceLabel,
     getTrackingUrl,
     isDemoSource
 } from '@/lib/utils'
 import { useLanguage } from '@/lib/i18n/context'
 import MealImage from '@/components/offers/MealImage'
 import DemoNotice from '@/components/offers/DemoNotice'
+import PriceComparison from '@/components/offers/PriceComparison'
+import { getOfferTotal } from '@/lib/offers/compare'
 
 export default function OfferDetailPage() {
     const params = useParams()
     const router = useRouter()
     const { t } = useLanguage()
     const [offer, setOffer] = useState<OfferWithDetails | null>(null)
+    const [mealOffers, setMealOffers] = useState<OfferWithDetails[]>([])
     const [loading, setLoading] = useState(true)
     const [isFavorite, setIsFavorite] = useState(false)
 
@@ -45,6 +49,7 @@ export default function OfferDetailPage() {
             const data = await getOfferById(params.id as string)
             setOffer(data)
             setLoading(false)
+            setMealOffers(data ? await getOffersForMeal(data.meal_id) : [])
         }
 
         loadOffer()
@@ -211,12 +216,17 @@ export default function OfferDetailPage() {
                                     <span className="text-[10px] font-black uppercase tracking-widest">Kuljetus</span>
                                 </div>
                                 <p className="text-2xl font-black text-[#27ae60]">
-                                    {offer.delivery_fee_cents === 0
-                                        ? 'ILMAINEN'
-                                        : formatPrice(offer.delivery_fee_cents)}
+                                    {offer.is_pickup
+                                        ? t.card.pickup
+                                        : offer.delivery_fee_cents === 0
+                                            ? t.card.free_delivery
+                                            : formatPrice(offer.delivery_fee_cents)}
                                 </p>
                             </div>
                         </div>
+
+                        {/* Same meal on other sources */}
+                        <PriceComparison offers={mealOffers} currentOfferId={offer.id} />
 
                         {/* Main CTA Section */}
                         <div className="relative group">
@@ -241,10 +251,14 @@ export default function OfferDetailPage() {
                                     <div className="space-y-1">
                                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Alusta</p>
                                         <span className="text-xl font-black text-white px-4 py-1.5 rounded-xl border border-white/10 bg-white/5">
-                                            {isDemo ? t.card.example : offer.source.name}
+                                            {getSourceLabel(offer.source, t.card.example)}
                                         </span>
                                     </div>
                                 </div>
+
+                                <p className="-mt-6 mb-8 text-sm font-bold text-white/60">
+                                    {t.card.total_with_delivery}: <span className="text-white">{formatPrice(getOfferTotal(offer))}</span>
+                                </p>
 
                                 {isDemo ? (
                                     <DemoNotice />
