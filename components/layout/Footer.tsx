@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Facebook, Twitter, Instagram, Linkedin, Utensils, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/context'
+import { openConsentSettings } from '@/lib/consent'
 import { COMPANY_NAME, SITE_NAME } from '@/lib/seo'
 
 export default function Footer() {
@@ -71,10 +72,11 @@ export default function Footer() {
                             © {new Date().getFullYear()} {COMPANY_NAME}. {t.footer.rights}
                         </p>
                     </div>
-                    <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest text-white/40">
+                    <div className="flex flex-wrap justify-center gap-8 text-[10px] font-black uppercase tracking-widest text-white/40">
                         <Link href="/privacy" className="hover:text-white transition-colors">{t.footer.links.privacy}</Link>
                         <Link href="/terms" className="hover:text-white transition-colors">{t.footer.links.terms}</Link>
-                        <Link href="/cookies" className="hover:text-white transition-colors">Evästeet</Link>
+                        <Link href="/cookies" className="hover:text-white transition-colors">{t.footer.links.cookies}</Link>
+                        <button type="button" onClick={openConsentSettings} className="font-black uppercase tracking-widest hover:text-white transition-colors">{t.legal.consent.settings_button}</button>
                     </div>
                 </div>
             </div>

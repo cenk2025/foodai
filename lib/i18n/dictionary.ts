@@ -1,5 +1,7 @@
 export type Locale = 'fi' | 'en';
 
+export type LegalSection = { heading: string; paragraphs?: string[]; items?: string[] };
+
 export const dictionary = {
     fi: {
         common: {
@@ -309,6 +311,202 @@ export const dictionary = {
             sort: { price_asc: 'halvin ensin', savings_desc: 'suurin alennus', rating: 'paras arvio', eta: 'nopein' },
             diet: { vegan: 'vegaaninen', vegetarian: 'kasvis', gluten_free: 'gluteeniton', halal: 'halal', healthy: 'terveellinen', pescatarian: 'pescetaarinen' },
         },
+        legal: {
+            back: 'Takaisin',
+            consent: {
+                title: 'Evästeet ja tietosuoja',
+                necessary: 'FoodAi käyttää vain palvelun toimintaan tarvittavia evästeitä ja selaimen tallennustilaa: kirjautumista sekä valitsemaasi kieltä ja kaupunkia varten. Mainos- tai seurantaevästeitä ei ole.',
+                statistics: 'Saat itse päättää, lasketaanko sinulle näytetyt tarjoukset nimettömiin tilastoihin. Valinta ei vaikuta palvelun toimintaan, ja voit muuttaa sitä milloin tahansa.',
+                clicks: 'Kun siirryt kumppanin sivulle, siirtymä kirjataan valinnasta riippumatta, kuten tietosuojaselosteessa kerrotaan.',
+                accept: 'Salli tilastot',
+                reject: 'Vain välttämättömät',
+                settings_title: 'Evästevalintasi',
+                settings_button: 'Evästeasetukset',
+                status_statistics: 'Olet sallinut nimettömät tarjoustilastot.',
+                status_necessary: 'Käytössä ovat vain välttämättömät evästeet ja tallennustila.',
+                status_none: 'Et ole vielä tehnyt valintaa, joten käytössä ovat vain välttämättömät evästeet ja tallennustila.',
+            },
+            search_ranking: 'Järjestys: alin kokonaishinta tai hakusi mukainen järjestys. Sijoituksista ei makseta.',
+            updated: 'Päivitetty 1.11.2026',
+            contact_title: 'Yhteystiedot',
+            contact_operator: 'FoodAi on VoonIQ-nimellä toimiva palvelu. VoonIQ ei ole vielä rekisteröity yritys, joten Y-tunnusta ei ole. Palvelun ylläpitäjä on toistaiseksi Cenk Yakinlar.',
+            privacy: {
+                title: 'Tietosuojaseloste',
+                intro: 'Tässä kerromme, mitä tietoja FoodAi käsittelee, miksi ja kuinka kauan. FoodAi vertailee ruokatarjouksia ja ohjaa sinut kumppanin palveluun. Se ei ota vastaan tilauksia eikä maksuja.',
+                sections: [
+                    {
+                        heading: 'Rekisterinpitäjä',
+                        paragraphs: ['Rekisterinpitäjä on Cenk Yakinlar, joka ylläpitää FoodAita VoonIQ-nimellä. VoonIQ ei ole vielä rekisteröity yritys, joten Y-tunnusta ei ole. Tietosuoja-asioissa voit ottaa yhteyttä osoitteeseen info@foodai.fi.'],
+                    },
+                    {
+                        heading: 'Mitä tietoja käsittelemme',
+                        items: [
+                            'Käyttäjätili: sähköpostiosoite, nimi ja salasana, jota ei tallenneta selväkielisenä. Jos kirjaudut Googlella, saamme nimesi ja sähköpostiosoitteesi Googlelta. Tilin vahvistus- ja salasanaviestit lähetetään sähköpostiisi.',
+                            'Siirtyminen kumppanin sivulle: tarjous, aika, edellisen sivun osoite, mahdolliset kampanjatunnisteet (UTM), selaimen tunniste (user agent) ja IP-osoitteestasi avaimella laskettu tiiviste. IP-osoitetta ei tallenneta sellaisenaan, eikä tietoa yhdistetä käyttäjätiliin.',
+                            'Tarjousten näyttökerrat, vain jos olet sallinut tilastot: päiväkohtaiset laskurit tarjouksittain. Niihin ei tallenneta tietoja kävijästä.',
+                            'Väärinkäytön esto: IP-osoitteesta laskettu tiiviste ja aika, kun käytät tekoälyhakua tai -assistenttia tai kun tarjousten näyttökertoja lasketaan. Ylläpidon kirjautumisyrityksistä tallennetaan vastaava tiiviste.',
+                            'Tekoälyhaku ja -assistentti: kirjoittamasi teksti ja hakukaupunki lähetetään tekoälypalveluun vastauksen muodostamista varten. FoodAi ei tallenna tekstiä tietokantaansa. Älä kirjoita siihen henkilötietoja.',
+                            'Sijainti: vain jos pyydät sijainnin tunnistusta ja sallit sen selaimessa. Koordinaatit lähetetään palvelimemme kautta OpenStreetMapin Nominatim-palveluun kaupungin selvittämiseksi. Emme tallenna koordinaatteja. Valittu kaupunki säilyy selaimessasi.',
+                            'Palvelinlokit: palvelun alustat voivat kirjata teknisiä tietoja pyynnöistä, kuten IP-osoitteen, palvelun ylläpitoa ja turvallisuutta varten.',
+                        ],
+                        paragraphs: ['Suosikkeja ja ilmoitusasetuksia ei tällä hetkellä tallenneta, emmekä lähetä uutiskirjeitä tai hintahälytyksiä.'],
+                    },
+                    {
+                        heading: 'Miksi käsittelemme tietoja',
+                        items: [
+                            'Käyttäjätili ja tekoälytoiminnot: palvelun tarjoaminen sinulle (sopimus).',
+                            'Siirtymät: tilastot ja kumppanien kanssa tehtävä kohdistus ja laskutus (oikeutettu etu).',
+                            'Näyttökerrat: nimettömät tilastot (suostumus), jonka voit perua milloin tahansa Evästeet-sivulla.',
+                            'Väärinkäytön esto ja palvelinlokit: palvelun turvallisuus ja kustannusten hallinta (oikeutettu etu).',
+                            'Sijainti: oma pyyntösi ja selaimessa antamasi lupa (suostumus), jonka voit perua selaimen asetuksista.',
+                        ],
+                        paragraphs: ['Tarjouksia voi selata ilman käyttäjätiliä. Tilin tiedot ovat tarpeen vain, jos haluat luoda tilin. Emme tee sinua koskevia automaattisia päätöksiä, joilla olisi oikeudellisia tai vastaavia vaikutuksia.'],
+                    },
+                    {
+                        heading: 'Kenelle tietoja siirretään',
+                        items: [
+                            'Supabase: tietokanta ja käyttäjätilit.',
+                            'Vercel: sivuston ylläpito.',
+                            'NVIDIA (build.nvidia.com): tekoälyhaku ja -assistentti.',
+                            'OpenStreetMap Foundation (Nominatim): sijainnin muuntaminen kaupungiksi.',
+                            'Google: vain jos kirjaudut Googlella.',
+                            'Kumppanit: kun siirryt kumppanin sivulle, osoitteessa voi olla FoodAin tunniste ja siirtymän yksilöllinen tunnus, jotta kumppani voi kohdistaa tilauksen FoodAille. Kumppanin sivulla noudatetaan kumppanin omaa tietosuojaselostetta.',
+                        ],
+                        paragraphs: ['Emme myy henkilötietoja. Osa palveluntarjoajista on Yhdysvalloissa tai muualla EU:n ja ETA-alueen ulkopuolella, joten tietoja voidaan käsitellä myös siellä. Vercel kertoo kuuluvansa EU:n ja Yhdysvaltojen väliseen tietosuojakehykseen ja käyttävänsä EU:n vakiosopimuslausekkeita. Muiden palveluntarjoajien siirtojen suojakeinoista ja niiden kopioista saat tietoa osoitteesta info@foodai.fi.'],
+                    },
+                    {
+                        heading: 'Kuinka kauan säilytämme tietoja',
+                        items: [
+                            'Käyttäjätili: kunnes tili poistetaan.',
+                            'Siirtymät kumppanin sivulle: noin 6 kuukautta.',
+                            'Väärinkäytön eston tiivisteet: yleensä noin vuorokausi.',
+                            'Näyttökertojen laskurit: säilytetään tilastoina, koska ne eivät sisällä kävijän tietoja.',
+                            'Selaimeen tallennetut tiedot: kunnes tyhjennät ne. Katso evästekäytäntö.',
+                        ],
+                    },
+                    {
+                        heading: 'Sinun oikeutesi',
+                        paragraphs: [
+                            'Voit pyytää pääsyä tietoihisi, niiden oikaisemista tai poistamista ja käsittelyn rajoittamista, vastustaa oikeutettuun etuun perustuvaa käsittelyä ja pyytää tietojen siirtämistä. Nimesi voit muuttaa myös tilin asetuksista. Suostumuksen voit perua milloin tahansa, mikä ei vaikuta aiemman käsittelyn lainmukaisuuteen.',
+                            'Tilin ja sen tietojen poistamista pyydetään tällä hetkellä sähköpostitse osoitteesta info@foodai.fi. Jos katsot, että tietojasi käsitellään lainvastaisesti, voit tehdä valituksen tietosuojavaltuutetun toimistolle (tietosuoja.fi).',
+                        ],
+                    },
+                    {
+                        heading: 'Muutokset',
+                        paragraphs: ['Päivitämme tätä selostetta, kun palvelu tai tietojen käsittely muuttuu. Viimeisin päivityspäivä näkyy sivun yläosassa.'],
+                    },
+                ] as LegalSection[],
+            },
+            terms: {
+                title: 'Käyttöehdot',
+                intro: 'Nämä ehdot koskevat FoodAi-palvelun käyttöä osoitteessa foodai.fi. Luomalla tilin hyväksyt ehdot.',
+                sections: [
+                    {
+                        heading: 'Palveluntarjoaja',
+                        paragraphs: ['Palvelun tarjoaa Cenk Yakinlar VoonIQ-nimellä. VoonIQ ei ole vielä rekisteröity yritys, joten sitä ei ole merkitty kaupparekisteriin eikä sillä ole Y-tunnusta. Sähköposti: info@foodai.fi.'],
+                    },
+                    {
+                        heading: 'Mikä FoodAi on',
+                        paragraphs: ['FoodAi on hintavertailupalvelu, joka kokoaa ruokatarjouksia yhteen näkymään ja ohjaa sinut kumppanin palveluun. FoodAi ei myy ruokaa eikä ota vastaan tilauksia, maksuja tai toimituksia. Tilaus tehdään kumppanin palvelussa ja sen ehdoin, ja tilausta koskevat asiat hoidetaan kumppanin kanssa.'],
+                    },
+                    {
+                        heading: 'Palvelu on kehitysvaiheessa',
+                        paragraphs: ['Palvelussa näkyvät tarjoukset ovat tällä hetkellä esimerkkidataa, joten hinnat ja saatavuus eivät vastaa todellisia tarjouksia eikä niitä voi tilata. Kun mukana on kumppanien tarjouksia, ajantasainen hinta ja saatavuus on aina tarkistettava kumppanin palvelusta.'],
+                    },
+                    {
+                        heading: 'Korvaus kumppaneilta',
+                        paragraphs: ['FoodAi voi saada kumppanilta korvauksen, kun siirryt kumppanin palveluun tai teet siellä tilauksen. Siirtymät kirjataan tätä varten, kuten tietosuojaselosteessa kerrotaan.'],
+                    },
+                    {
+                        heading: 'Näin tarjoukset järjestetään',
+                        paragraphs: ['Tarjoukset järjestetään oletuksena alimman kokonaishinnan mukaan, ja voit vaihtaa järjestykseksi suurimman alennuksen. Hinta on tärkein järjestykseen vaikuttava tekijä, ellet itse valitse muuta. Tekoälyhaku muuttaa hakusi samoiksi hakuehdoiksi ja voi käyttää myös arvosanaa tai toimitusaikaa, jos pyydät sitä. Etusivun nostot perustuvat alennukseen, toimitusaikaan, ilmaiseen kuljetukseen tai arvosanaan.', 'Kukaan ei maksa paremmasta sijoituksesta. Jos tämä muuttuu, maksetut sijoitukset merkitään selvästi.'],
+                    },
+                    {
+                        heading: 'Hinnat',
+                        paragraphs: ['Hinnat ilmoitetaan euroina, ja kuluttajille ilmoitettuihin hintoihin sisältyy arvonlisävero. Kokonaishinta sisältää ruoan hinnan ja toimitusmaksun. Noudettaessa toimitusmaksua ei ole.'],
+                    },
+                    {
+                        heading: 'Käyttäjätili',
+                        paragraphs: ['Anna tiliä luodessasi oikeat tiedot ja pidä salasanasi omana tietonasi. Voimme sulkea tilin, jos sitä käytetään näiden ehtojen vastaisesti. Tilin poistamista voit pyytää osoitteesta info@foodai.fi.'],
+                    },
+                    {
+                        heading: 'Sallittu käyttö',
+                        paragraphs: ['Et saa häiritä palvelun toimintaa, kiertää sen käyttörajoituksia, kerätä sen sisältöä automaattisesti ilman lupaa tai käyttää palvelua lainvastaisesti.'],
+                    },
+                    {
+                        heading: 'Tekoälytoiminnot',
+                        paragraphs: ['Tekoälyhaku ja -assistentti voivat tehdä virheitä. Tarkista tarjouksen tiedot ennen päätöstä, erityisesti allergioihin ja ruokavalioihin liittyvät tiedot, jotka on aina varmistettava ravintolasta tai kumppanilta.'],
+                    },
+                    {
+                        heading: 'Oikeudet sisältöön',
+                        paragraphs: ['Palvelun sisältö ja ulkoasu kuuluvat FoodAille tai sen kumppaneille ja lisenssinantajille. Sisältöä ei saa kopioida kaupalliseen käyttöön ilman lupaa.'],
+                    },
+                    {
+                        heading: 'Vastuu',
+                        paragraphs: ['Palvelu tarjotaan sellaisena kuin se on, emmekä takaa sen jatkuvaa toimivuutta tai tietojen virheettömyyttä. Emme vastaa kumppanien tuotteista, palveluista tai toimituksista. Nämä ehdot eivät rajoita kuluttajansuojalain mukaisia pakottavia oikeuksiasi.'],
+                    },
+                    {
+                        heading: 'Muutokset ja sovellettava laki',
+                        paragraphs: ['Voimme muuttaa ehtoja, kun palvelu muuttuu. Viimeisin päivityspäivä näkyy sivun yläosassa. Ehtoihin sovelletaan Suomen lakia. Kuluttajana voit pyytää neuvoa kuluttajaneuvonnasta (kkv.fi) ja viedä riidan kuluttajariitalautakunnan käsiteltäväksi (www.kuluttajariita.fi).'],
+                    },
+                ] as LegalSection[],
+            },
+            cookies: {
+                title: 'Evästeet',
+                intro: 'FoodAi ei käytä mainos- tai seurantaevästeitä. Palvelun toimintaan tarvittavat evästeet ja selaimen tallennustila ovat aina käytössä. Nimettömät tarjoustilastot ovat käytössä vain, jos sallit ne.',
+                sections: [
+                    {
+                        heading: 'Evästeet',
+                        items: [
+                            'sb-…-alkuiset evästeet (Supabase): pitävät sinut kirjautuneena. Ne asetetaan vain kirjautumisen yhteydessä ja poistuvat, kun kirjaudut ulos tai istunto päättyy.',
+                            'admin_session: vain palvelun ylläpitäjän kirjautumiseen. Voimassa 24 tuntia.',
+                        ],
+                    },
+                    {
+                        heading: 'Selaimen paikallinen tallennustila',
+                        paragraphs: ['Nämä tiedot säilyvät vain selaimessasi. Niitä ei lähetetä palvelimelle tallennettavaksi.'],
+                        items: [
+                            'foodai_locale: valitsemasi kieli.',
+                            'foodai_location: valitsemasi kaupunki ja alue.',
+                            'foodai_direct_carts_v2: suoratilausten ostoskori. Toiminto ei ole käytössä, joten kori on tyhjä.',
+                            'foodai_consent: evästevalintasi ja sen ajankohta. Valintaa kysytään uudelleen 12 kuukauden kuluttua tai jos käytäntö muuttuu.',
+                        ],
+                    },
+                    {
+                        heading: 'Nimettömät tarjoustilastot',
+                        paragraphs: ['Tämä on ainoa valinnainen toiminto. Jos sallit tilastot, selaimesi kertoo palvelimelle, mitkä tarjoukset sinulle näytettiin, ja palvelin kasvattaa tarjouksen päiväkohtaista laskuria. Laitteellesi ei tallenneta tunnistetta, eikä laskureihin tallenneta tietoja kävijästä. Väärinkäytön estämiseksi IP-osoitteesta lasketaan tiiviste, joka säilyy yleensä noin vuorokauden. Jos et salli tilastoja tai et tee valintaa, tietoja ei lähetetä.'],
+                    },
+                    {
+                        heading: 'Kumppanien sivut',
+                        paragraphs: ['Kun siirryt kumppanin sivulle, kumppani voi käyttää omia evästeitään oman käytäntönsä mukaisesti.'],
+                    },
+                    {
+                        heading: 'Näin poistat tiedot',
+                        paragraphs: ['Voit poistaa evästeet ja paikallisesti tallennetut tiedot selaimesi asetuksista. Jos estät kirjautumisevästeet, et voi kirjautua tilillesi, mutta tarjousten selaaminen toimii.'],
+                    },
+                ] as LegalSection[],
+            },
+            partners: {
+                title: 'Ravintoloille ja ruokapalveluille',
+                intro: 'FoodAi kokoaa alennetut ruokatarjoukset yhteen näkymään ja ohjaa käyttäjät suoraan kumppanin omaan palveluun. Tilaus, maksu ja asiakassuhde pysyvät teillä.',
+                sections: [
+                    {
+                        heading: 'Näin yhteistyö toimii',
+                        items: [
+                            'Tarjouksenne näkyvät vertailussa ja tekoälyhaussa.',
+                            'Käyttäjä siirtyy tarjouksesta suoraan palveluunne.',
+                            'Jokainen siirtymä kirjataan, ja osoitteeseen voidaan lisätä seurantaparametrinne.',
+                        ],
+                    },
+                    {
+                        heading: 'Missä vaiheessa olemme',
+                        paragraphs: ['Palvelu on kehitysvaiheessa, ja tarjoukset ovat tällä hetkellä esimerkkidataa. Etsimme ensimmäisiä kumppaneita. Kaupalliset ehdot sovitaan erikseen.'],
+                    },
+                ] as LegalSection[],
+                contact_title: 'Ota yhteyttä',
+                contact_text: 'Kerro lyhyesti yrityksestänne ja siitä, miten tarjoustietonne ovat saatavilla.',
+            },
+        },
     },
     en: {
         common: {
@@ -617,6 +815,202 @@ export const dictionary = {
             min_rating: 'rating at least',
             sort: { price_asc: 'cheapest first', savings_desc: 'biggest discount', rating: 'best rated', eta: 'fastest' },
             diet: { vegan: 'vegan', vegetarian: 'vegetarian', gluten_free: 'gluten-free', halal: 'halal', healthy: 'healthy', pescatarian: 'pescatarian' },
+        },
+        legal: {
+            back: 'Back',
+            consent: {
+                title: 'Cookies and privacy',
+                necessary: 'FoodAi only uses cookies and browser storage that the service needs to work: for signing in and for the language and city you choose. There are no advertising or tracking cookies.',
+                statistics: 'You decide whether the offers shown to you are counted in anonymous statistics. Your choice does not affect how the service works, and you can change it at any time.',
+                clicks: 'When you go to a partner\'s site, the visit is recorded whatever you choose, as described in the privacy policy.',
+                accept: 'Allow statistics',
+                reject: 'Necessary only',
+                settings_title: 'Your cookie choice',
+                settings_button: 'Cookie settings',
+                status_statistics: 'You have allowed anonymous offer statistics.',
+                status_necessary: 'Only necessary cookies and storage are in use.',
+                status_none: 'You have not chosen yet, so only necessary cookies and storage are in use.',
+            },
+            search_ranking: 'Sorted by lowest total price or as your search asked. No one pays for placement.',
+            updated: 'Updated 1 November 2026',
+            contact_title: 'Contact',
+            contact_operator: 'FoodAi is run under the name VoonIQ. VoonIQ is not yet a registered company, so there is no business ID. For now, the service is operated by Cenk Yakinlar.',
+            privacy: {
+                title: 'Privacy policy',
+                intro: 'This page explains what data FoodAi handles, why and for how long. FoodAi compares food deals and sends you to a partner\'s service. It does not take orders or payments.',
+                sections: [
+                    {
+                        heading: 'Data controller',
+                        paragraphs: ['The data controller is Cenk Yakinlar, who runs FoodAi under the name VoonIQ. VoonIQ is not yet a registered company, so there is no business ID. For privacy matters, contact info@foodai.fi.'],
+                    },
+                    {
+                        heading: 'What data we handle',
+                        items: [
+                            'User account: email address, name and a password that is not stored in plain text. If you sign in with Google, we receive your name and email address from Google. Account confirmation and password emails are sent to your address.',
+                            'Going to a partner\'s site: the offer, the time, the address of the previous page, any campaign tags (UTM), your browser identifier (user agent) and a keyed hash of your IP address. The IP address itself is not stored, and this data is not linked to your account.',
+                            'Offer views, only if you have allowed statistics: daily counters per offer. No visitor data is stored with them.',
+                            'Abuse prevention: a hash of your IP address and the time, when you use the AI search or assistant or when offer views are counted. A similar hash is stored for admin login attempts.',
+                            'AI search and assistant: the text you write and the search city are sent to an AI service to produce the answer. FoodAi does not store the text in its database. Please do not include personal data in it.',
+                            'Location: only if you ask for location detection and allow it in your browser. The coordinates are sent through our server to OpenStreetMap\'s Nominatim service to find the city. We do not store the coordinates. The chosen city stays in your browser.',
+                            'Server logs: the platforms running the service may log technical request data, such as the IP address, for operations and security.',
+                        ],
+                        paragraphs: ['Favourites and notification settings are not currently stored, and we do not send newsletters or price alerts.'],
+                    },
+                    {
+                        heading: 'Why we handle data',
+                        items: [
+                            'User account and AI features: providing the service to you (contract).',
+                            'Partner visits: statistics, and attribution and invoicing with partners (legitimate interest).',
+                            'Offer views: anonymous statistics (consent), which you can withdraw at any time on the Cookies page.',
+                            'Abuse prevention and server logs: security of the service and cost control (legitimate interest).',
+                            'Location: your own request and the permission you give in your browser (consent), which you can withdraw in your browser settings.',
+                        ],
+                        paragraphs: ['You can browse offers without an account. Account details are only needed if you want to create an account. We do not make automated decisions about you that have legal or similar effects.'],
+                    },
+                    {
+                        heading: 'Who receives data',
+                        items: [
+                            'Supabase: database and user accounts.',
+                            'Vercel: website hosting.',
+                            'NVIDIA (build.nvidia.com): AI search and assistant.',
+                            'OpenStreetMap Foundation (Nominatim): converting a location to a city.',
+                            'Google: only if you sign in with Google.',
+                            'Partners: when you go to a partner\'s site, the address may include a FoodAi tag and a unique ID for the visit, so the partner can attribute the order to FoodAi. The partner\'s own privacy policy applies on its site.',
+                        ],
+                        paragraphs: ['We do not sell personal data. Some providers are in the United States or elsewhere outside the EU and EEA, so data may also be processed there. Vercel states that it is part of the EU-U.S. Data Privacy Framework and uses the EU Standard Contractual Clauses. For the safeguards used by other providers and copies of them, contact info@foodai.fi.'],
+                    },
+                    {
+                        heading: 'How long we keep data',
+                        items: [
+                            'User account: until the account is deleted.',
+                            'Visits to partner sites: about 6 months.',
+                            'Abuse prevention hashes: usually about one day.',
+                            'View counters: kept as statistics, because they contain no visitor data.',
+                            'Data stored in your browser: until you clear it. See the cookie page.',
+                        ],
+                    },
+                    {
+                        heading: 'Your rights',
+                        paragraphs: [
+                            'You can ask for access to your data, for it to be corrected or erased, and for processing to be restricted. You can object to processing based on legitimate interest and ask for your data to be transferred. You can also change your name in your account settings. You can withdraw consent at any time, which does not affect the lawfulness of earlier processing.',
+                            'To delete your account and its data, please currently email info@foodai.fi. If you think your data is being handled unlawfully, you can complain to the Office of the Data Protection Ombudsman (tietosuoja.fi).',
+                        ],
+                    },
+                    {
+                        heading: 'Changes',
+                        paragraphs: ['We update this policy when the service or the handling of data changes. The latest update date is shown at the top of the page.'],
+                    },
+                ] as LegalSection[],
+            },
+            terms: {
+                title: 'Terms of use',
+                intro: 'These terms apply to the use of FoodAi at foodai.fi. By creating an account you accept them.',
+                sections: [
+                    {
+                        heading: 'Service provider',
+                        paragraphs: ['The service is provided by Cenk Yakinlar under the name VoonIQ. VoonIQ is not yet a registered company, so it is not in the Trade Register and has no business ID. Email: info@foodai.fi.'],
+                    },
+                    {
+                        heading: 'What FoodAi is',
+                        paragraphs: ['FoodAi is a price comparison service that gathers food deals into one view and sends you to a partner\'s service. FoodAi does not sell food or handle orders, payments or deliveries. You order in the partner\'s service under its terms, and any questions about an order are handled with the partner.'],
+                    },
+                    {
+                        heading: 'The service is in development',
+                        paragraphs: ['The offers shown are currently example data, so their prices and availability do not reflect real deals and they cannot be ordered. Once partner offers are included, always check the current price and availability in the partner\'s service.'],
+                    },
+                    {
+                        heading: 'Payment from partners',
+                        paragraphs: ['FoodAi may receive payment from a partner when you go to its service or order there. Visits are recorded for this purpose, as described in the privacy policy.'],
+                    },
+                    {
+                        heading: 'How offers are ranked',
+                        paragraphs: ['Offers are sorted by lowest total price by default, and you can switch to biggest discount. Price is the main factor unless you choose otherwise. AI search turns your request into the same search filters and can also use rating or delivery time if you ask for them. The home page highlights are based on discount, delivery time, free delivery or rating.', 'No one pays for a better position. If this changes, paid positions will be clearly marked.'],
+                    },
+                    {
+                        heading: 'Prices',
+                        paragraphs: ['Prices are in euros, and prices shown to consumers include VAT. The total price includes the food and the delivery fee. There is no delivery fee for pickup.'],
+                    },
+                    {
+                        heading: 'User account',
+                        paragraphs: ['Give correct details when you create an account and keep your password to yourself. We may close an account that is used against these terms. To have your account deleted, email info@foodai.fi.'],
+                    },
+                    {
+                        heading: 'Acceptable use',
+                        paragraphs: ['You must not disrupt the service, get around its usage limits, collect its content automatically without permission or use it unlawfully.'],
+                    },
+                    {
+                        heading: 'AI features',
+                        paragraphs: ['The AI search and assistant can make mistakes. Check the details of an offer before deciding, especially anything about allergies and diets, which you should always confirm with the restaurant or partner.'],
+                    },
+                    {
+                        heading: 'Rights to content',
+                        paragraphs: ['The content and design of the service belong to FoodAi or its partners and licensors. The content must not be copied for commercial use without permission.'],
+                    },
+                    {
+                        heading: 'Liability',
+                        paragraphs: ['The service is provided as it is, and we do not guarantee that it always works or that its information is free of errors. We are not responsible for partners\' products, services or deliveries. These terms do not limit your mandatory rights under consumer protection law.'],
+                    },
+                    {
+                        heading: 'Changes and governing law',
+                        paragraphs: ['We may change these terms when the service changes. The latest update date is shown at the top of the page. Finnish law applies. As a consumer, you can get advice from the Finnish consumer advisory service (kkv.fi) and take a dispute to the Finnish Consumer Disputes Board (www.kuluttajariita.fi).'],
+                    },
+                ] as LegalSection[],
+            },
+            cookies: {
+                title: 'Cookies',
+                intro: 'FoodAi does not use advertising or tracking cookies. Cookies and browser storage the service needs to work are always on. Anonymous offer statistics are only on if you allow them.',
+                sections: [
+                    {
+                        heading: 'Cookies',
+                        items: [
+                            'Cookies starting with sb-… (Supabase): keep you signed in. They are set only when you sign in and are removed when you sign out or the session ends.',
+                            'admin_session: only for the service administrator\'s sign-in. Valid for 24 hours.',
+                        ],
+                    },
+                    {
+                        heading: 'Browser storage',
+                        paragraphs: ['This data stays in your browser. It is not sent to a server for storage.'],
+                        items: [
+                            'foodai_locale: the language you chose.',
+                            'foodai_location: the city and area you chose.',
+                            'foodai_direct_carts_v2: the shopping cart for direct ordering. The feature is not in use, so the cart is empty.',
+                            'foodai_consent: your cookie choice and when you made it. You are asked again after 12 months or if this policy changes.',
+                        ],
+                    },
+                    {
+                        heading: 'Anonymous offer statistics',
+                        paragraphs: ['This is the only optional feature. If you allow statistics, your browser tells the server which offers were shown to you, and the server adds to that offer\'s daily counter. No identifier is stored on your device and no visitor data is stored with the counters. To prevent abuse, a hash is calculated from your IP address and is usually kept for about one day. If you do not allow statistics or do not choose, nothing is sent.'],
+                    },
+                    {
+                        heading: 'Partner sites',
+                        paragraphs: ['When you go to a partner\'s site, the partner may use its own cookies under its own policy.'],
+                    },
+                    {
+                        heading: 'How to remove this data',
+                        paragraphs: ['You can remove cookies and stored data in your browser settings. If you block sign-in cookies you cannot sign in to your account, but browsing offers still works.'],
+                    },
+                ] as LegalSection[],
+            },
+            partners: {
+                title: 'For restaurants and food services',
+                intro: 'FoodAi gathers discounted food deals into one view and sends users straight to the partner\'s own service. The order, the payment and the customer relationship stay with you.',
+                sections: [
+                    {
+                        heading: 'How it works',
+                        items: [
+                            'Your offers appear in the comparison and in AI search.',
+                            'Users go from an offer straight to your service.',
+                            'Every visit is recorded, and your tracking parameters can be added to the address.',
+                        ],
+                    },
+                    {
+                        heading: 'Where we are now',
+                        paragraphs: ['The service is in development, and the offers are currently example data. We are looking for our first partners. Commercial terms are agreed separately.'],
+                    },
+                ] as LegalSection[],
+                contact_title: 'Get in touch',
+                contact_text: 'Tell us briefly about your company and how your offer data is available.',
+            },
         },
     }
 };

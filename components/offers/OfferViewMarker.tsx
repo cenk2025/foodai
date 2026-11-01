@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { getConsent, subscribeToConsent } from '@/lib/consent'
 
 const FLUSH_DELAY_MS = 2000
 const MAX_BATCH = 50
@@ -13,7 +14,8 @@ let timer: ReturnType<typeof setTimeout> | null = null
 function flush() {
     if (timer) clearTimeout(timer)
     timer = null
-    if (queue.length === 0) return
+    // Offers wait here until the visitor chooses; nothing is sent without their permission.
+    if (queue.length === 0 || getConsent() !== 'statistics') return
     const ids = queue.slice(0, MAX_BATCH)
     queue = queue.slice(MAX_BATCH)
     fetch('/api/track/views', {
@@ -35,6 +37,11 @@ function report(offerId: string) {
 if (typeof document !== 'undefined') {
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden') flush()
+    })
+    subscribeToConsent(() => {
+        const consent = getConsent()
+        if (consent === 'statistics') flush()
+        if (consent === 'necessary') queue = []
     })
 }
 

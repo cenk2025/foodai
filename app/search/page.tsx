@@ -237,6 +237,8 @@ function SearchPageContent() {
                             </button>
                         </div>
 
+                        <p className="text-sm text-subtle font-medium mb-6">{t.legal.search_ranking}</p>
+
                         {aiLabels && (
                             <div className="flex flex-wrap items-center gap-2 mb-8">
                                 <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-brand">

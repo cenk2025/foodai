@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import AiAssistant from "@/components/ai/AiAssistant";
+import ConsentDialog from "@/components/legal/ConsentDialog";
+import LegalLinks from "@/components/legal/LegalLinks";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
@@ -83,9 +85,11 @@ export default function RootLayout({
               <Header />
               <main className="pb-24 md:pb-0">
                 {children}
+                <LegalLinks />
               </main>
               <BottomNav />
               <AiAssistant />
+              <ConsentDialog />
               {DIRECT_ORDERING_ENABLED && <CartPanel />}
             </CartProvider>
           </LocationProvider>

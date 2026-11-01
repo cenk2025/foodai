@@ -40,6 +40,14 @@ export async function trackClick(
             return { success: false, error: error.message }
         }
 
+        // Opportunistic cleanup: /privacy promises clicks are kept for about six months.
+        if (Math.random() < 0.05) {
+            const cutoff = new Date()
+            cutoff.setMonth(cutoff.getMonth() - 6)
+            const { error: cleanupError } = await supabase.from('click_events').delete().lt('clicked_at', cutoff.toISOString())
+            if (cleanupError) console.error('Error cleaning up click events:', cleanupError)
+        }
+
         return { success: true, clickId: data.id }
     } catch (error) {
         console.error('Error tracking click:', error)

@@ -182,7 +182,7 @@ export default function SignupPage() {
                         <div className="flex items-start ml-2">
                             <input type="checkbox" className="mt-1 mr-3 accent-brand" required disabled={loading} />
                             <span className="text-[10px] text-subtle leading-relaxed font-medium">
-                                Hyväksyn <Link href="#" className="text-ink underline decoration-brand/20 font-black uppercase tracking-wider">Käyttöehdot</Link> ja <Link href="#" className="text-ink underline decoration-brand/20 font-black uppercase tracking-wider">Tietosuojaselosteen</Link>
+                                Hyväksyn <Link href="/terms" target="_blank" className="text-ink underline decoration-brand/20 font-black uppercase tracking-wider">Käyttöehdot</Link> ja <Link href="/privacy" target="_blank" className="text-ink underline decoration-brand/20 font-black uppercase tracking-wider">Tietosuojaselosteen</Link>
                             </span>
                         </div>
 
