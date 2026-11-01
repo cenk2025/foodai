@@ -45,6 +45,9 @@ function answerPrompt(locale: 'fi' | 'en', offers: AiOffer[] | null, city?: stri
     return lines.join('\n')
 }
 
+// Each AI call may try several models (see lib/ai/nvidia.ts).
+export const maxDuration = 60
+
 export async function POST(request: Request) {
     if (!isAiConfigured()) return NextResponse.json({ error: 'ai_unavailable' }, { status: 503 })
 

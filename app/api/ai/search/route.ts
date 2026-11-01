@@ -7,6 +7,9 @@ const MAX_TEXT_LENGTH = 200
 
 // Natural-language search for the homepage search box. Returns the interpreted
 // filters (shown to the user) and the matching offers from the database.
+// Each AI call may try several models (see lib/ai/nvidia.ts).
+export const maxDuration = 60
+
 export async function POST(request: Request) {
     if (!isAiConfigured()) return NextResponse.json({ error: 'ai_unavailable' }, { status: 503 })
 

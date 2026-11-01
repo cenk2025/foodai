@@ -12,7 +12,14 @@ const FALLBACK_MODELS = [
     'mistralai/mistral-large-2-instruct',
     'nvidia/nemotron-3-super-120b-a12b',
 ]
-const TIMEOUT_MS = 20_000
+// Per-model timeout and total budget per completion: a slow or queued model
+// must not use up the whole request before the fallbacks get a chance.
+const MODEL_TIMEOUT_MS = 9_000
+const TOTAL_BUDGET_MS = 25_000
+// A model that timed out or was rejected is skipped for this long.
+const COOLDOWN_MS = 10 * 60 * 1000
+// Reported as upstream status when a model did not answer in time.
+const TIMEOUT_STATUS = 504
 // Statuses that mean "this model can't serve this request", not "the key or
 // service is broken": move on to the next model.
 const TRY_NEXT_MODEL = new Set([400, 404, 410, 422])
@@ -32,15 +39,24 @@ export function isAiConfigured(): boolean {
     return Boolean(process.env.NVIDIA_API_KEY)
 }
 
-function candidateModels(): string[] {
-    const configured = (process.env.AI_MODEL ?? '').split(',').map((m) => m.trim()).filter(Boolean)
-    return [...new Set([...(workingModel ? [workingModel] : []), ...configured, ...FALLBACK_MODELS])]
-}
-
-// Remembered per warm serverless instance so later requests skip dead models
-// and don't repeat a system-role request a model has already rejected.
+// Remembered per warm serverless instance so later requests skip dead or slow
+// models and don't repeat a system-role request a model has already rejected.
 let workingModel: string | null = null
 const noSystemRoleModels = new Set<string>()
+const cooldownUntil = new Map<string, number>()
+
+function candidateModels(): string[] {
+    const configured = (process.env.AI_MODEL ?? '').split(',').map((m) => m.trim()).filter(Boolean)
+    const all = [...new Set([...(workingModel ? [workingModel] : []), ...configured, ...FALLBACK_MODELS])]
+    const now = Date.now()
+    const available = all.filter((m) => (cooldownUntil.get(m) ?? 0) <= now)
+    return available.length ? available : all
+}
+
+function coolDown(model: string) {
+    cooldownUntil.set(model, Date.now() + COOLDOWN_MS)
+    if (workingModel === model) workingModel = null
+}
 
 // Some models don't accept a system role; fold it into the first user turn.
 function withoutSystemRole(messages: ChatMessage[]): ChatMessage[] {
@@ -56,7 +72,8 @@ async function requestCompletion(
     messages: ChatMessage[],
     maxTokens: number,
     temperature: number,
-): Promise<Response> {
+    timeoutMs: number,
+): Promise<Response | null> {
     const baseUrl = (process.env.AI_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, '')
     try {
         return await fetch(`${baseUrl}/chat/completions`, {
@@ -67,11 +84,13 @@ async function requestCompletion(
                 Accept: 'application/json',
             },
             body: JSON.stringify({ model, messages, max_tokens: maxTokens, temperature, stream: false }),
-            signal: AbortSignal.timeout(TIMEOUT_MS),
+            signal: AbortSignal.timeout(timeoutMs),
             cache: 'no-store',
         })
     } catch (error) {
-        throw new AiUnavailableError(`AI request to ${model} failed: ${String(error)}`)
+        // Timeout or network error: let the caller try the next model.
+        console.error(`AI model ${model} did not respond: ${error instanceof Error ? error.name : 'error'}`)
+        return null
     }
 }
 
@@ -81,26 +100,38 @@ export async function chatCompletion(
 ): Promise<string> {
     if (!isAiConfigured()) throw new AiUnavailableError('NVIDIA_API_KEY is not set')
 
+    const deadline = Date.now() + TOTAL_BUDGET_MS
+    const timeLeft = () => Math.min(MODEL_TIMEOUT_MS, deadline - Date.now())
+    const hasSystem = messages.some((m) => m.role === 'system')
+
     let lastStatus: number | undefined
     for (const model of candidateModels()) {
-        const hasSystem = messages.some((m) => m.role === 'system')
+        if (timeLeft() < 2_000) break
         let res = await requestCompletion(
             model,
             noSystemRoleModels.has(model) ? withoutSystemRole(messages) : messages,
             maxTokens,
             temperature,
+            timeLeft(),
         )
-        if (res.status === 400 && hasSystem && !noSystemRoleModels.has(model)) {
-            res = await requestCompletion(model, withoutSystemRole(messages), maxTokens, temperature)
-            if (res.ok) noSystemRoleModels.add(model)
+        if (res?.status === 400 && hasSystem && !noSystemRoleModels.has(model) && timeLeft() >= 2_000) {
+            res = await requestCompletion(model, withoutSystemRole(messages), maxTokens, temperature, timeLeft())
+            if (res?.ok) noSystemRoleModels.add(model)
         }
 
+        if (!res) {
+            lastStatus = TIMEOUT_STATUS
+            coolDown(model)
+            continue
+        }
         if (!res.ok) {
             lastStatus = res.status
             // Never log the response body verbatim; it can echo the request.
             console.error(`AI model ${model} returned status ${res.status}`)
-            if (workingModel === model) workingModel = null
-            if (TRY_NEXT_MODEL.has(res.status)) continue
+            if (TRY_NEXT_MODEL.has(res.status)) {
+                coolDown(model)
+                continue
+            }
             throw new AiUnavailableError(`AI request failed with status ${res.status}`, res.status)
         }
 
@@ -109,6 +140,7 @@ export async function chatCompletion(
         const content = data.choices?.[0]?.message?.content?.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
         if (!content) {
             console.error(`AI model ${model} returned an empty response`)
+            coolDown(model)
             continue
         }
         workingModel = model
