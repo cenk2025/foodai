@@ -78,6 +78,19 @@ export function matchesDietFilter(
     return filterDietFlags.every(flag => mealDietFlags.includes(flag))
 }
 
+// Illustrations made for the demo menu, one per meal; image_path holds 'meals/<name>.jpg'.
+const DEMO_MEAL_PHOTOS = new Set([
+    'arrabbiata', 'bacon-burger', 'beef-kebab', 'buddha-bowl', 'california-roll', 'carbonara', 'cheeseburger',
+    'chicken-burger', 'chicken-kebab', 'daily-lunch', 'falafel', 'green-salad', 'grilled-chicken', 'hawaiian',
+    'house-special', 'lasagna', 'margherita', 'mixed-kebab', 'pepperoni', 'pesto-pasta', 'salmon-nigiri',
+    'smoothie-bowl', 'soup', 'tofu-stirfry', 'tuna-sashimi', 'veggie-burger', 'veggie-maki', 'veggie-pizza',
+])
+
+function getDemoPhoto(imagePath?: string | null): string | undefined {
+    const file = imagePath?.match(/^meals\/([a-z-]+)\.jpg$/)?.[1]
+    return file && DEMO_MEAL_PHOTOS.has(file) ? `/images/meals/${file}.jpg` : undefined
+}
+
 const MEAT_OR_FISH_FREE = ['vegan', 'vegetarian']
 
 // The stock photos show specific food (pepperoni pizza, beef burger, salmon sushi),
@@ -115,7 +128,7 @@ export function getMealVisual(
     const name = mealName.toLowerCase()
     const emoji = DISH_EMOJI.find(([pattern]) => pattern.test(name))?.[1] ?? '🍽️'
     if (imagePath?.startsWith('http')) return { src: imagePath, emoji }
-    return { src: getStockPhoto(name, dietFlags ?? []), emoji }
+    return { src: getDemoPhoto(imagePath) ?? getStockPhoto(name, dietFlags ?? []), emoji }
 }
 
 /**

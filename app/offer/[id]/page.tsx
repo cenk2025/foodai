@@ -125,7 +125,7 @@ export default function OfferDetailPage() {
                                     sizes="(max-width: 1024px) 100vw, 50vw"
                                 />
                                 {discountBadge && (
-                                    <div className="absolute top-6 left-6 z-10 anim-float">
+                                    <div className="absolute bottom-6 left-6 md:bottom-auto md:top-6 z-10 anim-float">
                                         <div className="bg-[#d35400] text-white text-lg font-black px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-2 border-2 border-white/20">
                                             <TrendingDown className="w-4 h-4" />
                                             {discountBadge} {t.card.off}

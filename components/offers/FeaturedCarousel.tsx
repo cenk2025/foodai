@@ -55,7 +55,7 @@ export default function FeaturedCarousel({ offers }: FeaturedCarouselProps) {
                         className="transition-transform duration-1000 group-hover:scale-110 animate-in fade-in duration-700"
                         emojiClassName="text-7xl md:text-9xl lg:text-[11rem] -translate-y-[120px] md:translate-x-40 md:translate-y-0 lg:translate-x-80"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-[#3d1d11] via-[#3d1d11]/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#3d1d11] via-[#3d1d11]/70 to-transparent" />
                 </Link>
 
                 {discount > 0 && (
