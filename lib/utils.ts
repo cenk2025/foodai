@@ -79,6 +79,18 @@ export function matchesDietFilter(
 }
 
 /**
+ * Image for a meal: its own URL if it has one, otherwise a stock photo by dish
+ */
+export function getMealImage(mealName: string, imagePath?: string | null): string {
+    if (imagePath?.startsWith('http')) return imagePath
+    const lower = mealName.toLowerCase()
+    if (lower.includes('pizza')) return '/images/pizza.jpg'
+    if (lower.includes('sushi') || lower.includes('maki') || lower.includes('roll')) return '/images/sushi.jpg'
+    if (lower.includes('burger')) return '/images/burger.jpg'
+    return '/images/placeholder-meal.jpg'
+}
+
+/**
  * Generate tracking URL for offer
  */
 export function getTrackingUrl(offerId: string): string {

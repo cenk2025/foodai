@@ -1,16 +1,16 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { searchOffers, getCities, SearchParams } from './actions/offers'
 import SearchBar from '@/components/search/SearchBar'
 import OfferCard from '@/components/offers/OfferCard'
 import { SkeletonCard } from '@/components/ui/Skeleton'
 import { OfferWithDetails } from '@/lib/types/database'
-import { TrendingDown, Clock, Star, ChevronRight, MapPin, Sparkles, X } from 'lucide-react'
+import { Star, ChevronRight, MapPin, Sparkles, X } from 'lucide-react'
 import Footer from '@/components/layout/Footer'
 import OfferPreview from '@/components/offers/OfferPreview'
+import FeaturedCarousel from '@/components/offers/FeaturedCarousel'
 import { useLocation } from '@/lib/context/LocationContext'
 import HomepageDirectRestaurants from '@/components/direct-ordering/HomepageDirectRestaurants'
 import { DIRECT_ORDERING_ENABLED } from '@/lib/features'
@@ -29,6 +29,8 @@ export default function HomePage() {
 
   const [sortBy, setSortBy] = useState<'price_asc' | 'savings_desc'>('price_asc')
   const [freeDelivery, setFreeDelivery] = useState(false)
+  // Biggest real discounts in the selected city, for the hero carousel
+  const [featured, setFeatured] = useState<OfferWithDetails[]>([])
   // Set while the grid shows results of a natural-language (AI) search
   const [aiLabels, setAiLabels] = useState<string[] | null>(null)
 
@@ -38,6 +40,19 @@ export default function HomePage() {
       setCities(data)
     })
   }, [])
+
+  useEffect(() => {
+    if (cities.length === 0) return
+    const cityId = cities.find(c => c.name.toLowerCase() === city.toLowerCase())?.id
+    let cancelled = false
+    searchOffers({ cityId, sortBy: 'savings_desc' })
+      .then((results) => {
+        if (cancelled) return
+        setFeatured(results.filter(o => o.old_price_cents && o.old_price_cents > o.price_cents).slice(0, 5))
+      })
+      .catch(() => { if (!cancelled) setFeatured([]) })
+    return () => { cancelled = true }
+  }, [cities, city])
 
   const generateDemoOffers = (): OfferWithDetails[] => {
     const demoDeals = [
@@ -375,70 +390,9 @@ export default function HomePage() {
           {/* Main Content Area */}
           <div className="flex-1 space-y-12">
 
-            {/* Featured Section - More wide for Web */}
-            {!searchQuery && (
-              <section className="relative">
-                <div
-                  className="featured-card h-[400px] md:h-[500px] group cursor-pointer shadow-2xl"
-                  onMouseEnter={() => setHoveredOffer({
-                    id: 'featured-special',
-                    meal: {
-                      name: 'Gourmet Burger Kitchen Special',
-                      description: 'Ravintolan suosituimmat säästöateriat vain tänään puoleen hintaan. Koe kaupungin parhaat burgerit uskomattomin hinnoin.',
-                      restaurant: { name: 'Gourmet Burger Kitchen', rating: 4.9, city: { name: 'Helsinki' } },
-                      diet_flags: [],
-                      image_path: 'burger'
-                    },
-                    source: { name: 'Päivän Erikoistarjous' },
-                    price_cents: 890,
-                    old_price_cents: 1780,
-                    delivery_fee_cents: 0,
-                    eta_minutes: 20
-                  } as unknown as OfferWithDetails)}
-                  onMouseLeave={() => setHoveredOffer(null)}
-                >
-                  <Image
-                    src="/images/burger.jpg"
-                    alt="Daily Special"
-                    fill
-                    className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[#3d1d11] via-[#3d1d11]/40 to-transparent" />
-
-                  <div className="absolute top-10 left-10 anim-float">
-                    <div className="bg-[#f3d179] text-[#3d1d11] text-lg md:text-xl font-black px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-white/20">
-                      <div className="bg-[#3d1d11] text-white p-1 rounded-lg">
-                        <TrendingDown className="w-5 h-5" />
-                      </div>
-                      SÄÄSTÄ -50%
-                    </div>
-                  </div>
-
-                  <div className="absolute bottom-12 left-12 right-12 text-white">
-                    <div className="flex flex-wrap items-center gap-4 mb-6">
-                      <span className="bg-[#d35400] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-lg border border-white/10">PÄIVÄN ERIKOINEN</span>
-                      <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-white/10">
-                        <Clock className="w-4 h-4 text-[#f3d179]" />
-                        15–25 min
-                      </div>
-                      <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border border-white/10">
-                        <Star className="w-4 h-4 text-[#f3d179] fill-[#f3d179]" />
-                        4.9 (500+)
-                      </div>
-                    </div>
-                    <h2 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter leading-none">Gourmet Burger <br /><span className="text-[#f3d179]">Kitchen</span></h2>
-                    <p className="text-[#fdf2e2]/70 font-medium max-w-xl text-lg leading-relaxed hidden md:block border-l-4 border-[#d35400] pl-6">
-                      Ravintolan suosituimmat säästöateriat vain tänään puoleen hintaan. Koe kaupungin parhaat burgerit uskomattomin hinnoin.
-                    </p>
-                    <Link href="/search">
-                      <button className="mt-8 bg-white text-[#3d1d11] px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-[#f3d179] hover:scale-105 active:scale-95 transition-all shadow-xl">
-                        Tilaa Heti
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-              </section>
+            {/* Featured carousel: the city's biggest real discounts */}
+            {!searchQuery && featured.length > 0 && (
+              <FeaturedCarousel key={city} offers={featured} onHover={setHoveredOffer} />
             )}
 
             {/* Direct-order partner spotlight (additive — separate from the aggregator feed) */}

@@ -9,6 +9,7 @@ import {
     getDiscountBadge,
     formatDeliveryTime,
     getTrackingUrl,
+    getMealImage,
 } from '@/lib/utils'
 import { useLanguage } from '@/lib/i18n/context'
 
@@ -19,23 +20,12 @@ interface OfferCardProps {
     onMouseLeave?: () => void
 }
 
-// Demo image mapping helper
-function getDemoImage(mealName: string): string {
-    const lower = mealName.toLowerCase()
-    if (lower.includes('pizza')) return '/images/pizza.jpg'
-    if (lower.includes('sushi') || lower.includes('maki') || lower.includes('roll')) return '/images/sushi.jpg'
-    if (lower.includes('burger')) return '/images/burger.jpg'
-    return '/images/placeholder-meal.jpg'
-}
-
 export default function OfferCard({ offer, priority = false, onMouseEnter, onMouseLeave }: OfferCardProps) {
     const { t } = useLanguage()
     const discountBadge = getDiscountBadge(offer.old_price_cents, offer.price_cents)
 
     // Demo image mapping
-    const imageUrl = offer.meal.image_path?.startsWith('http')
-        ? offer.meal.image_path
-        : getDemoImage(offer.meal.name)
+    const imageUrl = getMealImage(offer.meal.name, offer.meal.image_path)
 
     // "View Deal" goes through /go, which records the click and forwards to the partner
     const handleViewDeal = (e: React.MouseEvent) => {
