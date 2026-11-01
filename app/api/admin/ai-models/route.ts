@@ -5,33 +5,33 @@ import { buildIntentPrompt } from '@/lib/ai/search-intent'
 
 export const maxDuration = 60
 
+// Full catalog check (?all=1), for when NVIDIA changes what the key can use.
+const ALL_CANDIDATES = [
+    'google/gemma-4-31b-it', 'google/gemma-3-12b-it', 'mistralai/mistral-large-2-instruct',
+    'mistralai/mistral-large-4-1t-a52b', 'mistralai/mistral-7b-instruct-v0.3', 'nv-mistralai/mistral-nemo-12b-instruct',
+    'nvidia/nemotron-3-super-120b-a12b', 'nvidia/nemotron-3.5-lightning-30b-a3b', 'nvidia/nemotron-nano-3-30b-a3b',
+    'nvidia/llama-3.1-nemotron-70b-instruct', 'deepseek-ai/deepseek-v4.1-flash', 'openai/gpt-oss-20b',
+    'z-ai/glm-5.3-flash', 'minimaxai/minimax-m3.1-flash', 'moonshotai/kimi-k2.6',
+]
+
+// Models that answered for this key in the last measurement, plus the
+// ones worth re-checking. Each is tried with thinking on and off.
 const CANDIDATES = [
-    'google/gemma-4-31b-it',
-    'google/gemma-3-12b-it',
-    'mistralai/mistral-large-2-instruct',
-    'mistralai/mistral-large-4-1t-a52b',
-    'mistralai/mistral-7b-instruct-v0.3',
-    'nv-mistralai/mistral-nemo-12b-instruct',
-    'nvidia/nemotron-3-super-120b-a12b',
     'nvidia/nemotron-3.5-lightning-30b-a3b',
-    'nvidia/nemotron-nano-3-30b-a3b',
-    'nvidia/llama-3.1-nemotron-70b-instruct',
-    'nvidia/llama-3.1-nemotron-51b-instruct',
-    'deepseek-ai/deepseek-v4.1-flash',
-    'openai/gpt-oss-20b',
-    'z-ai/glm-5.3-flash',
     'minimaxai/minimax-m3.1-flash',
-    'moonshotai/kimi-k2.6',
-    'ibm/granite-3.0-8b-instruct',
+    'mistralai/mistral-large-4-1t-a52b',
+    'google/gemma-4-31b-it',
+    'deepseek-ai/deepseek-v4.1-flash',
 ]
 
 // GET /api/admin/ai-models (admin session required): tests which models the
 // configured NVIDIA key can use, with latency and a sample answer.
-export async function GET() {
+export async function GET(request: Request) {
     if (!(await getAdminUserId())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     if (!isAiConfigured()) return NextResponse.json({ error: 'NVIDIA_API_KEY is not set' }, { status: 503 })
 
-    const results = await probeModels(CANDIDATES, [
+    const models = new URL(request.url).searchParams.get('all') === '1' ? ALL_CANDIDATES : CANDIDATES
+    const results = await probeModels(models, [
         { role: 'system', content: buildIntentPrompt(['Helsinki', 'Espoo', 'Tampere']) },
         { role: 'user', content: 'halpa vegaaninen pizza alle 10 € Kampissa ilmaisella kotiinkuljetuksella' },
     ])
