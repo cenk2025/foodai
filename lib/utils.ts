@@ -82,8 +82,8 @@ export function matchesDietFilter(
  * Generate tracking URL for offer
  */
 export function getTrackingUrl(offerId: string): string {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    return `${baseUrl}/go/${offerId}`
+    // Relative so it always points at the current deployment.
+    return `/go/${offerId}`
 }
 
 /**

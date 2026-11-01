@@ -8,6 +8,7 @@ import {
     formatPrice,
     getDiscountBadge,
     formatDeliveryTime,
+    getTrackingUrl,
 } from '@/lib/utils'
 import { useLanguage } from '@/lib/i18n/context'
 
@@ -36,15 +37,11 @@ export default function OfferCard({ offer, priority = false, onMouseEnter, onMou
         ? offer.meal.image_path
         : getDemoImage(offer.meal.name)
 
-    // Handle "View Deal" click - Simulate tracking
+    // "View Deal" goes through /go, which records the click and forwards to the partner
     const handleViewDeal = (e: React.MouseEvent) => {
         e.preventDefault()
         e.stopPropagation()
-        // In a real app, we would fire a server action here: trackClick(offer.id)
-        console.log(`Tracking click for offer ${offer.id} on ${offer.source.name}`)
-
-        // Open the external deal (mock URL for demo)
-        window.open(`https://${offer.source.name.toLowerCase()}.fi`, '_blank')
+        window.open(getTrackingUrl(offer.id), '_blank', 'noopener')
     }
 
     return (

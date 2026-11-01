@@ -3,6 +3,7 @@
 import { Compass, Search, ShoppingBag, Heart, User } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { DIRECT_ORDERING_ENABLED } from '@/lib/features'
 
 export default function BottomNav() {
     const pathname = usePathname()
@@ -13,7 +14,7 @@ export default function BottomNav() {
         { icon: ShoppingBag, label: 'Tilaukset', href: '/orders' },
         { icon: Heart, label: 'Suosikit', href: '/favorites' },
         { icon: User, label: 'Profiili', href: '/profile' },
-    ]
+    ].filter((item) => DIRECT_ORDERING_ENABLED || item.href !== '/orders')
 
     return (
         <div className="bottom-nav md:hidden pb-safe">

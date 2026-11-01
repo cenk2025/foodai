@@ -10,6 +10,7 @@ import { LocationProvider } from "@/lib/context/LocationContext";
 import AuthHashHandler from "@/components/auth/AuthHashHandler";
 import { CartProvider } from "@/lib/direct-ordering/CartContext";
 import CartPanel from "@/components/direct-ordering/CartPanel";
+import { DIRECT_ORDERING_ENABLED } from "@/lib/features";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", weight: ["400", "500", "600", "700", "800"] });
@@ -99,7 +100,7 @@ export default function RootLayout({
               </main>
               <BottomNav />
               <AiAssistant />
-              <CartPanel />
+              {DIRECT_ORDERING_ENABLED && <CartPanel />}
             </CartProvider>
           </LocationProvider>
         </LanguageProvider>

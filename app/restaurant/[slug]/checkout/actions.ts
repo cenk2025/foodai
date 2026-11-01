@@ -18,6 +18,7 @@ import type {
     OrderOptionSnapshot,
 } from '@/lib/direct-ordering/types';
 import { computeUnitPrice } from '@/lib/direct-ordering/pricing';
+import { DIRECT_ORDERING_ENABLED } from '@/lib/features';
 
 export type PlaceOrderInput = {
     slug: string;
@@ -52,6 +53,9 @@ export type PlaceOrderResult =
       };
 
 export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResult> {
+    // Server actions are reachable by direct POST, so the page-level gate is not enough.
+    if (!DIRECT_ORDERING_ENABLED) return { ok: false, error: 'restaurant_not_found' };
+
     const restaurant = await getRestaurantBySlug(input.slug);
     if (!restaurant || !restaurant.isActive) return { ok: false, error: 'restaurant_not_found' };
 
