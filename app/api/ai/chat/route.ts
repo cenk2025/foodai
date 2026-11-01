@@ -78,7 +78,9 @@ export async function POST(request: Request) {
     } catch (error) {
         if (error instanceof AiUnavailableError) {
             console.error('AI chat unavailable:', error.message)
-            return NextResponse.json({ error: 'ai_unavailable' }, { status: 503 })
+            // upstream is NVIDIA's HTTP status: no secrets, but it tells 410 (model
+            // retired) apart from 401 (bad key) without access to server logs.
+            return NextResponse.json({ error: 'ai_unavailable', upstream: error.upstreamStatus ?? null }, { status: 503 })
         }
         throw error
     }
