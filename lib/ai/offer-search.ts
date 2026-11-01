@@ -31,7 +31,8 @@ export async function interpretSearch(
         [{ role: 'system', content: buildIntentPrompt(cityNames) }, ...conversation],
         { maxTokens: 200, temperature: 0 },
     )
-    return { intent: validateIntent(extractJsonObject(reply), cityNames), cities }
+    const userText = conversation.filter((m) => m.role === 'user').map((m) => m.content).join('\n')
+    return { intent: validateIntent(extractJsonObject(reply), cityNames, userText), cities }
 }
 
 export async function searchByIntent(
